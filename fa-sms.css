@@ -1,0 +1,326 @@
+/******************************
+** === TABLE OF CONTENTS === **
+*******************************
+** 00. MAIN STYLES
+** 01. CHATS LIST
+** 02. MESSAGE LIST
+******************************/
+
+/* -- 00. MAIN STYLES -- */
+@import url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css);
+
+#FASMS, #FASMS * { box-sizing:border-box; }
+#FASMS {
+  color:#333;
+  font-size:13px;
+  font-family:Arial;
+  background:#FFF;
+  border:1px solid #DDD;
+  position:fixed;
+  height:70%;
+  width:40%;
+  min-height:400px;
+  min-width:300px;
+  right:3px;
+  z-index:99999;
+
+  /* transitions for the hidden rule below */
+  visibility:visible;
+  opacity:1;
+  bottom:35px;
+  transition:500ms;
+}
+
+/* hides chat */
+#FASMS[data-hidden="true"] {
+  visibility:hidden;
+  opacity:0;
+  bottom:-100%;
+}
+
+/* embeded chat style */
+#FASMS.FASMS-embeded {
+  position:relative;
+  bottom:0;
+  right:0;
+  width:100%;
+  height:400px;
+  margin:12px 0;
+  z-index:1;
+}
+
+/* toggle chat button */
+#FASMS-button {
+  color:#FFF;
+  font-size:18px;
+  font-family:Arial;
+  text-align:center;
+  background:#39C;
+  position:fixed;
+  width:30px;
+  height:30px;
+  right:3px;
+  bottom:3px;
+  cursor:pointer;
+  z-index:99999;
+}
+#FASMS-button i { line-height:30px; }
+#FASMS-button:hover { background-color:#28B; }
+#FASMS-button:active { background-color:#17A; }
+
+/* toolbar */
+#FASMS-toolbar {
+  color:#FFF;
+  background:#39C;
+  border-bottom:1px solid #28B;
+  height:40px;
+  line-height:40px;
+  margin:-1px -1px 0 -1px;
+}
+
+.FASMS-maintitle {
+  color:#FFF;
+  font-size:18px;
+  text-align:center;
+  width:70%;
+  margin:0 auto;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+a.FASMS-back {
+  color:#FFF;
+  font-size:24px;
+  position:absolute;
+  height:40px;
+  left:10px;
+}
+a.FASMS-back i { line-height:40px; }
+a.FASMS-back:hover { color:#EEE; }
+a.FASMS-back:active { color:#DDD; }
+
+/* content */
+#FASMS-content {
+  height:90%;
+  height:calc(100% - 80px);
+  overflow-y:auto;
+  overflow-x:hidden;
+}
+
+.FASMS-loading {
+  font-size:18px;
+  font-weight:bold;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+}
+
+/* scrollbar */
+#FASMS-content::-webkit-scrollbar {
+  width:8px;
+  height:8px;
+}
+#FASMS-content::-webkit-scrollbar-track { background:none; }
+#FASMS-content::-webkit-scrollbar-thumb {
+  background-color:#39C;
+  border:none;
+}
+
+/* scrollbar buttons */
+#FASMS-content::-webkit-scrollbar-button:single-button {
+  height:0;
+  width:0;
+}
+
+/* hover / active scrollbar colors */
+#FASMS-content::-webkit-scrollbar-thumb:hover, ::-webkit-scrollbar-button:hover { background-color:#28B; }
+#FASMS-content::-webkit-scrollbar-thumb:active, ::-webkit-scrollbar-button:active { background-color:#069; }
+
+/* actions */
+#FASMS-actions {
+  height:40px;
+  border-top:1px solid #DDD;
+}
+
+#FASMS-actions button {
+  color:#333;
+  font-size:18px;
+  background:#FFF;
+  border:none;
+  border-left:1px solid #DDD;
+  height:40px;
+  width:40px;
+  cursor:pointer;
+  outline:none;
+}
+#FASMS-actions button:first-child { border:none; }
+
+#FASMS-actions button:hover { background:#EEE; }
+#FASMS-actions button:active { background:#DDD; }
+
+#FASMS-actions button[data-disabled="true"] { pointer-events:none; }
+#FASMS-actions button[data-disabled="true"] > * { opacity:0.5; }
+
+#FASMS-msg {
+  font-size:14px;
+  border:none;
+  border-left:1px solid #DDD;
+  height:40px;
+  width:calc(100% - 120px);
+  margin:0;
+  padding:0 6px;
+  vertical-align:top;
+  outline:none;
+}
+
+
+/* -- 01. CHATS LIST -- */
+a.FASMS-chat, a.FASMS-chat * { display:block; }
+a.FASMS-chat {
+  color:#333;
+  border-bottom:2px solid #DDD;
+  position:relative;
+  padding:12px;
+  height:80px;
+}
+a.FASMS-chat:hover { background-color:#EEE; }
+
+.FASMS-chat-avatar {
+  position:absolute;
+  left:10px;
+  top:50%;
+  margin-top:-20px;
+  height:40px;
+  width:40px;
+  overflow:hidden;
+}
+
+.FASMS-chat-avatar img {
+  height:100%;
+  width:100%;
+}
+
+.FASMS-chat-title, .FASMS-chat-date {
+  position:absolute;
+  left:0;
+  width:100%;
+  padding:0 12px 0 60px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.FASMS-chat-title {
+  font-size:14px;
+  font-weight:bold;
+  top:20px;
+}
+
+.FASMS-chat-date { bottom:20px; }
+
+
+/* -- 02. MESSAGE LIST -- */
+.FASMS-msg {
+  position:relative;
+  padding:12px;
+  margin-bottom:12px;
+}
+
+.FASMS-msg:after {
+  content:"";
+  display:table;
+  clear:both;
+}
+
+.FASMS-msg-avatar {
+  height:40px;
+  width:40px;
+  display:block;
+  margin-top:12px;
+  overflow:hidden;
+  float:left;
+}
+
+.FASMS-msg-avatar img {
+  height:100%;
+  width:100%;
+}
+
+.FASMS-my-msg .FASMS-msg-avatar {
+  margin-top:-2px;
+  float:right;
+}
+
+.FASMS-msg-box {
+  float:right;
+  width:80%;
+  width:calc(100% - 40px);
+  padding-left:15px;
+}
+
+.FASMS-my-msg .FASMS-msg-box {
+  float:left;
+  padding:0 15px 0 0;
+}
+
+.FASMS-msg-content {
+  color:#000;
+  background:#DDD;
+  border-radius:6px;
+  padding:8px;
+  margin:3px 0;
+  min-height:30px;
+  word-break:break-word;
+  position:relative;
+}
+
+/* normal message arrow */
+.FASMS-msg-content:before {
+  content:"";
+  height:0;
+  width:0;
+  border-top:5px solid transparent;
+  border-bottom:5px solid transparent;
+  border-right:10px solid #DDD;
+  position:absolute;
+  top:10px;
+  left:-10px;
+}
+
+/* personal message arrow */
+.FASMS-my-msg .FASMS-msg-content:before {
+  border-right:none;
+  border-left:10px solid #07C;
+  top:12px;
+  left:auto;
+  right:-10px;
+}
+
+/* message content styles */
+.FASMS-msg-content a {
+  color:inherit;
+  text-decoration:underline;
+}
+.FASMS-msg-content a:hover { text-decoration:none; }
+.FASMS-msg-content * { max-width:100%; }
+
+/* personal message style */
+.FASMS-my-msg .FASMS-msg-content {
+  color:#FFF;
+  background:#07C;
+  text-align:right;
+}
+.FASMS-my-msg .FASMS-msg-name { display:none; } /* hides your name on your messages */
+
+.FASMS-msg-date { text-align:right; }
+.FASMS-msg-name, .FASMS-msg-date {
+  font-size:12px;
+  display:block;
+  padding:0 3px;
+  width:100%;
+}
