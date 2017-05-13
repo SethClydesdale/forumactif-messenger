@@ -75,7 +75,7 @@
 
       // get the page
       $.get(url, function (data) {
-        var a = $(type == 'topic' ? '.post' : 'a.forumtitle, a.topictitle', data),
+        var a = $(type == 'topic' ? '.post' : (FASMS.fVersion == 0 ? 'a.forumlink,' : 'a.forumtitle,') + 'a.topictitle', data),
             form = type == 'topic' ? $('form[action="/post"]', data) : null,
             i = 0,
             j = a.length,
@@ -235,10 +235,10 @@
           ][FASMS.fVersion],
 
           row_date : [
-            '.row3Right .postdetails', // phpbb2
+            '.row3Right .postdetails, .row3.over .gensmall', // phpbb2
             '.lastpost', // phpbb3
             '.tcr', // punbb
-            '.lastaction', // invision
+            '.lastaction, td:last-child > span:last-child', // invision
             '.forum-lastpost', // forumactif edge
             '.lastpost' // modernbb
           ][FASMS.fVersion],

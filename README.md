@@ -16,19 +16,22 @@ Follow the steps below to install this application for testing.
 Below is a list of features, fixes, and ideas that need reviewing, implementing, or fixing.
 
 #### Implement
+- [ ] add icons to topics and forums so it's easier to differentiate the two
 - [ ] add page numbers to load older / new pages
 - [ ] add new topic button
 - [ ] add message submission in topics
 - [ ] add auto-refresh for new messages
 - [ ] add emoticons
 - [ ] add attachment popup for images and videos
+- [ ] add new styles for quotes, codeboxes, etc.. in messages (collapsing these elements by default is preferred)
 
 #### Fix
-
 - [ ] fix avatars and usernames so they link to the user profile
+- [ ] fix similar topics and other non-message elements displaying as anon message
+- [ ] fix button and input styles on modernbb
+- [ ] remove username and topic title from last post times
 
 #### Misc ideas for later development stages
-
 - [ ] add theme picker
 - [ ] add bubble color preference
 - [ ] add pm support
