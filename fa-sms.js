@@ -75,37 +75,58 @@
 
       // get the page
       $.get(url, function (data) {
-        var a = $(type == 'topic' ? '.post' : (FASMS.fVersion == 0 ? 'a.forumlink,' : 'a.forumtitle,') + 'a.topictitle', data),
+        var a = $(type == 'topic' ? '.post[class*="post--"]' : 'a.forum' + ( FASMS.fVersion == 0 ? 'link' : 'title' ) + ', a.topictitle', data),
             form = type == 'topic' ? $('form[action="/post"]', data) : null,
             i = 0,
             j = a.length,
             html = '',
-            row, avatar, date, name, msg, pages, type2;
+            row, avatar, date, name, msg, pages, group, pLink, type2;
 
 
         for (; i < j; i++) {
+          // message structure
           if (type == 'topic') {
             avatar = $(FASMS.selector.post_avatar, a[i])[0];
+
+            // get username
             name = $(FASMS.selector.post_name, a[i])[0];
+
+            // check if the user link is available
+            pLink = name.getElementsByTagName('A')[0];
+            pLink = pLink ? '<a href="' + pLink.href + '">' : null;
+
+            // check if the user is in a group
+            group = name.getElementsByTagName('SPAN')[0];
+            group = group ? '<span style="' + group.getAttribute('style') + '"><strong>' : null;
+
+            // check if the username is available
             name = name ? name.innerText : FASMS.config.no_name;
+
             date = $(FASMS.selector.post_date, a[i])[0];
             msg = $(FASMS.selector.post_message, a[i])[0];
 
             html +=
             '<div class="FASMS-msg' + ( name == _userdata.username ? ' FASMS-my-msg' : '' ) + '">'+
               '<span class="FASMS-msg-avatar">'+
+                (pLink ? pLink : '')+
                 '<img src="' + ( avatar ? avatar.src : FASMS.config.no_avatar ) + '" alt="avatar">'+
+                (pLink ? '</a>' : '')+
               '</span>'+
 
               '<div class="FASMS-msg-box">'+
-                '<span class="FASMS-msg-name">' + name + '</span>'+
-
+                '<div class="FASMS-msg-name">'+
+                  (pLink ? pLink : '')+
+                    (group ? group : '')+
+                      name+
+                    (group ? '</span></strong>' : '')+
+                  (pLink ? '</a>' : '')+
+                '</div>'+
                 '<div class="FASMS-msg-content">' + FASMS.cleanMessage( msg ? msg.innerHTML : '' ) + '</div>'+
-
-                '<span class="FASMS-msg-date">' + ( date ? date.innerText : '' ) + '</span>'+
+                '<div class="FASMS-msg-date">' + ( date ? date.innerText : '' ) + '</div>'+
               '</div>'+
             '</div>';
 
+          // forum and category structure
           } else {
             row = $(a[i]).closest(FASMS.selector.row)[0];
             avatar = $('.lastpost-avatar img', row)[0];
@@ -134,6 +155,11 @@
         '<input id="FASMS-msg" type="text" placeholder="' + FASMS.config.lang.msg_placeholder + '" onkeyup="FASMS.validate(this.value);">'+
         '<button id="FASMS-send" type="button" onclick="FASMS.send();" data-disabled="true"><i class="fa fa-paper-plane"></i></button>'+
         '<div style="display:none;">' + ( form ? form.innerHTML : '' ) + '</div>' : '';
+
+        // topic specific initializations
+        if (type == 'topic') {
+          FASMS.cache.content.scrollTop = FASMS.cache.content.lastChild.offsetTop;
+        }
       });
     },
 
@@ -215,9 +241,9 @@
 
 
         // set forum version
-        FASMS.fVersion = $('.bodylinewidth')[0] ? 0 :
-                      $('#phpbb #wrap')[0] ? 1 :
-                      $('div.pun')[0] ? 2 :
+        FASMS.fVersion = document.querySelector('.bodylinewidth') ? 0 :
+                      document.getElementById('phpbb') ? 1 :
+                      document.querySelector('div.pun') ? 2 :
                       document.getElementById('ipbwrapper') ? 3 :
                       document.getElementById('fa_edge') ? 4 :
                       document.getElementById('modernbb') ? 5 :
@@ -236,11 +262,11 @@
 
           row_date : [
             '.row3Right .postdetails, .row3.over .gensmall', // phpbb2
-            '.lastpost', // phpbb3
+            '.lastpost span:not(.lastpost-avatar)', // phpbb3
             '.tcr', // punbb
             '.lastaction, td:last-child > span:last-child', // invision
             '.forum-lastpost', // forumactif edge
-            '.lastpost' // modernbb
+            '.lastpost > span:not(.lastpost-avatar)' // modernbb
           ][FASMS.fVersion],
 
           post_avatar : [
@@ -261,7 +287,7 @@
             '.postprofile-name' // modernbb
           ][FASMS.fVersion],
 
-          post_data : [
+          post_date : [
             '.postdetails:not(.poster-profile)', // phpbb2
             '.author', // phpbb3
             '.posthead h2', // punbb
@@ -273,7 +299,7 @@
           post_message : [
             '.postbody > div', // phpbb2
             '.content > div', // phpbb3
-            '.entry-content > div > div', // punbb
+            '.entry-content > div:not(.vote) > div', // punbb
             '.post-entry > div:not(.clear, .vote)', // invision
             '.content > div', // forumactif edge
             '.content > div' // modernbb
@@ -317,5 +343,5 @@
 
 
   // FASMS styles
-  $('head').append('<style>@import url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css);#FASMS,#FASMS *{box-sizing:border-box}#FASMS,#FASMS-button{font-family:Arial;position:fixed;right:3px;z-index:99999}#FASMS{background:#fff;border:1px solid #ddd;min-height:400px;min-width:300px;visibility:visible;opacity:1;transition:500ms;color:#333;font-size:13px;height:70%;width:40%;bottom:35px}#FASMS[data-hidden=true]{visibility:hidden;opacity:0;bottom:-100%}#FASMS.FASMS-embeded{position:relative;bottom:0;right:0;width:100%;height:400px;margin:12px 0;z-index:1}#FASMS-button{color:#fff;font-size:18px;text-align:center;background:#39c;width:30px;height:30px;bottom:3px;cursor:pointer}#FASMS-button i{line-height:30px}#FASMS-button:hover{background-color:#28b}#FASMS-button:active{background-color:#17a}#FASMS-toolbar{color:#fff;background:#39c;border-bottom:1px solid #28b;height:40px;margin:-1px -1px 0}.FASMS-maintitle{color:#fff;font-size:18px;text-align:center;width:70%;margin:0 auto;overflow:hidden;text-overflow:ellipsis}a.FASMS-back{color:#fff;font-size:24px;position:absolute;height:40px;left:10px}#FASMS-toolbar,a.FASMS-back i{line-height:40px}a.FASMS-back:hover{color:#eee}a.FASMS-back:active{color:#ddd}#FASMS-content{height:90%;height:calc(100% - 80px);overflow-y:auto;overflow-x:hidden}.FASMS-loading{font-size:18px;font-weight:700;display:flex;justify-content:center;align-items:center;position:absolute;top:0;left:0;right:0;bottom:0}#FASMS-content::-webkit-scrollbar{width:8px;height:8px}#FASMS-content::-webkit-scrollbar-track{background:0 0}#FASMS-content::-webkit-scrollbar-thumb{background-color:#39c;border:none}#FASMS-content::-webkit-scrollbar-button:single-button{height:0;width:0}#FASMS-content::-webkit-scrollbar-thumb:hover,::-webkit-scrollbar-button:hover{background-color:#28b}#FASMS-content::-webkit-scrollbar-thumb:active,::-webkit-scrollbar-button:active{background-color:#069}#FASMS-actions{height:40px;border-top:1px solid #ddd}#FASMS-actions button{color:#333;font-size:18px;background:#fff;border:none;border-left:1px solid #ddd;height:40px;width:40px;cursor:pointer;outline:none}#FASMS-actions button:first-child{border:none}#FASMS-actions button:hover{background:#eee}#FASMS-actions button:active{background:#ddd}#FASMS-actions button[data-disabled=true]{pointer-events:none}#FASMS-actions button[data-disabled=true]>*{opacity:.5}#FASMS-msg{font-size:14px;border:none;border-left:1px solid #ddd;height:40px;width:calc(100% - 120px);margin:0;padding:0 6px;vertical-align:top;outline:none}a.FASMS-chat,a.FASMS-chat *{display:block}a.FASMS-chat{color:#333;border-bottom:2px solid #ddd;position:relative;padding:12px;height:80px}a.FASMS-chat:hover{background-color:#eee}.FASMS-chat-avatar{position:absolute;left:10px;top:50%;margin-top:-20px;height:40px;width:40px;overflow:hidden}.FASMS-chat-avatar img,.FASMS-msg-avatar img{height:100%;width:100%}.FASMS-chat-date,.FASMS-chat-title{position:absolute;left:0;width:100%;padding:0 12px 0 60px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.FASMS-chat-title{font-size:14px;font-weight:700;top:20px}.FASMS-chat-date{bottom:20px}.FASMS-msg{position:relative;padding:12px;margin-bottom:12px}.FASMS-msg:after{content:"";display:table;clear:both}.FASMS-msg-avatar{height:40px;width:40px;display:block;margin-top:12px;overflow:hidden;float:left}.FASMS-my-msg .FASMS-msg-avatar{margin-top:-2px;float:right}.FASMS-msg-box{float:right;width:80%;width:calc(100% - 40px);padding-left:15px}.FASMS-my-msg .FASMS-msg-box{float:left;padding:0 15px 0 0}.FASMS-msg-content{color:#000;background:#ddd;border-radius:6px;padding:8px;margin:3px 0;min-height:30px;word-break:break-word;position:relative}.FASMS-msg-content:before{content:"";height:0;width:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-right:10px solid #ddd;position:absolute;top:10px;left:-10px}.FASMS-my-msg .FASMS-msg-content:before{border-right:none;border-left:10px solid #07c;top:12px;left:auto;right:-10px}.FASMS-msg-content a{color:inherit;text-decoration:underline}.FASMS-msg-content a:hover{text-decoration:none}.FASMS-msg-content *{max-width:100%}.FASMS-my-msg .FASMS-msg-content{color:#fff;background:#07c;text-align:right}.FASMS-my-msg .FASMS-msg-name{display:none}.FASMS-msg-date{text-align:right}.FASMS-msg-date,.FASMS-msg-name{font-size:12px;display:block;padding:0 3px;width:100%}</style>');
+  $('head').append('<style>@import url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css);#modernbb #FASMS i.fa,#modernbb #FASMS-button i.fa,#modernbb #FASMS-send{margin:initial;vertical-align:initial}#FASMS,#FASMS *{box-sizing:border-box}#FASMS,#FASMS-button{font-family:Arial;position:fixed;right:3px;z-index:99999}#FASMS{background:#fff;border:1px solid #ddd;min-height:400px;min-width:300px;visibility:visible;opacity:1;transition:500ms;color:#333;font-size:13px;height:70%;width:40%;bottom:35px}#FASMS[data-hidden=true]{visibility:hidden;opacity:0;bottom:-100%}#FASMS.FASMS-embeded{position:relative;bottom:0;right:0;width:100%;height:400px;margin:12px 0;z-index:1}#FASMS-button{color:#fff;font-size:18px;text-align:center;background:#39c;width:30px;height:30px;bottom:3px;cursor:pointer}#FASMS-button i{line-height:30px}#FASMS-button:hover{background-color:#28b}#FASMS-button:active{background-color:#17a}#FASMS-toolbar{color:#fff;background:#39c;border-bottom:1px solid #28b;height:40px;margin:-1px -1px 0}.FASMS-maintitle{color:#fff;font-size:18px;text-align:center;width:70%;margin:0 auto;overflow:hidden;text-overflow:ellipsis}a.FASMS-back{color:#fff;font-size:24px;position:absolute;height:40px;left:10px}#FASMS-toolbar,a.FASMS-back i{line-height:40px}a.FASMS-back:hover{color:#eee}a.FASMS-back:active{color:#ddd}#FASMS-content{height:90%;height:calc(100% - 80px);overflow-y:auto;overflow-x:hidden}.FASMS-loading{font-size:18px;font-weight:700;display:flex;justify-content:center;align-items:center;position:absolute;top:0;left:0;right:0;bottom:0}#FASMS-content::-webkit-scrollbar{width:8px;height:8px}#FASMS-content::-webkit-scrollbar-track{background:0 0}#FASMS-content::-webkit-scrollbar-thumb{background-color:#39c;border:none}#FASMS-content::-webkit-scrollbar-button:single-button{height:0;width:0}#FASMS-content::-webkit-scrollbar-thumb:hover,::-webkit-scrollbar-button:hover{background-color:#28b}#FASMS-content::-webkit-scrollbar-thumb:active,::-webkit-scrollbar-button:active{background-color:#069}#FASMS-actions{height:40px;border-top:1px solid #ddd}#FASMS-actions button{color:#333;font-size:18px;background:#fff;border:none;border-left:1px solid #ddd;height:40px;width:40px;cursor:pointer;outline:none}#FASMS-actions button:first-child{border:none}#FASMS-actions button:hover{background:#eee}#FASMS-actions button:active{background:#ddd}#FASMS-actions button[data-disabled=true]{pointer-events:none}#FASMS-actions button[data-disabled=true]>*{opacity:.5}#FASMS-msg{font-size:14px;border:none;border-left:1px solid #ddd;height:40px;width:calc(100% - 120px);margin:0;padding:0 6px;vertical-align:top;outline:none}a.FASMS-chat,a.FASMS-chat *{display:block}a.FASMS-chat{color:#333;border-bottom:2px solid #ddd;position:relative;padding:12px;height:80px}a.FASMS-chat:hover{background-color:#eee}.FASMS-chat-avatar{position:absolute;left:10px;top:50%;margin-top:-20px;height:40px;width:40px;overflow:hidden}.FASMS-chat-avatar img,.FASMS-msg-avatar img{height:100%;width:100%}.FASMS-chat-date,.FASMS-chat-title{position:absolute;left:0;width:100%;padding:0 12px 0 60px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.FASMS-chat-title{font-size:14px;font-weight:700;top:20px}.FASMS-chat-date{bottom:20px}.FASMS-msg{position:relative;padding:12px;margin-bottom:12px}.FASMS-msg:after{content:"";display:table;clear:both}.FASMS-msg-avatar{height:40px;width:40px;display:block;margin-top:12px;overflow:hidden;float:left}.FASMS-my-msg .FASMS-msg-avatar{margin-top:-2px;float:right}.FASMS-msg-box{float:right;width:80%;width:calc(100% - 40px);padding-left:15px}.FASMS-my-msg .FASMS-msg-box{float:left;padding:0 15px 0 0}.FASMS-msg-content{color:#000;background:#ddd;border-radius:6px;padding:8px;margin:3px 0;min-height:30px;max-width:80%;position:relative}.FASMS-msg-content:before{content:"";height:0;width:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-right:10px solid #ddd;position:absolute;top:10px;left:-10px}.FASMS-my-msg .FASMS-msg-content{color:#fff;background:#07c;float:right}.FASMS-my-msg .FASMS-msg-content:before{border-right:none;border-left:10px solid #07c;top:12px;left:auto;right:-10px}.FASMS-msg-content a{color:inherit;text-decoration:underline}.FASMS-msg-content a:hover{text-decoration:none}.FASMS-msg-content *{max-width:100%}.FASMS-msg-date{clear:both}.FASMS-msg-date,.FASMS-msg-name{font-size:12px;padding:0 3px;width:100%}.FASMS-my-msg .FASMS-msg-name{display:none}.FASMS-my-msg .FASMS-msg-date{text-align:right}</style>');
 }());

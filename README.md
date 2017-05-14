@@ -16,6 +16,10 @@ Follow the steps below to install this application for testing.
 Below is a list of features, fixes, and ideas that need reviewing, implementing, or fixing.
 
 #### Implement
+- [ ] add drop down nav menu for various options such as...
+  - [ ] a Home button for going back to first history entry
+  - [ ] a Settings button for configuring personal settings
+  - [ ] an About button for viewing info about FASMS + Checking for updates on Github
 - [ ] add icons to topics and forums so it's easier to differentiate the two
 - [ ] add page numbers to load older / new pages
 - [ ] add new topic button
@@ -26,10 +30,11 @@ Below is a list of features, fixes, and ideas that need reviewing, implementing,
 - [ ] add new styles for quotes, codeboxes, etc.. in messages (collapsing these elements by default is preferred)
 
 #### Fix
-- [ ] fix avatars and usernames so they link to the user profile
-- [ ] fix similar topics and other non-message elements displaying as anon message
-- [ ] fix button and input styles on modernbb
-- [ ] remove username and topic title from last post times
+- [ ] fix scrolling to the last message when images aren't loaded
+- [x] fix avatars and usernames so they link to the user profile
+- [x] fix similar topics and other non-message elements displaying as anon message
+- [x] fix button and input styles on modernbb
+- [ ] remove username, topic title, and "on"/"by" from last post times
 
 #### Misc ideas for later development stages
 - [ ] add theme picker

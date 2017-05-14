@@ -9,6 +9,13 @@
 /* -- 00. MAIN STYLES -- */
 @import url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css);
 
+/* style reset for modernbb */
+#modernbb #FASMS-button i.fa, #modernbb #FASMS i.fa, #modernbb #FASMS-send {
+  margin:initial;
+  vertical-align:initial;
+}
+
+/* FASMS primary styles */
 #FASMS, #FASMS * { box-sizing:border-box; }
 #FASMS {
   color:#333;
@@ -268,6 +275,7 @@ a.FASMS-chat:hover { background-color:#EEE; }
   padding:0 15px 0 0;
 }
 
+/* message bubble */
 .FASMS-msg-content {
   color:#000;
   background:#DDD;
@@ -275,7 +283,7 @@ a.FASMS-chat:hover { background-color:#EEE; }
   padding:8px;
   margin:3px 0;
   min-height:30px;
-  word-break:break-word;
+  max-width:80%;
   position:relative;
 }
 
@@ -290,6 +298,13 @@ a.FASMS-chat:hover { background-color:#EEE; }
   position:absolute;
   top:10px;
   left:-10px;
+}
+
+/* personal message style */
+.FASMS-my-msg .FASMS-msg-content {
+  color:#FFF;
+  background:#07C;
+  float:right;
 }
 
 /* personal message arrow */
@@ -309,18 +324,12 @@ a.FASMS-chat:hover { background-color:#EEE; }
 .FASMS-msg-content a:hover { text-decoration:none; }
 .FASMS-msg-content * { max-width:100%; }
 
-/* personal message style */
-.FASMS-my-msg .FASMS-msg-content {
-  color:#FFF;
-  background:#07C;
-  text-align:right;
-}
-.FASMS-my-msg .FASMS-msg-name { display:none; } /* hides your name on your messages */
-
-.FASMS-msg-date { text-align:right; }
+.FASMS-msg-date { clear:both; }
 .FASMS-msg-name, .FASMS-msg-date {
   font-size:12px;
-  display:block;
   padding:0 3px;
   width:100%;
 }
+
+.FASMS-my-msg .FASMS-msg-name { display:none; } /* hides your name on your messages */
+.FASMS-my-msg .FASMS-msg-date { text-align:right; }
