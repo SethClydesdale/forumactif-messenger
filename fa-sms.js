@@ -3,12 +3,13 @@
 
     // general config
     config : {
-      chat_category : '', // specify category e.g. '/c1-category' or leave empty '' for all index forums
-      group_title : 'Select a Group', // initial title
+      chat_page : '', // specify a forum, category, or topic for chatting e.g. '/c1-category', '/f1-forum', '/t1-topic'. Leave blank for all forums.
+      main_title : 'Select a Group', // initial title
       embed : '', // selector of element that you want to embed the chat app into. e.g. #wrap, #my-custom-element, etc..
 
       refresh : 5000,
       timeout : 10*60*1000,
+      flood_control : 5000,
 
       ignore_announcements : false,
       ignore_firstpost : true,
@@ -29,7 +30,7 @@
         FASMS.cache.chat.dataset.hidden = false;
 
         if (!FASMS.history.length) {
-          FASMS.get(FASMS.config.chat_category || '/forum', FASMS.config.group_title);
+          FASMS.get(FASMS.config.chat_page || '/forum', FASMS.config.main_title);
         }
 
       } else {
@@ -39,20 +40,17 @@
 
 
     // get the specified page
-    get : function (url, title, back) {
+    get : function (url, title, noHistory) {
       var type = /c\d+-/.test(url) ? 'category' :
                  /f\d+-/.test(url) ? 'forum' :
                  /t\d+-/.test(url) ? 'topic' : 'category';
 
       // push new entry to history
-      if (!back) {
+      if (!noHistory) {
         FASMS.history.push({
           url : url,
           title : title
         });
-
-      } else {
-        FASMS.history.pop();
       }
 
       // show / hide back button
@@ -73,58 +71,24 @@
         '<span class="sr-only">' + FASMS.config.lang.loading + '</span>'+
       '</div>';
 
+      // reset the message log
+      if (type == 'topic') {
+        FASMS.msgLog = {};
+      }
+
       // get the page
       $.get(url, function (data) {
         var a = $(type == 'topic' ? '.post[class*="post--"]' : 'a.forum' + ( FASMS.fVersion == 0 ? 'link' : 'title' ) + ', a.topictitle', data),
-            form = type == 'topic' ? $('form[action="/post"]', data) : null,
+            form = type == 'topic' ? $('form[action="/post"]', data)[0] : null,
             i = 0,
             j = a.length,
             html = '',
-            row, avatar, date, name, msg, pages, group, pLink, type2;
-
+            row, avatar, date, pages, type2;
 
         for (; i < j; i++) {
           // message structure
           if (type == 'topic') {
-            avatar = $(FASMS.selector.post_avatar, a[i])[0];
-
-            // get username
-            name = $(FASMS.selector.post_name, a[i])[0];
-
-            // check if the user link is available
-            pLink = name.getElementsByTagName('A')[0];
-            pLink = pLink ? '<a href="' + pLink.href + '">' : null;
-
-            // check if the user is in a group
-            group = name.getElementsByTagName('SPAN')[0];
-            group = group ? '<span style="' + group.getAttribute('style') + '"><strong>' : null;
-
-            // check if the username is available
-            name = name ? name.innerText : FASMS.config.no_name;
-
-            date = $(FASMS.selector.post_date, a[i])[0];
-            msg = $(FASMS.selector.post_message, a[i])[0];
-
-            html +=
-            '<div class="FASMS-msg' + ( name == _userdata.username ? ' FASMS-my-msg' : '' ) + '">'+
-              '<span class="FASMS-msg-avatar">'+
-                (pLink ? pLink : '')+
-                '<img src="' + ( avatar ? avatar.src : FASMS.config.no_avatar ) + '" alt="avatar">'+
-                (pLink ? '</a>' : '')+
-              '</span>'+
-
-              '<div class="FASMS-msg-box">'+
-                '<div class="FASMS-msg-name">'+
-                  (pLink ? pLink : '')+
-                    (group ? group : '')+
-                      name+
-                    (group ? '</span></strong>' : '')+
-                  (pLink ? '</a>' : '')+
-                '</div>'+
-                '<div class="FASMS-msg-content">' + FASMS.cleanMessage( msg ? msg.innerHTML : '' ) + '</div>'+
-                '<div class="FASMS-msg-date">' + ( date ? date.innerText : '' ) + '</div>'+
-              '</div>'+
-            '</div>';
+            html += FASMS.msgLog[a[i].className.replace(/.*?(post--\d+).*/, '$1')] = FASMS.parse(a[i]);
 
           // forum and category structure
           } else {
@@ -152,13 +116,20 @@
         FASMS.cache.actions.innerHTML = type == 'topic' ?
         '<button id="FASMS-attachment" type="button"><i class="fa fa-paperclip"></i></button>'+
         '<button id="FASMS-emoji" type="button"><i class="fa fa-smile-o"></i></button>'+
-        '<input id="FASMS-msg" type="text" placeholder="' + FASMS.config.lang.msg_placeholder + '" onkeyup="FASMS.validate(this.value);">'+
+        '<input id="FASMS-msg" type="text" placeholder="' + FASMS.config.lang.msg_placeholder + '" onkeyup="FASMS.validate(this.value, event);">'+
         '<button id="FASMS-send" type="button" onclick="FASMS.send();" data-disabled="true"><i class="fa fa-paper-plane"></i></button>'+
-        '<div style="display:none;">' + ( form ? form.innerHTML : '' ) + '</div>' : '';
+        ( form ? form.outerHTML.replace(/id=".*?"|name=".*?"/, '').replace('<form', '<form name="postsms" style="display:none"') : '' ) : '';
 
         // topic specific initializations
         if (type == 'topic') {
-          FASMS.cache.content.scrollTop = FASMS.cache.content.lastChild.offsetTop;
+          FASMS.scroll();
+
+          // listen for new posts and changes to existing messages
+          FASMS.listen = setInterval(function () {
+            if (!FASMS.sending) {
+              FASMS.checkMessages();
+            }
+          }, FASMS.config.refresh);
         }
       });
     },
@@ -166,15 +137,21 @@
 
     // log history so the user can go back
     history : [],
-
     back : function () {
       var history = FASMS.history[FASMS.history.length - 2];
+      FASMS.history.pop();
       FASMS.get(history.url, history.title, true);
+
+      // stop listening for message changes
+      if (FASMS.listen) {
+        clearInterval(FASMS.listen);
+        delete FASMS.listen;
+      }
     },
 
 
     // validate a message to make sure that sending it is okay
-    validate : function (message) {
+    validate : function (message, e) {
       var send = FASMS.cache.actions.querySelector('#FASMS-send');
 
       if (message && send.dataset.disabled == 'true') {
@@ -183,20 +160,146 @@
       } else if (!message && send.dataset.disabled == 'false') {
         send.dataset.disabled = true;
       }
+
+      if (e && FASMS.cache.actions.querySelector('#FASMS-send').dataset.disabled != 'true' && {
+        'Enter' : 1,
+        '13' : 1
+      }[e.key || e.keyCode]) {
+        FASMS.send();
+      }
     },
 
 
     // send a message to the topic
     send : function () {
+      if (FASMS.sending) {
+        return false;
+      } else {
+        FASMS.sending = true;
+      }
 
+      var msg = document.getElementById('FASMS-msg'),
+          val = msg.value;
+
+      msg.value = '';
+      FASMS.validate();
+
+      // show placeholder message until the sent message is ready
+      FASMS.cache.content.insertAdjacentHTML('beforeend',
+        '<div class="FASMS-msg FASMS-my-msg FASMS-msg-placeholder">'+
+          '<span class="FASMS-msg-avatar">' + _userdata.avatar + '</span>'+
+          '<div class="FASMS-msg-box">'+
+            '<div class="FASMS-msg-content"><i class="fa fa-circle-o-notch fa-spin fa-fw"></i></div>'+
+            '<div class="FASMS-msg-date"></div>'+
+          '</div>'+
+        '</div>'
+      );
+      FASMS.scroll();
+
+      // post the message to the topic
+      $.post('/post', $(document.postsms).serialize().replace(
+        'message=',
+        'message=' + (
+          /UTF-8/i.test(document.characterSet) ?
+            encodeURIComponent(val) :
+            // URI encoding for NON-UTF8 forums
+            encodeURIComponent(escape(val).replace(/%u[A-F0-9]{4}/g, function(match) {
+              return '&#' + parseInt(match.substr(2), 16) + ';'
+            })).replace(/%25/g, '%')
+        )
+      ) + '&post=1', function (data) {
+        // get the new message and remove the placeholder + sending restriction
+        FASMS.checkMessages(function () {
+          FASMS.cache.content.removeChild(FASMS.cache.content.querySelector('.FASMS-msg-placeholder'));
+          FASMS.scroll();
+
+          // wait the specified time before sending another message
+          window.setTimeout(function () {
+            FASMS.sending = false;
+          }, FASMS.config.flood_control);
+        });
+      });
     },
 
 
-    // clean message content and strip unnecessary data
-    cleanMessage : function (string) {
-      return string.replace(/<br>/g, '\n')
-                   .replace(/^\n+|\n+$|^\s+|\s+$/g, '')
-                   .replace(/\n/g, '<br>');
+    // check for new messages / edits and update the message list
+    checkMessages : function (callback) {
+      $.get(FASMS.history[FASMS.history.length - 1].url, function (data) {
+        for (var a = $('.post[class*="post--"]', data), i = 0, j = a.length, pid, msg; i < j; i++) {
+          pid = a[i].className.replace(/.*?(post--\d+).*/, '$1');
+          msg = FASMS.parse(a[i]);
+
+          // check for edited messages and update them
+          if (FASMS.msgLog[pid]) {
+            if (FASMS.msgLog[pid] != msg) {
+              FASMS.msgLog[pid] = msg;
+              FASMS.cache.content.querySelector('.FASMS-msg.' + pid).outerHTML = msg;
+            }
+
+          // add in new messages if there are any
+          } else {
+            FASMS.msgLog[pid] = msg;
+            FASMS.cache.content.insertAdjacentHTML('beforeend', msg);
+            FASMS.scroll();
+          }
+        }
+
+        // optional callback to execute, mainly used for send()
+        if (typeof callback === 'function') {
+          callback();
+        }
+      });
+    },
+
+
+    // returns the parsed message
+    parse : function (post) {
+      var avatar, name, pLink, group, date, msg;
+
+      avatar = $(FASMS.selector.post_avatar, post)[0];
+
+      // get username
+      name = $(FASMS.selector.post_name, post)[0];
+
+      // check if the user link is available
+      pLink = name.getElementsByTagName('A')[0];
+      pLink = pLink ? '<a href="' + pLink.href + '">' : null;
+
+      // check if the user is in a group
+      group = name.getElementsByTagName('SPAN')[0];
+      group = group ? '<span style="' + group.getAttribute('style') + '"><strong>' : null;
+
+      // check if the username is available
+      name = name ? name.innerText : FASMS.config.no_name;
+
+      date = $(FASMS.selector.post_date, post)[0];
+      msg = $(FASMS.selector.post_message, post)[0];
+
+      return '<div class="FASMS-msg' + ( name == _userdata.username ? ' FASMS-my-msg' : '' ) + ' ' + post.className.replace(/.*?(post--\d+).*/, '$1') + '">'+
+        '<span class="FASMS-msg-avatar">'+
+          (pLink ? pLink : '')+
+          '<img src="' + ( avatar ? avatar.src : FASMS.config.no_avatar ) + '" alt="avatar">'+
+          (pLink ? '</a>' : '')+
+        '</span>'+
+
+        '<div class="FASMS-msg-box">'+
+          '<div class="FASMS-msg-name">'+
+            (pLink ? pLink : '')+
+              (group ? group : '')+
+                name+
+              (group ? '</strong></span>' : '')+
+            (pLink ? '</a>' : '')+
+          '</div>'+
+          '<div class="FASMS-msg-content">' + ( msg ? msg.innerHTML.replace(/<br>/g, '\n').replace(/^\n+|\n+$|^\s+|\s+$/g, '').replace(/\n/g, '<br>') : '' ) + '</div>'+
+          '<div class="FASMS-msg-date">' + ( date ? date.innerText : '' ) + '</div>'+
+        '</div>'+
+      '</div>';
+    },
+
+
+    // scroll to the newest message or specified amount
+    scroll : function (amount) {
+      FASMS.cache.content.scrollTop = amount || FASMS.cache.content.scrollHeight;
     },
 
 
@@ -309,7 +412,7 @@
         (FASMS.config.embed ? document.querySelector(FASMS.config.embed) : document.body).appendChild(frag);
 
         if (FASMS.config.embed) {
-          FASMS.get(FASMS.config.chat_category || '/forum', FASMS.config.group_title);
+          FASMS.get(FASMS.config.chat_page || '/forum', FASMS.config.main_title);
         }
 
         delete FASMS.init;

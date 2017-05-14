@@ -22,9 +22,12 @@ Below is a list of features, fixes, and ideas that need reviewing, implementing,
   - [ ] an About button for viewing info about FASMS + Checking for updates on Github
 - [ ] add icons to topics and forums so it's easier to differentiate the two
 - [ ] add page numbers to load older / new pages
+- [ ] add button in chats to view older posts
 - [ ] add new topic button
-- [ ] add message submission in topics
-- [ ] add auto-refresh for new messages
+- [X] add message submission in topics
+- [X] add auto-refresh for new messages
+- [ ] add notification when new messages are posted
+- [ ] add indicator for flood control timeout
 - [ ] add emoticons
 - [ ] add attachment popup for images and videos
 - [ ] add new styles for quotes, codeboxes, etc.. in messages (collapsing these elements by default is preferred)
