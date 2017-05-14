@@ -1,5 +1,5 @@
 # Forumactif SMS
-Forumactif SMS (or FASMS for short) is a web application that integrates with your Forumotion forum. It designates a single category or your entire forum as an SMS chat, allowing you to [view topics and post messages in real time](https://i58.servimg.com/u/f58/18/21/41/30/fasms10.gif). What it does is display your forum in a little chat window, in this window forums are converted to groups and topics are converted into chats. Even when not using this application, members can still participate in chats by accessing the topics directly on your forum.
+Forumactif SMS (or FASMS for short) is a web application that integrates with your Forumotion forum. It designates a single category or your entire forum as an SMS chat, allowing you to [view topics and post messages in real time](https://i58.servimg.com/u/f58/18/21/41/30/56hv4610.gif). What it does is display your forum in a little chat window, in this window forums are converted to groups and topics are converted into chats. Even when not using this application, members can still participate in chats by accessing the topics directly on your forum.
 
 
 ## Under Development
@@ -10,6 +10,8 @@ Follow the steps below to install this application for testing.
 2. Go to Admin Panel > Modules > JavaScript Codes Management > Create a new script.
 3. Set the placement as **In all the pages** and paste [this code](https://github.com/SethClydesdale/forumactif-sms/blob/master/fa-sms.js) as the contents.
 4. Save and you can now test FASMS. (it'll be a little chat bubble in the bottom right-hand corner)
+
+Checkout [**config**](https://github.com/SethClydesdale/forumactif-sms/wiki/Config) for info on modifying this plugin.
 
 
 ### To do list
