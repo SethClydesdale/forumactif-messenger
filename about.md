@@ -8,7 +8,7 @@
   <div id="FAM-version-sync">
     <div><button id="FAM-update" onclick="FAM.update()"><i class="fa fa-refresh"></i> Sync</button></div>
     <div><textarea id="FAM-update-code" onclick="this.select()" readonly></textarea></div>
-    <p><a href="https://github.com/SethClydesdale/forumactif-messenger/wiki/Updating">How do I update Forumactif Messenger?</a></p>
+    <p id="FAM-update-help"><a href="https://github.com/SethClydesdale/forumactif-messenger/wiki/Updating"><i class="fa fa-question-circle"></i> How do I update Forumactif Messenger?</a></p>
   </div>
 
   <div id="FAM-creator-info">

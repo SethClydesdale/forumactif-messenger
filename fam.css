@@ -380,7 +380,7 @@
   padding:12px;
 }
 
-#FAM-version-data { text-align:center; }
+#FAM-version-data, #FAM-update-help  { text-align:center; }
 
 #FAM-version-status i {
   font-size:32px;
@@ -425,7 +425,7 @@
   margin-top:30px;
 }
 
-#FAM-creator-info i {
+#FAM-creator-info i, #FAM-update-help i {
   font-size:24px;
   vertical-align:-3px;
 }
