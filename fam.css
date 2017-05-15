@@ -10,14 +10,14 @@
 @import url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css);
 
 /* style reset for modernbb */
-#modernbb #FASMS-button i.fa, #modernbb #FASMS i.fa, #modernbb #FASMS-send {
+#modernbb #FAM-button i.fa, #modernbb #FAM i.fa, #modernbb #FAM-send {
   margin:initial;
   vertical-align:initial;
 }
 
-/* FASMS primary styles */
-#FASMS, #FASMS * { box-sizing:border-box; }
-#FASMS {
+/* FAM primary styles */
+#FAM, #FAM * { box-sizing:border-box; }
+#FAM {
   color:#333;
   font-size:13px;
   font-family:Arial;
@@ -39,14 +39,14 @@
 }
 
 /* hides chat */
-#FASMS[data-hidden="true"] {
+#FAM[data-hidden="true"] {
   visibility:hidden;
   opacity:0;
   bottom:-100%;
 }
 
 /* embeded chat style */
-#FASMS.FASMS-embeded {
+#FAM.FAM-embeded {
   position:relative;
   bottom:0;
   right:0;
@@ -57,7 +57,7 @@
 }
 
 /* toggle chat button */
-#FASMS-button {
+#FAM-button {
   color:#FFF;
   font-size:18px;
   font-family:Arial;
@@ -71,12 +71,12 @@
   cursor:pointer;
   z-index:99999;
 }
-#FASMS-button i { line-height:30px; }
-#FASMS-button:hover { background-color:#28B; }
-#FASMS-button:active { background-color:#17A; }
+#FAM-button i { line-height:30px; }
+#FAM-button:hover { background-color:#28B; }
+#FAM-button:active { background-color:#17A; }
 
 /* toolbar */
-#FASMS-toolbar {
+#FAM-toolbar {
   color:#FFF;
   background:#39C;
   border-bottom:1px solid #28B;
@@ -85,7 +85,7 @@
   margin:-1px -1px 0 -1px;
 }
 
-.FASMS-maintitle {
+.FAM-maintitle {
   color:#FFF;
   font-size:18px;
   text-align:center;
@@ -95,26 +95,26 @@
   text-overflow:ellipsis;
 }
 
-a.FASMS-back {
+a.FAM-back {
   color:#FFF;
   font-size:24px;
   position:absolute;
   height:40px;
   left:10px;
 }
-a.FASMS-back i { line-height:40px; }
-a.FASMS-back:hover { color:#EEE; }
-a.FASMS-back:active { color:#DDD; }
+a.FAM-back i { line-height:40px; }
+a.FAM-back:hover { color:#EEE; }
+a.FAM-back:active { color:#DDD; }
 
 /* content */
-#FASMS-content {
+#FAM-content {
   height:90%;
   height:calc(100% - 80px);
   overflow-y:auto;
   overflow-x:hidden;
 }
 
-.FASMS-loading {
+.FAM-loading {
   font-size:18px;
   font-weight:bold;
   display:flex;
@@ -128,33 +128,33 @@ a.FASMS-back:active { color:#DDD; }
 }
 
 /* scrollbar */
-#FASMS-content::-webkit-scrollbar {
+#FAM-content::-webkit-scrollbar {
   width:8px;
   height:8px;
 }
-#FASMS-content::-webkit-scrollbar-track { background:none; }
-#FASMS-content::-webkit-scrollbar-thumb {
+#FAM-content::-webkit-scrollbar-track { background:none; }
+#FAM-content::-webkit-scrollbar-thumb {
   background-color:#39C;
   border:none;
 }
 
 /* scrollbar buttons */
-#FASMS-content::-webkit-scrollbar-button:single-button {
+#FAM-content::-webkit-scrollbar-button:single-button {
   height:0;
   width:0;
 }
 
 /* hover / active scrollbar colors */
-#FASMS-content::-webkit-scrollbar-thumb:hover, ::-webkit-scrollbar-button:hover { background-color:#28B; }
-#FASMS-content::-webkit-scrollbar-thumb:active, ::-webkit-scrollbar-button:active { background-color:#069; }
+#FAM-content::-webkit-scrollbar-thumb:hover, ::-webkit-scrollbar-button:hover { background-color:#28B; }
+#FAM-content::-webkit-scrollbar-thumb:active, ::-webkit-scrollbar-button:active { background-color:#069; }
 
 /* actions */
-#FASMS-actions {
+#FAM-actions {
   height:40px;
   border-top:1px solid #DDD;
 }
 
-#FASMS-actions button {
+#FAM-actions button {
   color:#333;
   font-size:18px;
   background:#FFF;
@@ -165,15 +165,15 @@ a.FASMS-back:active { color:#DDD; }
   cursor:pointer;
   outline:none;
 }
-#FASMS-actions button:first-child { border:none; }
+#FAM-actions button:first-child { border:none; }
 
-#FASMS-actions button:hover { background:#EEE; }
-#FASMS-actions button:active { background:#DDD; }
+#FAM-actions button:hover { background:#EEE; }
+#FAM-actions button:active { background:#DDD; }
 
-#FASMS-actions button[data-disabled="true"] { pointer-events:none; }
-#FASMS-actions button[data-disabled="true"] > * { opacity:0.5; }
+#FAM-actions button[data-disabled="true"] { pointer-events:none; }
+#FAM-actions button[data-disabled="true"] > * { opacity:0.5; }
 
-#FASMS-msg {
+#FAM-msg {
   font-size:14px;
   border:none;
   border-left:1px solid #DDD;
@@ -187,17 +187,17 @@ a.FASMS-back:active { color:#DDD; }
 
 
 /* -- 01. CHATS LIST -- */
-a.FASMS-chat, a.FASMS-chat * { display:block; }
-a.FASMS-chat {
+a.FAM-chat, a.FAM-chat * { display:block; }
+a.FAM-chat {
   color:#333;
   border-bottom:2px solid #DDD;
   position:relative;
   padding:12px;
   height:80px;
 }
-a.FASMS-chat:hover { background-color:#EEE; }
+a.FAM-chat:hover { background-color:#EEE; }
 
-.FASMS-chat-avatar {
+.FAM-chat-avatar {
   position:absolute;
   left:10px;
   top:50%;
@@ -207,12 +207,12 @@ a.FASMS-chat:hover { background-color:#EEE; }
   overflow:hidden;
 }
 
-.FASMS-chat-avatar img {
+.FAM-chat-avatar img {
   height:100%;
   width:100%;
 }
 
-.FASMS-chat-title, .FASMS-chat-date {
+.FAM-chat-title, .FAM-chat-date {
   position:absolute;
   left:0;
   width:100%;
@@ -222,29 +222,29 @@ a.FASMS-chat:hover { background-color:#EEE; }
   text-overflow:ellipsis;
 }
 
-.FASMS-chat-title {
+.FAM-chat-title {
   font-size:14px;
   font-weight:bold;
   top:20px;
 }
 
-.FASMS-chat-date { bottom:20px; }
+.FAM-chat-date { bottom:20px; }
 
 
 /* -- 02. MESSAGE LIST -- */
-.FASMS-msg {
+.FAM-msg {
   position:relative;
   padding:12px;
   margin-bottom:12px;
 }
 
-.FASMS-msg:after {
+.FAM-msg:after {
   content:"";
   display:table;
   clear:both;
 }
 
-.FASMS-msg-avatar {
+.FAM-msg-avatar {
   height:40px;
   width:40px;
   display:block;
@@ -253,30 +253,30 @@ a.FASMS-chat:hover { background-color:#EEE; }
   float:left;
 }
 
-.FASMS-msg-avatar img {
+.FAM-msg-avatar img {
   height:100%;
   width:100%;
 }
 
-.FASMS-my-msg .FASMS-msg-avatar {
+.FAM-my-msg .FAM-msg-avatar {
   margin-top:-2px;
   float:right;
 }
 
-.FASMS-msg-box {
+.FAM-msg-box {
   float:right;
   width:80%;
   width:calc(100% - 40px);
   padding-left:15px;
 }
 
-.FASMS-my-msg .FASMS-msg-box {
+.FAM-my-msg .FAM-msg-box {
   float:left;
   padding:0 15px 0 0;
 }
 
 /* message bubble */
-.FASMS-msg-content {
+.FAM-msg-content {
   color:#000;
   background:#DDD;
   border-radius:6px;
@@ -285,10 +285,11 @@ a.FASMS-chat:hover { background-color:#EEE; }
   min-height:30px;
   max-width:80%;
   position:relative;
+  float:left;
 }
 
 /* normal message arrow */
-.FASMS-msg-content:before {
+.FAM-msg-content:before {
   content:"";
   height:0;
   width:0;
@@ -301,14 +302,14 @@ a.FASMS-chat:hover { background-color:#EEE; }
 }
 
 /* personal message style */
-.FASMS-my-msg .FASMS-msg-content {
+.FAM-my-msg .FAM-msg-content {
   color:#FFF;
   background:#07C;
   float:right;
 }
 
 /* personal message arrow */
-.FASMS-my-msg .FASMS-msg-content:before {
+.FAM-my-msg .FAM-msg-content:before {
   border-right:none;
   border-left:10px solid #07C;
   top:12px;
@@ -317,19 +318,19 @@ a.FASMS-chat:hover { background-color:#EEE; }
 }
 
 /* message content styles */
-.FASMS-msg-content a {
+.FAM-msg-content a {
   color:inherit;
   text-decoration:underline;
 }
-.FASMS-msg-content a:hover { text-decoration:none; }
-.FASMS-msg-content * { max-width:100%; }
+.FAM-msg-content a:hover { text-decoration:none; }
+.FAM-msg-content * { max-width:100%; }
 
-.FASMS-msg-date { clear:both; }
-.FASMS-msg-name, .FASMS-msg-date {
+.FAM-msg-date { clear:both; }
+.FAM-msg-name, .FAM-msg-date {
   font-size:12px;
   padding:0 3px;
   width:100%;
 }
 
-.FASMS-my-msg .FASMS-msg-name { display:none; } /* hides your name on your messages */
-.FASMS-my-msg .FASMS-msg-date { text-align:right; }
+.FAM-my-msg .FAM-msg-name { display:none; } /* hides your name on your messages */
+.FAM-my-msg .FAM-msg-date { text-align:right; }
