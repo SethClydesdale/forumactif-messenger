@@ -18,23 +18,25 @@ Checkout [**config**](https://github.com/SethClydesdale/forumactif-messenger/wik
 Below is a list of features, fixes, and ideas that need reviewing, implementing, or fixing.
 
 #### Implement
-- [ ] add drop down nav menu for various options such as...
-  - [ ] a Home button for going back to first history entry
+- [x] add drop down nav menu for various options such as...
+  - [x] a Home button for going back to first history entry
   - [ ] a Settings button for configuring personal settings
-  - [ ] an About button for viewing info about FAIM + Checking for updates on Github
+  - [x] an About button for viewing info about FAM + Checking for updates on Github
 - [ ] add icons to topics and forums so it's easier to differentiate the two
 - [ ] add page numbers to load older / new pages
 - [ ] add button in chats to view older posts
 - [ ] add new topic button
-- [X] add message submission in topics
-- [X] add auto-refresh for new messages
+- [x] add message submission in topics
+- [x] add auto-refresh for new messages
 - [ ] add notification when new messages are posted
 - [ ] add indicator for flood control timeout
 - [ ] add emoticons
 - [ ] add attachment popup for images and videos
 - [ ] add new styles for quotes, codeboxes, etc.. in messages (collapsing these elements by default is preferred)
+- [x] add theme color to FAM toolbar on Forumactif Edge
 
 #### Fix
+- [ ] fix guests being able to post when there's no reply button
 - [ ] fix scrolling to the last message when images aren't loaded
 - [x] fix avatars and usernames so they link to the user profile
 - [x] fix similar topics and other non-message elements displaying as anon message

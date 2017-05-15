@@ -7,7 +7,7 @@
       main_title : 'Select a Group', // initial title
       embed : '', // selector of element that you want to embed the chat app into. e.g. #wrap, #my-custom-element, etc..
 
-      refresh : 5000,
+      refresh : 7500,
       timeout : 10*60*1000,
       flood_control : 5000,
 
@@ -41,9 +41,9 @@
 
     // get the specified page
     get : function (url, title, noHistory) {
-      var type = /c\d+-/.test(url) ? 'category' :
-                 /f\d+-/.test(url) ? 'forum' :
-                 /t\d+-/.test(url) ? 'topic' : 'category';
+      var type = /\/c\d+/.test(url) ? 'category' :
+                 /\/f\d+/.test(url) ? 'forum' :
+                 /\/t\d+/.test(url) ? 'topic' : 'category';
 
       // push new entry to history
       if (!noHistory) {
@@ -54,15 +54,10 @@
       }
 
       // show / hide back button
-      if (FAM.history.length > 1 && FAM.cache.back.style.display == 'none') {
-        FAM.cache.back.style.display = '';
-
-      } else if (FAM.history.length <= 1 && FAM.cache.back.style.display != 'none') {
-        FAM.cache.back.style.display = 'none';
-      }
+      FAM.toggleBack();
 
       // update the main title
-      FAM.cache.title.querySelector('.FAM-maintitle').innerText = title;
+      FAM.cache.toolbar.querySelector('.FAM-maintitle').innerText = title;
 
       // display loading texts
       FAM.cache.content.innerHTML =
@@ -100,15 +95,15 @@
                     /t\d+-/.test(a[i].href) ? 'topic' : 'unknown';
 
             html +=
-            '<a class="FAM-chat FAM-' + type2 + '" href="javascript:FAM.get(\'' + a[i].href + ( type2 == 'topic' ? '?view=newest' : '' ) + '\', \'' + a[i].innerText + '\');">'+
-              '<span class="FAM-chat-avatar">'+
+            '<div class="FAM-chat FAM-' + type2 + '" onclick="FAM.get(\'' + a[i].href + ( type2 == 'topic' ? '?view=newest' : '' ) + '\', \'' + a[i].innerText + '\');">'+
+              '<div class="FAM-chat-avatar">'+
                 '<img src="' + ( avatar ? avatar.src : FAM.config.no_avatar ) + '" alt="avatar">'+
-              '</span>'+
+              '</div>'+
 
-              '<span class="FAM-chat-title">' + a[i].innerText + '</span>'+
+              '<div class="FAM-chat-title">' + a[i].innerText + '</div>'+
 
-              '<span class="FAM-chat-date">' + ( date ? date.innerText : '' ) + '</span>'+
-            '</a>';
+              '<div class="FAM-chat-date">' + ( date ? date.innerText : '' ) + '</div>'+
+            '</div>';
           }
         }
 
@@ -129,7 +124,7 @@
             if (!FAM.sending) {
               FAM.checkMessages();
             }
-          }, FAM.config.refresh);
+          }, FAM.config.refresh < 3000 ? 3000 : FAM.config.refresh);
         }
       });
     },
@@ -137,15 +132,34 @@
 
     // log history so the user can go back
     history : [],
-    back : function () {
-      var history = FAM.history[FAM.history.length - 2];
-      FAM.history.pop();
-      FAM.get(history.url, history.title, true);
+
+    // goes back in history to the beginning or by 1
+    back : function (begin) {
+      var history = FAM.history[begin ? 0 : FAM.history.length - 2];
+
+      begin ? FAM.history = FAM.history.slice(0, 1) : FAM.history.pop();
+
+      if (history.recall) {
+        FAM[history.recall](true);
+
+      } else {
+        FAM.get(history.url, history.title, true);
+      }
 
       // stop listening for message changes
       if (FAM.listen) {
         clearInterval(FAM.listen);
         delete FAM.listen;
+      }
+    },
+
+    // toggles the back button
+    toggleBack : function () {
+      if (FAM.history.length > 1 && FAM.cache.back.style.display == 'none') {
+        FAM.cache.back.style.display = '';
+
+      } else if (FAM.history.length <= 1 && FAM.cache.back.style.display != 'none') {
+        FAM.cache.back.style.display = 'none';
       }
     },
 
@@ -189,7 +203,9 @@
         '<div class="FAM-msg FAM-my-msg FAM-msg-placeholder">'+
           '<span class="FAM-msg-avatar">' + _userdata.avatar + '</span>'+
           '<div class="FAM-msg-box">'+
-            '<div class="FAM-msg-content"><i class="fa fa-circle-o-notch fa-spin fa-fw"></i></div>'+
+            '<div class="FAM-msg-content">'+
+              '<div class="FAM-msg-text"><i class="fa fa-circle-o-notch fa-spin fa-fw"></i></div>'+
+            '</div>'+
             '<div class="FAM-msg-date"></div>'+
           '</div>'+
         '</div>'
@@ -290,7 +306,9 @@
               (group ? '</strong></span>' : '')+
             (pLink ? '</a>' : '')+
           '</div>'+
-          '<div class="FAM-msg-content">' + ( msg ? msg.innerHTML.replace(/<br>/g, '\n').replace(/^\n+|\n+$|^\s+|\s+$/g, '').replace(/\n/g, '<br>') : '' ) + '</div>'+
+          '<div class="FAM-msg-content">'+
+            '<div class="FAM-msg-text">' + ( msg ? msg.innerHTML.replace(/<br>/g, '\n').replace(/^\n+|\n+$|^\s+|\s+$/g, '').replace(/\n/g, '<br>') : '' ) + '</div>'+
+          '</div>'+
           '<div class="FAM-msg-date">' + ( date ? date.innerText : '' ) + '</div>'+
         '</div>'+
       '</div>';
@@ -300,6 +318,63 @@
     // scroll to the newest message or specified amount
     scroll : function (amount) {
       FAM.cache.content.scrollTop = amount || FAM.cache.content.scrollHeight;
+    },
+
+
+    // get and open the about page
+    about : function (noHistory) {
+      if (!noHistory) {
+        FAM.history.push({
+          url : '',
+          title : 'About',
+          recall : 'about'
+        });
+      }
+
+      FAM.toggleBack();
+
+      FAM.cache.toolbar.querySelector('.FAM-maintitle').innerText = 'About';
+
+      FAM.cache.content.innerHTML =
+      '<div class="FAM-loading">'+
+        '<i class="fa fa-circle-o-notch fa-spin fa-3x fa-fw"></i>'+
+        '<span class="sr-only">' + FAM.config.lang.loading + '</span>'+
+      '</div>';
+
+      $.get('https://raw.githubusercontent.com/SethClydesdale/forumactif-messenger/master/about.md', function (data) {
+        FAM.cache.content.innerHTML = data.replace(/<a/g, '<a target="_blank"')
+                                          .replace('{CLIENT_VERSION}', '<a href="https://github.com/SethClydesdale/forumactif-messenger/releases/tag/' + FAM.version + '" target="_blank">' + FAM.version + '</a>');
+
+        var status = FAM.cache.content.querySelector('#FAM-version-status'),
+            code = FAM.cache.content.querySelector('#FAM-update-code');
+
+        if (FAM.version != FAM.cache.content.querySelector('#FAM-version-github').innerText) {
+          status.innerHTML = '<i class="fa fa-exclamation-circle"></i> A new version of Forumactif Messenger is available!';
+          code.value = 'Click the UPDATE button to get the latest release from Github';
+          FAM.cache.content.querySelector('#FAM-update').innerHTML = '<i class="fa fa-arrow-circle-up"></i> Update';
+
+        } else {
+          status.innerHTML = '<i class="fa fa-check-circle"></i> Forumactif Messenger is up to date!';
+          code.value = 'Click the SYNC button to sync Forumactif Messenger with the latest release from Github.'
+        }
+      });
+    },
+
+
+    // get the latest version of Forumactif Messenger
+    update : function () {
+      FAM.cache.content.querySelector('#FAM-update').outerHTML = '<p id="FAM-update" style="text-align:center;"><i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw"></i></p>';
+
+      $.get('https://raw.githubusercontent.com/SethClydesdale/forumactif-messenger/master/fam.js', function (data) {
+        FAM.cache.content.querySelector('#FAM-update').outerHTML = '<p>Replace your current Forumactif Messenger script with the one below. It should be applied in <strong>Admin Panel > Modules > JavaScript codes management</strong>.</p>';
+        FAM.cache.content.querySelector('#FAM-update-code').value = data.replace(/config.*?:.*?\{[\s\S]*?\},/, 'config : ' + JSON.stringify(FAM.config, null, 2) + ',');
+      });
+    },
+
+
+    // get and open the settings page
+    settings : function () {
+
     },
 
 
@@ -318,12 +393,20 @@
         chat.dataset.hidden = FAM.config.embed ? false : true;
         chat.innerHTML =
         '<div id="FAM-toolbar">'+
-          '<a class="FAM-back" href="javascript:FAM.back();" style="display:none"><i class="fa fa-arrow-left"></i></a>'+
-          '<h1 class="FAM-maintitle"></h1>'+
-       '</div>'+
-       '<div id="FAM-content"></div>'+
-       '<div id="FAM-actions"></div>';
-       frag.appendChild(chat);
+          '<div id="FAM-toolbar-inner">'+
+            '<span id="FAM-back" class="FAM-toolbar-button" onclick="FAM.back()" style="display:none"><i class="fa fa-arrow-left"></i></span>'+
+            '<h1 class="FAM-maintitle"></h1>'+
+            '<span id="FAM-menu-toggle" class="FAM-toolbar-button"><i class="fa fa-ellipsis-h"></i></span>'+
+            '<div id="FAM-menu" style="display:none;" onmouseleave="this.style.display=\'none\'">'+
+              '<div class="FAM-menu-option" onclick="FAM.back(true)"><i class="fa fa-home"></i></div>'+
+              '<div class="FAM-menu-option" onclick="FAM.settings()"><i class="fa fa-cog"></i></div>'+
+              '<div class="FAM-menu-option" onclick="FAM.about()"><i class="fa fa-question-circle"></i></div>'+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+        '<div id="FAM-content"></div>'+
+        '<div id="FAM-actions"></div>';
+        frag.appendChild(chat);
 
         if (!FAM.config.embed) {
           button.id = 'FAM-button';
@@ -336,10 +419,17 @@
         FAM.cache = {
           button : button,
           chat : chat,
-          back : chat.querySelector('.FAM-back'),
-          title : chat.querySelector('#FAM-toolbar'),
+          back : chat.querySelector('#FAM-back'),
+          toolbar : chat.querySelector('#FAM-toolbar'),
           content : chat.querySelector('#FAM-content'),
           actions : chat.querySelector('#FAM-actions')
+        };
+
+        // toggle FAM menu on click
+        chat.querySelector('#FAM-menu-toggle').onclick = function () {
+          var menu = FAM.cache.toolbar.querySelector('#FAM-menu');
+          menu.style.display = menu.style.display == 'none' ? 'block' : 'none';
+          return false;
         };
 
 
@@ -351,6 +441,11 @@
                       document.getElementById('fa_edge') ? 4 :
                       document.getElementById('modernbb') ? 5 :
                       'badapple';
+
+        // specific style changes for Forumactif Edge
+        if (FAM.fVersion == 4) {
+          FAM.cache.toolbar.querySelector('#FAM-toolbar-inner').className = 'color-primary';
+        }
 
         // css selectors by version
         FAM.selector = {
@@ -438,13 +533,20 @@
         $(build); // jQuery fallback
       }
 
-    }
+    },
+
+    version : 'v0.1.0'
   };
+
+  // add view=newest query to topic urls if it's not there
+  if (/\/t\d+/.test(FAM.config.chat_page) && !/view=newest/.test(FAM.config.chat_page)) {
+    FAM.config.chat_page = FAM.config.chat_page.replace(/#\d+$/, '') + '?view=newest';
+  }
 
   // setup FAM
   FAM.init();
 
 
   // FAM styles
-  $('head').append('<style>@import url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css);#modernbb #FAM i.fa,#modernbb #FAM-button i.fa,#modernbb #FAM-send{margin:initial;vertical-align:initial}#FAM,#FAM *{box-sizing:border-box}#FAM,#FAM-button{font-family:Arial;position:fixed;right:3px;z-index:99999}#FAM{background:#fff;border:1px solid #ddd;min-height:400px;min-width:300px;visibility:visible;opacity:1;transition:500ms;color:#333;font-size:13px;height:70%;width:40%;bottom:35px}#FAM[data-hidden=true]{visibility:hidden;opacity:0;bottom:-100%}#FAM.FAM-embeded{position:relative;bottom:0;right:0;width:100%;height:400px;margin:12px 0;z-index:1}#FAM-button{color:#fff;font-size:18px;text-align:center;background:#39c;width:30px;height:30px;bottom:3px;cursor:pointer}#FAM-button i{line-height:30px}#FAM-button:hover{background-color:#28b}#FAM-button:active{background-color:#17a}#FAM-toolbar{color:#fff;background:#39c;border-bottom:1px solid #28b;height:40px;margin:-1px -1px 0}.FAM-maintitle{color:#fff;font-size:18px;text-align:center;width:70%;margin:0 auto;overflow:hidden;text-overflow:ellipsis}a.FAM-back{color:#fff;font-size:24px;position:absolute;height:40px;left:10px}#FAM-toolbar,a.FAM-back i{line-height:40px}a.FAM-back:hover{color:#eee}a.FAM-back:active{color:#ddd}#FAM-content{height:90%;height:calc(100% - 80px);overflow-y:auto;overflow-x:hidden}.FAM-loading{font-size:18px;font-weight:700;display:flex;justify-content:center;align-items:center;position:absolute;top:0;left:0;right:0;bottom:0}#FAM-content::-webkit-scrollbar{width:8px;height:8px}#FAM-content::-webkit-scrollbar-track{background:0 0}#FAM-content::-webkit-scrollbar-thumb{background-color:#39c;border:none}#FAM-content::-webkit-scrollbar-button:single-button{height:0;width:0}#FAM-content::-webkit-scrollbar-thumb:hover,::-webkit-scrollbar-button:hover{background-color:#28b}#FAM-content::-webkit-scrollbar-thumb:active,::-webkit-scrollbar-button:active{background-color:#069}#FAM-actions{height:40px;border-top:1px solid #ddd}#FAM-actions button{color:#333;font-size:18px;background:#fff;border:none;border-left:1px solid #ddd;height:40px;width:40px;cursor:pointer;outline:none}#FAM-actions button:first-child{border:none}#FAM-actions button:hover{background:#eee}#FAM-actions button:active{background:#ddd}#FAM-actions button[data-disabled=true]{pointer-events:none}#FAM-actions button[data-disabled=true]>*{opacity:.5}#FAM-msg{font-size:14px;border:none;border-left:1px solid #ddd;height:40px;width:calc(100% - 120px);margin:0;padding:0 6px;vertical-align:top;outline:none}a.FAM-chat,a.FAM-chat *{display:block}a.FAM-chat{color:#333;border-bottom:2px solid #ddd;position:relative;padding:12px;height:80px}a.FAM-chat:hover{background-color:#eee}.FAM-chat-avatar{position:absolute;left:10px;top:50%;margin-top:-20px;height:40px;width:40px;overflow:hidden}.FAM-chat-avatar img,.FAM-msg-avatar img{height:100%;width:100%}.FAM-chat-date,.FAM-chat-title{position:absolute;left:0;width:100%;padding:0 12px 0 60px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.FAM-chat-title{font-size:14px;font-weight:700;top:20px}.FAM-chat-date{bottom:20px}.FAM-msg{position:relative;padding:12px;margin-bottom:12px}.FAM-msg:after{content:"";display:table;clear:both}.FAM-msg-avatar{height:40px;width:40px;display:block;margin-top:12px;overflow:hidden;float:left}.FAM-my-msg .FAM-msg-avatar{margin-top:-2px;float:right}.FAM-msg-box{float:right;width:80%;width:calc(100% - 40px);padding-left:15px}.FAM-my-msg .FAM-msg-box{float:left;padding:0 15px 0 0}.FAM-msg-content{color:#000;background:#ddd;border-radius:6px;padding:8px;margin:3px 0;min-height:30px;max-width:80%;position:relative;float:left}.FAM-msg-content:before{content:"";height:0;width:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-right:10px solid #ddd;position:absolute;top:10px;left:-10px}.FAM-my-msg .FAM-msg-content{color:#fff;background:#07c;float:right}.FAM-my-msg .FAM-msg-content:before{border-right:none;border-left:10px solid #07c;top:12px;left:auto;right:-10px}.FAM-msg-content a{color:inherit;text-decoration:underline}.FAM-msg-content a:hover{text-decoration:none}.FAM-msg-content *{max-width:100%}.FAM-msg-date{clear:both}.FAM-msg-date,.FAM-msg-name{font-size:12px;padding:0 3px;width:100%}.FAM-my-msg .FAM-msg-name{display:none}.FAM-my-msg .FAM-msg-date{text-align:right}</style>');
+  $('head').append('<style>@import url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css);#modernbb #FAM i.fa,#modernbb #FAM-button i.fa,#modernbb #FAM-send{margin:initial;vertical-align:initial}#FAM,#FAM *{box-sizing:border-box}#FAM{color:#333;font-size:13px;font-family:Arial,sans-serif;background:#fff;border:1px solid #ddd;position:fixed;height:70%;width:40%;min-height:400px;min-width:300px;right:3px;z-index:99999;visibility:visible;opacity:1;bottom:35px;transition:500ms}#FAM[data-hidden=true]{visibility:hidden;opacity:0;bottom:-100%}#FAM.FAM-embeded{position:relative;bottom:0;right:0;width:100%;height:400px;margin:12px 0;z-index:1}#FAM-button,#FAM-toolbar{color:#fff;background:#39c}#FAM-button{font-size:18px;text-align:center;position:fixed;width:30px;right:3px;bottom:3px;cursor:pointer;z-index:99999;height:30px}#FAM-button i{line-height:30px}#FAM-button:hover{background-color:#28b}#FAM-button:active{background-color:#17a}#FAM-toolbar{border-bottom:1px solid #28b;height:40px;margin:-1px -1px 0}.FAM-maintitle{color:#fff;font-size:18px;text-align:center;width:70%;margin:0 auto;overflow:hidden;text-overflow:ellipsis}.FAM-toolbar-button{color:#fff;font-size:24px;position:absolute;top:-1px;height:40px;cursor:pointer}#FAM-toolbar,.FAM-toolbar-button i{line-height:40px}.FAM-toolbar-button i:hover{color:#eee}.FAM-toolbar-button i:active{color:#ddd}#FAM-back{left:10px}#FAM-menu-toggle{right:10px}#FAM-menu{color:#666;background:#fff;border:1px solid #ccc;position:absolute;right:-1px;top:39px;min-width:75px;z-index:1}.FAM-menu-option{font-size:30px;text-align:center;padding:4px;cursor:pointer}.FAM-menu-option:hover{color:#333}.FAM-menu-option:active{color:#000}#FAM-back[style*=none]~#FAM-menu .FAM-menu-option:first-child{display:none}#FAM-content{height:90%;height:calc(100% - 80px);overflow-y:auto;overflow-x:hidden}.FAM-loading{font-size:18px;font-weight:700;display:flex;justify-content:center;align-items:center;position:absolute;top:0;left:0;right:0;bottom:0}#FAM-content::-webkit-scrollbar{width:8px;height:8px}#FAM-content::-webkit-scrollbar-track{background-color:#ddd}#FAM-content::-webkit-scrollbar-thumb{background-color:rgba(0,0,0,.1);border:none}#FAM-content::-webkit-scrollbar-button:single-button{height:0;width:0}#FAM-content::-webkit-scrollbar-thumb:hover{background-color:rgba(0,0,0,.2)}#FAM-content::-webkit-scrollbar-thumb:active{background-color:rgba(0,0,0,.3)}#FAM-actions{height:40px;border-top:1px solid #ddd}#FAM-actions button{color:#333;font-size:18px;background:#fff;border:none;border-left:1px solid #ddd;height:40px;width:40px;cursor:pointer;outline:none}#FAM-actions button:first-child{border:none}#FAM-actions button:hover,#FAM-update:hover{background:#eee}#FAM-actions button:active,#FAM-update:active{background:#ddd}#FAM-actions button[data-disabled=true]{pointer-events:none}#FAM-actions button[data-disabled=true]>*{opacity:.5}#FAM-msg{font-size:14px;border:none;border-left:1px solid #ddd;height:40px;width:calc(100% - 120px);margin:0;padding:0 6px;vertical-align:top;outline:none}.FAM-chat{color:#333;border-bottom:2px solid #ddd;position:relative;padding:12px;height:80px;cursor:pointer}.FAM-chat:hover{background-color:#eee}.FAM-chat-avatar{position:absolute;left:10px;top:50%;margin-top:-20px;height:40px;width:40px;overflow:hidden}.FAM-chat-avatar img,.FAM-msg-avatar img{height:100%;width:100%}.FAM-chat-date,.FAM-chat-title{position:absolute;left:0;width:100%;padding:0 12px 0 60px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.FAM-chat-title{font-size:14px;font-weight:700;top:20px}.FAM-chat-date{bottom:20px}.FAM-msg{position:relative;padding:12px;margin-bottom:12px}.FAM-msg:after{content:"";display:table;clear:both}.FAM-msg-avatar{height:40px;width:40px;display:block;margin-top:12px;overflow:hidden;float:left}.FAM-my-msg .FAM-msg-avatar{margin-top:-2px;float:right}.FAM-msg-box{float:right;width:80%;width:calc(100% - 40px);padding-left:15px}.FAM-my-msg .FAM-msg-box{float:left;padding:0 15px 0 0}.FAM-msg-content{color:#000;background:#ddd;border-radius:4px;padding:8px 12px;margin:3px 0;min-height:30px;max-width:80%;position:relative;float:left}.FAM-msg-content:before{content:"";height:0;width:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-right:10px solid #ddd;position:absolute;top:10px;left:-10px}.FAM-my-msg .FAM-msg-content{color:#fff;background:#07c;float:right}.FAM-my-msg .FAM-msg-content:before{border-right:none;border-left:10px solid #07c;top:12px;left:auto;right:-10px}.FAM-msg-text{font-size:14px;line-height:20px;white-space:pre-wrap;word-wrap:break-word}.FAM-msg-content a{color:inherit;text-decoration:underline}.FAM-msg-content a:hover{text-decoration:none}.FAM-msg-content *{max-width:100%}.FAM-msg-date{clear:both}.FAM-msg-date,.FAM-msg-name{font-size:12px;padding:0 3px;width:100%}.FAM-my-msg .FAM-msg-name{display:none}.FAM-my-msg .FAM-msg-date{text-align:right}#FAM-github-page{font-size:14px;padding:12px}#FAM-version-data{text-align:center}#FAM-version-status i{font-size:32px;vertical-align:-6px;margin-right:3px}#FAM-version-status i.fa-check-circle{color:#07c}#FAM-version-status i.fa-exclamation-circle{color:#c93}#FAM-update,#FAM-update-code{color:#333;background:#fff;border:1px solid #ddd;border-radius:4px}#FAM-update{font-weight:700;text-transform:uppercase;display:block;padding:6px 12px;margin:3px auto;cursor:pointer;outline:none;font-size:16px}#FAM-update-code{font-size:13px;font-family:Arial,sans-serif;resize:none;width:100%;height:150px}#FAM-creator-info{text-align:center;margin-top:30px}#FAM-creator-info i{font-size:24px;vertical-align:-3px}</style>');
 }());
