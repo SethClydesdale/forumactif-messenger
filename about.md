@@ -1,7 +1,7 @@
 <div id="FAM-github-page">
   <div id="FAM-version-data">
     <p>Your current version of Forumactif Messenger is <span id="FAM-version">{CLIENT_VERSION}</span><p>
-    <p>The latest release of Forumactif Messenger on Github is <a href="https://github.com/SethClydesdale/forumactif-messenger/releases/tag/v1.0.0"><span id="FAM-version-github">v0.1.0</span></a></p>
+    <p>The latest release of Forumactif Messenger on Github is <a href="https://github.com/SethClydesdale/forumactif-messenger/releases/tag/v0.1.0"><span id="FAM-version-github">v0.1.0</span></a></p>
     <p id="FAM-version-status"><i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw"></i></p>
   </div>
 

@@ -8,7 +8,7 @@ FAIM is still under development and in the planning phase, so it is not yet read
 Follow the steps below to install this application for testing.
 1. Go to your forumotion forum.
 2. Go to Admin Panel > Modules > JavaScript Codes Management > Create a new script.
-3. Set the placement as **In all the pages** and paste [this code](https://github.com/SethClydesdale/forumactif-messenger/blob/master/fa-im.js) as the contents.
+3. Set the placement as **In all the pages** and paste [this code](https://github.com/SethClydesdale/forumactif-messenger/blob/master/fam.js) as the contents.
 4. Save and you can now test FAIM. (it'll be a little chat bubble in the bottom right-hand corner)
 
 Checkout [**config**](https://github.com/SethClydesdale/forumactif-messenger/wiki/Config) for info on modifying this plugin.
