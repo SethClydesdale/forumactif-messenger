@@ -6,8 +6,8 @@
   </div>
 
   <div id="FAM-version-sync">
-    <button id="FAM-update"><i class="fa fa-refresh"></i> Sync</button>
-    <textarea id="FAM-update-code" onclick="this.select();"></textarea>
+    <div><button id="FAM-update" onclick="FAM.update()"><i class="fa fa-refresh"></i> Sync</button></div>
+    <div><textarea id="FAM-update-code" onclick="this.select()"></textarea></div>
   </div>
 
   <div id="FAM-creator-info">
