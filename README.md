@@ -1,5 +1,5 @@
 # Forumactif Messenger
-Forumactif Messenger (or "FAM" for short) is a web application that integrates with [Forumotion](https://www.forumotion.com/) forums. It enables instant messaging on the forum, allowing you to [view topics and post messages in real time](https://i58.servimg.com/u/f58/18/21/41/30/56hv4610.gif). What it does is display your forums, topics, etc.. in a separate window from the forum so you can pick it up and chat with anyone anytime. Even when not using this application, members can still participate in chats by accessing the topics directly on your forum.
+Forumactif Messenger (or "FAM" for short) is a JavaScript application or "plugin" that integrates with [Forumotion](https://www.forumotion.com/) forums to enable instant messaging in topics in the style of a SMS app. It allows you to [view topics and post messages in real time](https://i58.servimg.com/u/f58/18/21/41/30/w4f56y10.gif) without ever having to refresh the page. What it does is display your forums, topics, etc.. in a separate window from the forum so you can pick it up and chat with anyone anytime. Even when not using this application, members can still participate in chats by accessing the topics directly on your forum.
 
 
 ## Under Development
