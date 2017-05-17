@@ -27,6 +27,7 @@ Below is a list of features, fixes, and ideas that need reviewing, implementing,
   - [ ] add message deletion
   - [ ] add ability to moderate messages (check permissions by query selecting the topic modtools)
   - [x] add auto-refresh for new messages
+    - [ ] add timeout for auto-refresh after period of inactivity
   - [ ] add notification when new messages are posted
   - [ ] add indicator for flood control timeout
   - [ ] work on emoticons popup
@@ -37,6 +38,8 @@ Below is a list of features, fixes, and ideas that need reviewing, implementing,
 - [ ] add page numbers to load older / new pages
 - [ ] add button in chats to view older posts
 - [x] add icons to topics and forums so it's easier to differentiate the two
+  - [ ] change icon colors when a new post is available AND the icon if the forum / topic is locked.
+- [ ] add functionality for the ignore config options, so the admin can choose to ignore first posts and announcements / stickies.
 - [ ] add new styles for quotes, codeboxes, etc.. in messages (collapsing these elements by default is preferred)
 - [x] add theme color to FAM toolbar on Forumactif Edge
 
@@ -51,6 +54,7 @@ Below is a list of features, fixes, and ideas that need reviewing, implementing,
 - [ ] clean up timestamps to remove unnecessary data, or just make them look nicer.
 
 #### Misc ideas for later development stages
+- [ ] add tab functionality, so the user can have multiple instances of FAM open.
 - [ ] add theme picker
 - [ ] add bubble color preference
 - [ ] add pm support
