@@ -1,17 +1,13 @@
 # Forumactif Messenger
-Forumactif Messenger (FAM for short) is a web application that integrates with [Forumotion](https://www.forumotion.com/) forums. It enables instant messaging on the forum, allowing you to [view topics and post messages in real time](https://i58.servimg.com/u/f58/18/21/41/30/56hv4610.gif). What it does is display your forum in a little chat window, in this window forums are converted to groups and topics are converted into chats. Even when not using this application, members can still participate in chats by accessing the topics directly on your forum.
+Forumactif Messenger (or "FAM" for short) is a web application that integrates with [Forumotion](https://www.forumotion.com/) forums. It enables instant messaging on the forum, allowing you to [view topics and post messages in real time](https://i58.servimg.com/u/f58/18/21/41/30/56hv4610.gif). What it does is display your forums, topics, etc.. in a separate window from the forum so you can pick it up and chat with anyone anytime. Even when not using this application, members can still participate in chats by accessing the topics directly on your forum.
 
 
 ## Under Development
 Forumactif Messenger is still under development and in the planning phase, so it is not yet ready for production. You can however, install the application on your forum for testing purposes to provide feedback to us. You can also help contribute to the project if you like as well.
 
-Follow the steps below to install this application for testing.
-1. Go to your forumotion forum.
-2. Go to Admin Panel > Modules > JavaScript Codes Management > Create a new script.
-3. Set the placement as **In all the pages** and paste [this code](https://github.com/SethClydesdale/forumactif-messenger/blob/master/fam.js) as the contents.
-4. Save the script, and you can now use and test Forumactif Messenger. (it'll be a little chat bubble in the bottom right-hand corner of your screen)
+Follow the link below to learn how to install Forumactif Messenger on your forum.
 
-Check out [**config**](https://github.com/SethClydesdale/forumactif-messenger/wiki/Config) for info on modifying this plugin.
+https://github.com/SethClydesdale/forumactif-messenger/wiki/Installing
 
 
 ### To do list
@@ -47,6 +43,7 @@ Below is a list of features, fixes, and ideas that need reviewing, implementing,
 - [x] fix actions bar visible when not in a topic
 - [x] fix message listener still active while viewing about page
 - [ ] fix guests being able to post when there's no reply button
+  - [ ] also fix the message sending for guests so guests can leave messages ; it'll require extra data during submission.
 - [ ] fix scrolling to the last message when images aren't loaded
 - [x] fix avatars and usernames so they link to the user profile
 - [x] fix similar topics and other non-message elements displaying as anon message
