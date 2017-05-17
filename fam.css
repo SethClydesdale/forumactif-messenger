@@ -62,7 +62,7 @@
   color:#FFF;
   font-size:18px;
   text-align:center;
-  background:#39C;
+  background:#39F;
   position:fixed;
   width:30px;
   height:30px;
@@ -72,14 +72,14 @@
   z-index:99999;
 }
 #FAM-button i { line-height:30px; }
-#FAM-button:hover { background-color:#28B; }
-#FAM-button:active { background-color:#17A; }
+#FAM-button:hover { background-color:#28E; }
+#FAM-button:active { background-color:#17D; }
 
 /* toolbar */
 #FAM-toolbar {
   color:#FFF;
-  background:#39C;
-  border-bottom:1px solid #28B;
+  background:#39F;
+  border-bottom:1px solid #28E;
   height:40px;
   line-height:40px;
   margin:-1px -1px 0 -1px;
@@ -138,9 +138,15 @@
 /* content */
 #FAM-content {
   height:90%;
-  height:calc(100% - 80px);
+  height:calc(100% - 40px);
   overflow-y:auto;
   overflow-x:hidden;
+}
+#FAM-content.FAM-viewing-topic { height:calc(100% - 80px); }
+
+.FAM-content-block {
+  font-size:14px;
+  padding:12px;
 }
 
 .FAM-loading {
@@ -155,6 +161,48 @@
   right:0;
   bottom:0;
 }
+
+.FAM-button {
+  color:#FFF;
+  font-size:16px;
+  font-weight:bold;
+  text-transform:uppercase;
+  background:#39F;
+  border:none;
+  border-radius:4px;
+  display:block;
+  height:40px;
+  padding:0px 12px;
+  margin:3px auto;
+  cursor:pointer;
+  outline:none;
+}
+.FAM-button:hover { background:#28E; }
+.FAM-button:active { background:#17D; }
+
+#FAM .FAM-inputbox {
+  color:#333;
+  font-size:14px;
+  font-family:Arial, sans-serif;
+  background:#FFF;
+  border:1px solid #DDD;
+  border-radius:4px;
+  padding:8px;
+  width:100%;
+  cursor:text;
+  outline:none;
+}
+
+#FAM textarea.FAM-inputbox {
+  height:150px;
+  resize:none;
+}
+
+#FAM .FAM-inputbox:hover { border-color:#CCC; }
+#FAM .FAM-inputbox:focus { border-color:#39F; }
+
+.FAM-center { text-align:center; }
+.FAM-row { margin:12px 0; }
 
 /* scrollbar */
 #FAM-content::-webkit-scrollbar {
@@ -182,7 +230,22 @@
 #FAM-actions {
   height:40px;
   border-top:1px solid #DDD;
+  display:none;
 }
+.FAM-viewing-topic + #FAM-actions, .FAM-viewing-forum + #FAM-actions { display:block; }
+.FAM-viewing-forum + #FAM-actions { height:0; }
+
+#FAM-new-topic {
+  position:absolute;
+  right:8px;
+  bottom:3px;
+  cursor:pointer;
+}
+
+#FAM-new-topic .fa-plus { line-height:57px; }
+#FAM-new-topic .fa-circle { color:#39F; }
+#FAM-new-topic:hover .fa-circle { color:#28E; }
+#FAM-new-topic:active .fa-circle { color:#17D; }
 
 #FAM-actions button {
   color:#333;
@@ -204,9 +267,11 @@
 #FAM-actions button[data-disabled="true"] > * { opacity:0.5; }
 
 #FAM-msg {
+  color:#333;
   font-size:14px;
+  background:#FFF;
   border:none;
-  border-left:1px solid #DDD;
+  border-left:1px solid #DDD !important;
   height:40px;
   width:calc(100% - 120px);
   margin:0;
@@ -226,6 +291,14 @@
   cursor:pointer;
 }
 .FAM-chat:hover { background-color:#EEE; }
+
+.FAM-chat-icon {
+  position:absolute;
+  left:1px;
+  bottom:0px;
+  z-index:1;
+}
+.FAM-chat-icon .fa-circle { color:#999; }
 
 .FAM-chat-avatar {
   position:absolute;
@@ -265,7 +338,6 @@
 .FAM-msg {
   position:relative;
   padding:12px;
-  margin-bottom:12px;
 }
 
 .FAM-msg:after {
@@ -277,8 +349,7 @@
 .FAM-msg-avatar {
   height:40px;
   width:40px;
-  display:block;
-  margin-top:12px;
+  margin-top:16px;
   overflow:hidden;
   float:left;
 }
@@ -289,7 +360,7 @@
 }
 
 .FAM-my-msg .FAM-msg-avatar {
-  margin-top:-2px;
+  margin-top:0;
   float:right;
 }
 
@@ -312,7 +383,7 @@
   border-radius:4px;
   padding:8px 12px;
   margin:3px 0;
-  min-height:30px;
+  min-height:36px;
   max-width:80%;
   position:relative;
   float:left;
@@ -327,7 +398,7 @@
   border-bottom:5px solid transparent;
   border-right:10px solid #DDD;
   position:absolute;
-  top:10px;
+  top:13px;
   left:-10px;
 }
 
@@ -355,6 +426,9 @@
   word-wrap:break-word;
 }
 
+/* placeholder size */
+.FAM-msg-text .fa-circle-o-notch { font-size:20px; }
+
 /* message content styles */
 .FAM-msg-content a {
   color:inherit;
@@ -375,38 +449,14 @@
 
 
 /* -- 03. GITHUB PAGES -- */
-#FAM-github-page {
-  font-size:14px;
-  padding:12px;
-}
-
-#FAM-version-data, #FAM-update-help  { text-align:center; }
-
 #FAM-version-status i {
   font-size:32px;
   vertical-align:-6px;
   margin-right:3px;
 }
 
-#FAM-version-status i.fa-check-circle { color:#07C; }
-#FAM-version-status i.fa-exclamation-circle { color:#C93; }
-
-#FAM-update {
-  color:#333;
-  font-size:16px;
-  font-weight:bold;
-  text-transform:uppercase;
-  background:#FFF;
-  border:1px solid #ddd;
-  border-radius:4px;
-  display:block;
-  padding:6px 12px;
-  margin:3px auto;
-  cursor:pointer;
-  outline:none;
-}
-#FAM-update:hover { background:#EEE; }
-#FAM-update:active { background:#DDD; }
+#FAM-version-status i.fa-check-circle { color:#39F; }
+#FAM-version-status i.fa-exclamation-circle { color:#F93; }
 
 #FAM-update-code {
   color:#333;
