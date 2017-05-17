@@ -12,8 +12,8 @@
   </div>
 
   <div id="FAM-creator-info">
-    <div class="FAM-row"><a href="https://github.com/SethClydesdale/forumactif-messenger"><i class="fa fa-github"></i> Fork Forumactif Messenger on Github!</a></div>
     <div class="FAM-row">Created by <a href="https://github.com/SethClydesdale">Seth Clydesdale</a></div>
     <div class="FAM-row">And the awesome <a href="https://github.com/SethClydesdale/forumactif-messenger/graphs/contributors">Github Community</a></div>
+    <div class="FAM-row"><a href="https://github.com/SethClydesdale/forumactif-messenger/fork"><i class="fa fa-github"></i> Fork Forumactif Messenger on Github!</a></div>
   </div>
 </div>
