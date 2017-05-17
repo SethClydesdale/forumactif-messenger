@@ -474,6 +474,27 @@
       FAM.cache.content.querySelector('#FAM-update').outerHTML = '<p id="FAM-update" style="text-align:center;"><i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw"></i></p>';
 
       $.get('https://raw.githubusercontent.com/SethClydesdale/forumactif-messenger/master/fam.js', function (data) {
+        var config = data.replace(/[\s\S]*?(config.*?:.*?\{[\s\S]*?\},)[\s\S]*/, '$1').replace(/config.*?:/, 'window.fam_new_config = ').replace(/,$/, ';'),
+            lang = data.replace(/[\s\S]*?(lang.*?:.*?\{[\s\S]*?\})[\s\S]*/, '$1').replace(/lang.*?:/, 'window.fam_new_lang = '),
+            script = document.createElement('SCRIPT'),
+            k;
+
+        script.type = 'text/javascript';
+        script.text = config + '\n' + lang;
+        document.body.appendChild(script);
+
+        for (k in fam_new_lang) {
+          if (typeof FAM.config.lang[k] === 'undefined') {
+            FAM.config.lang[k] = fam_new_lang[k];
+          }
+        }
+
+        for (k in fam_new_config) {
+          if (typeof FAM.config[k] === 'undefined') {
+            FAM.config[k] = fam_new_config[k];
+          }
+        }
+
         FAM.cache.content.querySelector('#FAM-update').outerHTML = '<p>Replace your current Forumactif Messenger script with the one below. It should be applied in <strong>Admin Panel > Modules > JavaScript codes management</strong>.</p>';
         FAM.cache.content.querySelector('#FAM-update-code').value = data.replace(/config.*?:.*?\{[\s\S]*?\},/, 'config : ' + JSON.stringify(FAM.config, null, 2) + ',');
       });
