@@ -36,6 +36,8 @@ Below is a list of features, fixes, and ideas that need reviewing, implementing,
 - [x] add icons to topics and forums so it's easier to differentiate the two
   - [ ] change icon colors when a new post is available AND the icon if the forum / topic is locked.
 - [ ] add functionality for the ignore config options, so the admin can choose to ignore first posts and announcements / stickies.
+- [ ] add config option for hiding chat to guests
+  - [ ] additionally adding an option for showing the chat only to staff might be a good idea as well
 - [ ] add new styles for quotes, codeboxes, etc.. in messages (collapsing these elements by default is preferred)
 - [x] add theme color to FAM toolbar on Forumactif Edge
 
