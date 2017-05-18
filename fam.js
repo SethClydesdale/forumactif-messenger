@@ -19,6 +19,7 @@
 
       lang : {
         loading : 'Loading...',
+        idle : 'Forumactif Messenger has fallen asleep due to inactivity. Click here to start chatting again.',
 
         new_topic : 'New topic',
         start_topic : 'Start topic',
@@ -125,19 +126,16 @@
           FAM.cache.content.innerHTML = html;
           FAM.cache.actions.innerHTML =
           '<button id="FAM-attachment" type="button"><i class="fa fa-paperclip"></i></button>'+
-          '<button id="FAM-emoji" type="button"><i class="fa fa-smile-o"></i></button>'+
-          '<input id="FAM-msg" type="text" placeholder="' + FAM.config.lang.msg_placeholder + '" onkeyup="FAM.validate(this.value, event);">'+
+          '<button id="FAM-emoji" type="button" onclick="FAM.emoji(this);"><i class="fa fa-smile-o"></i></button>'+
+          '<textarea id="FAM-msg" placeholder="' + FAM.config.lang.msg_placeholder + '" onkeyup="FAM.validate(this.value, event);"></textarea>'+
           '<button id="FAM-send" type="button" onclick="FAM.send();" data-disabled="true"><i class="fa fa-paper-plane"></i></button>'+
           ( form ? form.outerHTML.replace(/id=".*?"|name=".*?"/, '').replace('<form', '<form name="fampost" style="display:none"') : '' );
 
           FAM.scroll();
 
           // listen for new posts and changes to existing messages
-          FAM.listen = setInterval(function () {
-            if (!FAM.sending) {
-              FAM.checkMessages();
-            }
-          }, FAM.config.refresh < 3000 ? 3000 : FAM.config.refresh);
+          FAM.startListening();
+
         // standard forum / category view
         } else {
           FAM.cache.content.innerHTML = html;
@@ -192,14 +190,71 @@
     },
 
 
-    // encode strings for sending over AJAX
-    encode : function (string) {
-      return /UTF-8/i.test(document.characterSet) ?
-        encodeURIComponent(string) :
-        // URI encoding for NON-UTF8 forums
-        encodeURIComponent(escape(string).replace(/%u[A-F0-9]{4}/g, function(match) {
-          return '&#' + parseInt(match.substr(2), 16) + ';'
-        })).replace(/%25/g, '%')
+    // insert text into the message input
+    insertText : function (string, pad) {
+      var msg = FAM.cache.actions.querySelector('#FAM-msg'),
+          addedText = (pad ? ' ' : '') + string + (pad ? ' ' : ''),
+          position = 0;
+
+      if (msg) {
+
+        try {
+          position = msg.selectionEnd;
+          msg.value = msg.value.slice(0, position) + addedText + msg.value.slice(position, msg.length);
+          msg.selectionEnd = position + addedText.length;
+        } catch (e) {
+          msg.value += addedText;
+        }
+
+        msg.focus();
+      }
+    },
+
+
+    // call the emoji list to the specified element (caller)
+    emoji : function (caller) {
+      var active = document.getElementById('FAM-emoji-list'),
+          selector;
+
+      if (active) {
+        active.style.display = active.style.display == 'none' ? 'block' : 'none';
+
+      } else {
+        selector = document.createElement('IFRAME');
+        selector.src = '/post?mode=smilies';
+        selector.id = 'FAM-emoji-list';
+        selector.className = 'FAM-dropdown';
+
+        selector.onload = function () {
+          try {
+            var doc = this.contentDocument || this.contentWindow.document,
+                emoji = $('a[href*="insert_chatboxsmilie"]', doc),
+                i = 0,
+                j = emoji.length;
+
+            for (; i < j; i++) {
+              emoji[i].dataset.emoji = emoji[i].href.replace(/.*?'(.*?)'.*/, '$1');
+              emoji[i].href = '#';
+              emoji[i].onclick = function () {
+                FAM.insertText(this.dataset.emoji, true);
+                return false;
+              };
+            }
+
+            $('a[href="javascript:window.close();"]', doc).hide();
+
+          } catch (e) {
+            console.log(e);
+          }
+        };
+
+        selector.onmouseleave = function () {
+          this.style.display = 'none';
+        };
+
+        caller.parentNode.insertBefore(selector, caller);
+      }
+
     },
 
 
@@ -214,12 +269,23 @@
         send.dataset.disabled = true;
       }
 
-      if (e && FAM.cache.actions.querySelector('#FAM-send').dataset.disabled != 'true' && {
+      if (e && FAM.cache.actions.querySelector('#FAM-send').dataset.disabled != 'true' && e.ctrlKey && {
         'Enter' : 1,
         '13' : 1
       }[e.key || e.keyCode]) {
         FAM.send();
       }
+    },
+
+
+    // encode strings for sending over AJAX
+    encode : function (string) {
+      return /UTF-8/i.test(document.characterSet) ?
+        encodeURIComponent(string) :
+        // URI encoding for NON-UTF8 forums
+        encodeURIComponent(escape(string).replace(/%u[A-F0-9]{4}/g, function(match) {
+          return '&#' + parseInt(match.substr(2), 16) + ';'
+        })).replace(/%25/g, '%')
     },
 
 
@@ -270,12 +336,49 @@
     },
 
 
+    // start listening for changes
+    startListening : function () {
+      FAM.listen = setInterval(function () {
+        if (!FAM.sending) {
+          FAM.checkMessages();
+        }
+      }, FAM.config.refresh < 3000 ? 3000 : FAM.config.refresh);
+
+      FAM.idle();
+      $(document).on('mousemove keypress click', FAM.idle);
+    },
+
+
+    // kill listener after a specified period of inactivity
+    idle : function () {
+      if (FAM.idler) {
+        clearTimeout(FAM.idler);
+      }
+
+      FAM.idler = setTimeout(function () {
+        FAM.killListener();
+        FAM.cache.chat.insertAdjacentHTML('beforeend',
+          '<div id="FAM-idle" class="FAM-loading" onclick="FAM.startListening(); FAM.cache.chat.removeChild(this);">'+
+            '<p><i class="fa fa-moon-o fa-3x"></i>' + FAM.config.lang.idle + '</p>'+
+          '</div>'
+        );
+      }, FAM.config.timeout > 15*60*1000 ? 15*60*1000 : FAM.config.timeout);
+    },
+
+
     // kill the message listener if it's active
     killListener : function () {
       if (FAM.listen) {
         FAM.sending = false;
         clearInterval(FAM.listen);
         delete FAM.listen;
+      }
+
+      if (FAM.idler) {
+        clearTimeout(FAM.idler);
+        delete FAM.idler;
+
+        $(document).off('mousemove keypress click', FAM.idle);
       }
     },
 
@@ -681,7 +784,7 @@
 
     },
 
-    version : 'v0.2.0'
+    version : 'v0.3.0'
   };
 
   // add view=newest query to topic urls if it's not there
@@ -694,5 +797,5 @@
 
 
   // FAM styles
-  $('head').append('<style>@import url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css);#modernbb #FAM i.fa,#modernbb #FAM-button i.fa,#modernbb #FAM-send{margin:initial;vertical-align:initial}#FAM,#FAM *{box-sizing:border-box}#FAM{color:#333;font-size:13px;font-family:Arial,sans-serif;background:#fff;border:1px solid #ddd;position:fixed;height:70%;width:40%;min-height:400px;min-width:300px;right:3px;z-index:99999;visibility:visible;opacity:1;bottom:35px;transition:500ms}#FAM[data-hidden=true]{visibility:hidden;opacity:0;bottom:-100%}#FAM.FAM-embeded{position:relative;bottom:0;right:0;width:100%;height:400px;margin:12px 0;z-index:1}#FAM-button,#FAM-toolbar{color:#fff;background:#39f}#FAM-button{font-size:18px;text-align:center;position:fixed;width:30px;right:3px;bottom:3px;cursor:pointer;z-index:99999;height:30px}#FAM-button i{line-height:30px}#FAM-button:hover{background-color:#28e}#FAM-button:active{background-color:#17d}#FAM-toolbar{border-bottom:1px solid #28e;height:40px;margin:-1px -1px 0}.FAM-maintitle{color:#fff;font-size:18px;text-align:center;width:70%;margin:0 auto;overflow:hidden;text-overflow:ellipsis}.FAM-toolbar-button{color:#fff;font-size:24px;position:absolute;top:-1px;height:40px;cursor:pointer}#FAM-toolbar,.FAM-toolbar-button i{line-height:40px}.FAM-toolbar-button i:hover{color:#eee}.FAM-toolbar-button i:active{color:#ddd}#FAM-back{left:10px}#FAM-menu-toggle{right:10px}#FAM-menu{color:#666;background:#fff;border:1px solid #ccc;position:absolute;right:-1px;top:39px;min-width:75px;z-index:1}.FAM-menu-option{font-size:30px;text-align:center;padding:4px;cursor:pointer}.FAM-menu-option:hover{color:#333}.FAM-menu-option:active{color:#000}#FAM-back[style*=none]~#FAM-menu .FAM-menu-option:first-child{display:none}#FAM-content{height:90%;height:calc(100% - 40px);overflow-y:auto;overflow-x:hidden}#FAM-content.FAM-viewing-topic{height:calc(100% - 80px)}.FAM-content-block{font-size:14px;padding:12px}.FAM-loading{font-size:18px;font-weight:700;display:flex;justify-content:center;align-items:center;position:absolute;top:0;left:0;right:0;bottom:0}.FAM-button{color:#fff;font-size:16px;font-weight:700;text-transform:uppercase;background:#39f;border:none;border-radius:4px;display:block;height:40px;padding:0 12px;margin:3px auto;cursor:pointer;outline:none}.FAM-button:hover{background:#28e}.FAM-button:active{background:#17d}#FAM .FAM-inputbox{color:#333;font-size:14px;font-family:Arial,sans-serif;background:#fff;border:1px solid #ddd;border-radius:4px;padding:8px;width:100%;cursor:text;outline:none}#FAM textarea.FAM-inputbox{height:150px;resize:none}#FAM .FAM-inputbox:hover{border-color:#ccc}#FAM .FAM-inputbox:focus{border-color:#39f}.FAM-center{text-align:center}.FAM-row{margin:12px 0}#FAM-content::-webkit-scrollbar{width:8px;height:8px}#FAM-content::-webkit-scrollbar-track{background-color:#ddd}#FAM-content::-webkit-scrollbar-thumb{background-color:rgba(0,0,0,.1);border:none}#FAM-content::-webkit-scrollbar-button:single-button{height:0;width:0}#FAM-content::-webkit-scrollbar-thumb:hover{background-color:rgba(0,0,0,.2)}#FAM-content::-webkit-scrollbar-thumb:active{background-color:rgba(0,0,0,.3)}#FAM-actions{height:40px;border-top:1px solid #ddd;display:none}.FAM-viewing-forum+#FAM-actions,.FAM-viewing-topic+#FAM-actions{display:block}.FAM-viewing-forum+#FAM-actions{height:0}#FAM-new-topic{position:absolute;right:8px;bottom:3px;cursor:pointer}#FAM-new-topic .fa-plus{line-height:57px}#FAM-new-topic .fa-circle,#FAM-version-status i.fa-check-circle{color:#39f}#FAM-new-topic:hover .fa-circle{color:#28e}#FAM-new-topic:active .fa-circle{color:#17d}#FAM-actions button{color:#333;font-size:18px;background:#fff;border:none;border-left:1px solid #ddd;height:40px;width:40px;cursor:pointer;outline:none}#FAM-actions button:first-child{border:none}#FAM-actions button:hover{background:#eee}#FAM-actions button:active{background:#ddd}#FAM-actions button[data-disabled=true]{pointer-events:none}#FAM-actions button[data-disabled=true]>*{opacity:.5}#FAM-msg{color:#333;font-size:14px;background:#fff;border:none;border-left:1px solid #ddd!important;height:40px;width:calc(100% - 120px);margin:0;padding:0 6px;vertical-align:top;outline:none}.FAM-chat{color:#333;border-bottom:2px solid #ddd;position:relative;padding:12px;height:80px;cursor:pointer}.FAM-chat:hover{background-color:#eee}.FAM-chat-icon{position:absolute;left:1px;bottom:0;z-index:1}.FAM-chat-icon .fa-circle{color:#999}.FAM-chat-avatar{position:absolute;left:10px;top:50%;margin-top:-20px;height:40px;width:40px;overflow:hidden}.FAM-chat-avatar img,.FAM-msg-avatar img{height:100%;width:100%}.FAM-chat-date,.FAM-chat-title{position:absolute;left:0;width:100%;padding:0 12px 0 60px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.FAM-chat-title{font-size:14px;font-weight:700;top:20px}.FAM-chat-date{bottom:20px}.FAM-msg{position:relative;padding:12px}.FAM-msg:after{content:"";display:table;clear:both}.FAM-msg-avatar{height:40px;width:40px;margin-top:16px;overflow:hidden;float:left}.FAM-my-msg .FAM-msg-avatar{margin-top:0;float:right}.FAM-msg-box{float:right;width:80%;width:calc(100% - 40px);padding-left:15px}.FAM-my-msg .FAM-msg-box{float:left;padding:0 15px 0 0}.FAM-msg-content{color:#000;background:#ddd;border-radius:4px;padding:8px 12px;margin:3px 0;min-height:36px;max-width:80%;position:relative;float:left}.FAM-msg-content:before{content:"";height:0;width:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-right:10px solid #ddd;position:absolute;top:13px;left:-10px}.FAM-my-msg .FAM-msg-content{color:#fff;background:#07c;float:right}.FAM-my-msg .FAM-msg-content:before{border-right:none;border-left:10px solid #07c;top:12px;left:auto;right:-10px}.FAM-msg-text{font-size:14px;line-height:20px;white-space:pre-wrap;word-wrap:break-word}.FAM-msg-text .fa-circle-o-notch{font-size:20px}.FAM-msg-content a{color:inherit;text-decoration:underline}.FAM-msg-content a:hover{text-decoration:none}.FAM-msg-content *{max-width:100%}.FAM-msg-date{clear:both}.FAM-msg-date,.FAM-msg-name{font-size:12px;padding:0 3px;width:100%}.FAM-my-msg .FAM-msg-name{display:none}.FAM-my-msg .FAM-msg-date{text-align:right}#FAM-version-status i{font-size:32px;vertical-align:-6px;margin-right:3px}#FAM-version-status i.fa-exclamation-circle{color:#f93}#FAM-update-code{color:#333;font-size:13px;font-family:Arial,sans-serif;background:#fff;border:1px solid #ddd;border-radius:4px;resize:none;width:100%;height:150px}#FAM-creator-info{text-align:center;margin-top:30px}#FAM-creator-info i,#FAM-update-help i{font-size:24px;vertical-align:-3px}</style>');
+  $('head').append('<style>@import url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css);#modernbb #FAM i.fa,#modernbb #FAM-button i.fa,#modernbb #FAM-send{margin:initial;vertical-align:initial}#FAM,#FAM *{box-sizing:border-box}#FAM{color:#333;font-size:13px;font-family:Arial,sans-serif;background:#fff;border:1px solid #ddd;position:fixed;height:70%;width:40%;min-height:400px;min-width:300px;right:3px;z-index:99999;visibility:visible;opacity:1;bottom:35px;transition:500ms}#FAM[data-hidden=true]{visibility:hidden;opacity:0;bottom:-100%}#FAM.FAM-embeded{position:relative;bottom:0;right:0;width:100%;height:400px;margin:12px 0;z-index:1}#FAM-button,#FAM-toolbar{color:#fff;background:#39f}#FAM-button{font-size:18px;text-align:center;position:fixed;width:30px;right:3px;bottom:3px;cursor:pointer;z-index:99999;height:30px}#FAM-button i{line-height:30px}#FAM-button:hover{background-color:#28e}#FAM-button:active{background-color:#17d}#FAM-toolbar{border-bottom:1px solid #28e;height:40px;margin:-1px -1px 0}.FAM-maintitle{color:#fff;font-size:18px;text-align:center;width:70%;margin:0 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.FAM-toolbar-button{color:#fff;font-size:24px;position:absolute;top:-1px;height:40px;cursor:pointer}#FAM-toolbar,.FAM-toolbar-button i{line-height:40px}.FAM-toolbar-button i:hover{color:#eee}.FAM-toolbar-button i:active{color:#ddd}#FAM-back{left:10px}#FAM-menu-toggle{right:10px}#FAM-menu{color:#666;background:#fff;border:1px solid #ccc;position:absolute;right:-1px;top:39px;min-width:75px;z-index:1}.FAM-menu-option{font-size:30px;text-align:center;padding:4px;cursor:pointer}.FAM-menu-option:hover{color:#333}.FAM-menu-option:active{color:#000}#FAM-back[style*=none]~#FAM-menu .FAM-menu-option:first-child{display:none}#FAM-content{height:90%;height:calc(100% - 40px);overflow-y:auto;overflow-x:hidden}#FAM-content.FAM-viewing-topic{height:calc(100% - 80px)}.FAM-content-block{font-size:14px;padding:12px}.FAM-loading{font-size:18px;font-weight:700;display:flex;justify-content:center;align-items:center;text-align:center;position:absolute;top:0;left:0;right:0;bottom:0}#FAM-idle,.FAM-button{color:#fff;cursor:pointer}#FAM-idle{background:rgba(0,0,0,.7);transition:300ms}#FAM-idle:hover{background:rgba(0,0,0,.6)}#FAM-idle i{display:block;margin-bottom:12px}.FAM-button{font-size:16px;font-weight:700;text-transform:uppercase;background:#39f;border:none;border-radius:4px;display:block;height:40px;padding:0 12px;margin:3px auto;outline:none}.FAM-button:hover{background:#28e}.FAM-button:active{background:#17d}#FAM .FAM-inputbox{color:#333;font-size:14px;font-family:Arial,sans-serif;background:#fff;border:1px solid #ddd;border-radius:4px;padding:8px;width:100%;cursor:text;outline:none}#FAM textarea.FAM-inputbox{height:150px;resize:none}#FAM .FAM-inputbox:hover{border-color:#ccc}#FAM .FAM-inputbox:focus{border-color:#39f}.FAM-center{text-align:center}.FAM-row{margin:12px 0}#FAM ::-webkit-scrollbar{width:8px;height:8px}#FAM ::-webkit-scrollbar-track{background-color:#ddd}#FAM ::-webkit-scrollbar-thumb{background-color:rgba(0,0,0,.1);border:none}#FAM ::-webkit-scrollbar-button:single-button{height:0;width:0}#FAM ::-webkit-scrollbar-thumb:hover{background-color:rgba(0,0,0,.2)}#FAM ::-webkit-scrollbar-thumb:active{background-color:rgba(0,0,0,.3)}#FAM-actions{height:40px;border-top:1px solid #ddd;display:none}.FAM-viewing-forum+#FAM-actions,.FAM-viewing-topic+#FAM-actions{display:block}.FAM-viewing-forum+#FAM-actions{height:0}#FAM-new-topic{position:absolute;right:8px;bottom:3px;cursor:pointer}#FAM-new-topic .fa-plus{line-height:57px}#FAM-new-topic .fa-circle,#FAM-version-status i.fa-check-circle{color:#39f}#FAM-new-topic:hover .fa-circle{color:#28e}#FAM-new-topic:active .fa-circle{color:#17d}#FAM-actions button{color:#333;font-size:18px;background:#fff;border:none;border-left:1px solid #ddd;height:40px;width:40px;cursor:pointer;outline:none}#FAM-actions button:first-child{border:none}#FAM-actions button:hover{background:#eee}#FAM-actions button:active{background:#ddd}#FAM-actions button[data-disabled=true]{pointer-events:none}#FAM-actions button[data-disabled=true]>*{opacity:.5}#FAM-actions .FAM-dropdown{background:#fff;border:1px solid #ddd;position:absolute;left:0;bottom:40px;width:250px;height:300px}#FAM-msg{color:#333;font-size:14px;background:#fff;border:none;border-left:1px solid #ddd!important;height:40px;width:calc(100% - 120px);margin:0;padding:6px;vertical-align:top;outline:none;resize:none}.FAM-chat{color:#333;border-bottom:2px solid #ddd;position:relative;padding:12px;height:80px;cursor:pointer}.FAM-chat:hover{background-color:#eee}.FAM-chat-icon{position:absolute;left:1px;bottom:0;z-index:1}.FAM-chat-icon .fa-circle{color:#999}.FAM-chat-avatar{position:absolute;left:10px;top:50%;margin-top:-20px;height:40px;width:40px;overflow:hidden}.FAM-chat-avatar img,.FAM-msg-avatar img{height:100%;width:100%}.FAM-chat-date,.FAM-chat-title{position:absolute;left:0;width:100%;padding:0 12px 0 60px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.FAM-chat-title{font-size:14px;font-weight:700;top:20px}.FAM-chat-date{bottom:20px}.FAM-msg{position:relative;padding:12px}.FAM-msg:after{content:"";display:table;clear:both}.FAM-msg-avatar{height:40px;width:40px;margin-top:16px;overflow:hidden;float:left}.FAM-my-msg .FAM-msg-avatar{margin-top:0;float:right}.FAM-msg-box{float:right;width:80%;width:calc(100% - 40px);padding-left:15px}.FAM-my-msg .FAM-msg-box{float:left;padding:0 15px 0 0}.FAM-msg-content{color:#000;background:#ddd;border-radius:4px;padding:8px 12px;margin:3px 0;min-height:36px;max-width:80%;position:relative;float:left}.FAM-msg-content:before{content:"";height:0;width:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-right:10px solid #ddd;position:absolute;top:13px;left:-10px}.FAM-my-msg .FAM-msg-content{color:#fff;background:#07c;float:right}.FAM-my-msg .FAM-msg-content:before{border-right:none;border-left:10px solid #07c;top:12px;left:auto;right:-10px}.FAM-msg-text{font-size:14px;line-height:20px;white-space:pre-wrap;word-wrap:break-word}.FAM-msg-text .fa-circle-o-notch{font-size:20px}.FAM-msg-text a{color:inherit;text-decoration:underline}.FAM-msg-text a:hover{text-decoration:none}.FAM-msg-text *{max-width:100%}.FAM-msg-text img{max-height:200px}.FAM-msg-date{clear:both}.FAM-msg-date,.FAM-msg-name{font-size:12px;padding:0 3px;width:100%}.FAM-my-msg .FAM-msg-name{display:none}.FAM-my-msg .FAM-msg-date{text-align:right}#FAM-version-status i{font-size:32px;vertical-align:-6px;margin-right:3px}#FAM-version-status i.fa-exclamation-circle{color:#f93}#FAM-creator-info{text-align:center;margin-top:30px}#FAM-creator-info i,#FAM-update-help i{font-size:24px;vertical-align:-3px}</style>');
 }());

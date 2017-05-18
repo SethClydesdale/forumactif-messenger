@@ -17,17 +17,25 @@ Below is a list of features, fixes, and ideas that need reviewing, implementing,
 - [x] add drop down nav menu for various options such as...
   - [x] a Home button for going back to first history entry
   - [ ] a Settings button for configuring personal settings
+    - [ ] add a full screen option
+    - [ ] add the ability to resize the chat window
   - [x] an About button for viewing info about FAM + Checking for updates on Github
 - [x] add message submission in topics
   - [ ] add message editing
   - [ ] add message deletion
   - [ ] add ability to moderate messages (check permissions by query selecting the topic modtools)
   - [x] add auto-refresh for new messages
-    - [ ] add timeout for auto-refresh after period of inactivity
+    - [x] add timeout for auto-refresh after period of inactivity
   - [ ] add notification when new messages are posted
   - [ ] add indicator for flood control timeout
-  - [ ] work on emoticons popup
+  - [x] work on emoticons popup
   - [ ] work on attachment popup for images and videos
+    - [ ] add "attach an image"
+      - [ ] integrate servimg into this option for uploading
+    - [ ] add "attach a gif" (we can utilize the Giphy API)
+    - [ ] add "attach a video" (I was thinking youtube, but do they have a search API?)
+  - [x] add height limit to images in messages
+    - [ ] we still want people to be able to view the full size, so we need to create a viewer that shows the full image on click.
 - [x] add new topic button
   - [x] setup new topic form and sending functionality
   - [x] load the created topic once it's submitted
