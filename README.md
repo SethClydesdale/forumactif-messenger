@@ -14,12 +14,24 @@ https://github.com/SethClydesdale/forumactif-messenger/wiki/Installing
 Below is a list of features, fixes, and ideas that need reviewing, implementing, or fixing.
 
 #### Implement
+
+**Navigation**
+
 - [x] add drop down nav menu for various options such as...
   - [x] a Home button for going back to first history entry
   - [ ] a Settings button for configuring personal settings
     - [ ] add a full screen option
     - [ ] add the ability to resize the chat window
+    - [ ] add theme picker so the user can switch between dark / light
+    - [ ] add chat bubble color preference
   - [x] an About button for viewing info about FAM + Checking for updates on Github
+- [x] add tab functionality, so the user can have multiple instances of FAM open.
+  - [ ] utilize localStorage to remember the user's opened tabs
+- [ ] add page numbers to forums to load older / newer pages
+
+
+**Messaging**
+
 - [x] add message submission in topics
   - [ ] add message editing
   - [ ] add message deletion
@@ -39,15 +51,23 @@ Below is a list of features, fixes, and ideas that need reviewing, implementing,
 - [x] add new topic button
   - [x] setup new topic form and sending functionality
   - [x] load the created topic once it's submitted
-- [ ] add page numbers to load older / new pages
 - [ ] add button in chats to view older posts
-- [x] add icons to topics and forums so it's easier to differentiate the two
-  - [ ] change icon colors when a new post is available AND the icon if the forum / topic is locked.
+
+
+**Customization**
+
 - [ ] add functionality for the ignore config options, so the admin can choose to ignore first posts and announcements / stickies.
 - [ ] add config option for hiding chat to guests
   - [ ] additionally adding an option for showing the chat only to staff might be a good idea as well
+
+
+**Misc**
+
 - [ ] add new styles for quotes, codeboxes, etc.. in messages (collapsing these elements by default is preferred)
 - [x] add theme color to FAM toolbar on Forumactif Edge
+- [x] add icons to topics and forums so it's easier to differentiate the two
+  - [ ] change icon colors when a new post is available AND the icon if the forum / topic is locked.
+
 
 #### Fix
 - [x] fix actions bar visible when not in a topic
@@ -60,9 +80,7 @@ Below is a list of features, fixes, and ideas that need reviewing, implementing,
 - [x] fix button and input styles on modernbb
 - [ ] clean up timestamps to remove unnecessary data, or just make them look nicer.
 
-#### Misc ideas for later development stages
-- [ ] add tab functionality, so the user can have multiple instances of FAM open.
-- [ ] add theme picker
-- [ ] add bubble color preference
+
+#### Ideas for later development stages
 - [ ] add pm support
 - [ ] turn into app w/[electron](https://electron.atom.io/)
