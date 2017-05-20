@@ -6,7 +6,7 @@
   </div>
 
   <div id="FAM-version-sync">
-    <div class="FAM-row"><button id="FAM-update" class="FAM-button" onclick="FAM.update()"><i class="fa fa-refresh"></i> Sync</button></div>
+    <div class="FAM-row"><button id="FAM-update" class="FAM-button" onclick="FAM.update ? FAM.update() : FAM.page.about.update();"><i class="fa fa-refresh"></i> Sync</button></div>
     <div class="FAM-row"><textarea id="FAM-update-code" class="FAM-inputbox" onclick="this.select()" readonly></textarea></div>
     <div class="FAM-row FAM-center"><a href="https://github.com/SethClydesdale/forumactif-messenger/wiki/Updating"><i class="fa fa-question-circle"></i> How do I update Forumactif Messenger?</a></div>
   </div>
