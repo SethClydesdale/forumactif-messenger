@@ -71,7 +71,7 @@
     },
 
 
-    // get the specified page
+    // get the specified page and load the contents into FAM
     get : function (url, title, noHistory) {
       var type = /\/c\d+/.test(url) ? 'category' :
                  /\/f\d+/.test(url) ? 'forum' :
@@ -85,7 +85,7 @@
         });
       }
 
-      // stop listening for message changed
+      // stop listening for message changes
       FAM.message.listener.stop();
 
       // show / hide back button
@@ -360,7 +360,7 @@
       },
 
 
-      // methods that listen for message changes
+      // methods that listen for message changes and user activity
       listener : {
         // start listening for changes
         start : function () {
@@ -604,18 +604,20 @@
         }
       },
 
+
+      // opens the settings page
       settings : {
-        // get and open the settings page
         open : function () {
 
-        },
+        }
       }
+
     },
 
 
-    // log history so the user can go back
+    // history methods and data
     history : {
-      log : {},
+      log : {}, // log history so the user can go back
 
 
       // save history to localStorage
@@ -717,7 +719,7 @@
     },
 
 
-    // tab functionality
+    // tab methods and data
     tab : {
       active : 0, // currently active tab
       total : 0, // total tabs created (used for assigning unique ids)
@@ -804,7 +806,7 @@
       title : function (string) {
         FAM.cache.toolbar.querySelector('.FAM-maintitle').innerText = string;
         FAM.cache.tabs.querySelector('#FAM-tab-' + FAM.tab.active + ' .FAM-tab-name').innerText = string;
-      },
+      }
     },
 
 
