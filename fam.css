@@ -4,7 +4,8 @@
 ** 00. MAIN STYLES
 ** 01. CHATS LIST
 ** 02. MESSAGE LIST
-** 03. GITHUB PAGES
+** 03. TABS LIST
+** 04. GITHUB PAGES
 ******************************/
 
 /* -- 00. MAIN STYLES -- */
@@ -15,6 +16,19 @@
   margin:initial;
   vertical-align:initial;
 }
+
+/* link styles */
+#FAM a {
+  color:#06D;
+  text-decoration:none;
+}
+
+#FAM a:hover {
+  color:#04A;
+  text-decoration:underline;
+}
+
+#FAM a:active { color:#028; }
 
 /* FAM primary styles */
 #FAM, #FAM * { box-sizing:border-box; }
@@ -121,7 +135,7 @@
   right:-1px;
   top:39px;
   min-width:75px;
-  z-index:1;
+  z-index:2;
 }
 
 .FAM-menu-option {
@@ -139,11 +153,13 @@
 /* content */
 #FAM-content {
   height:90%;
-  height:calc(100% - 40px);
+  height:calc(100% - 70px);
   overflow-y:auto;
   overflow-x:hidden;
 }
-#FAM-content.FAM-viewing-topic { height:calc(100% - 80px); }
+#FAM-content.FAM-viewing-topic { height:calc(100% - 110px); }
+#FAM-tab-container[style*="none"] + #FAM-content { height:calc(100% - 40px); }
+#FAM-tab-container[style*="none"] + #FAM-content.FAM-viewing-topic { height:calc(100% - 80px); }
 
 .FAM-content-block {
   font-size:14px;
@@ -164,6 +180,13 @@
   bottom:0;
 }
 
+.FAM-loading i {
+  display:block;
+  margin-bottom:12px;
+}
+
+#FAM-no-tabs { cursor:pointer; }
+
 #FAM-idle {
   color:#FFF;
   background:rgba(0, 0, 0, 0.7);
@@ -171,11 +194,6 @@
   cursor:pointer;
 }
 #FAM-idle:hover { background:rgba(0, 0, 0, 0.6); }
-
-#FAM-idle i {
-  display:block;
-  margin-bottom:12px;
-}
 
 .FAM-button {
   color:#FFF;
@@ -289,11 +307,13 @@
   bottom:40px;
   width:250px;
   height:300px;
+  z-index:2;
 }
 
 #FAM-msg {
   color:#333;
   font-size:14px;
+  font-family:Arial, sans-serif;
   background:#FFF;
   border:none;
   border-left:1px solid #DDD !important;
@@ -456,11 +476,11 @@
 .FAM-msg-text .fa-circle-o-notch { font-size:20px; }
 
 /* message content styles */
-.FAM-msg-text a {
+#FAM .FAM-msg-text a {
   color:inherit;
   text-decoration:underline;
 }
-.FAM-msg-text a:hover { text-decoration:none; }
+#FAM .FAM-msg-text a:hover { text-decoration:none; }
 .FAM-msg-text * { max-width:100%; }
 .FAM-msg-text img { max-height:200px; }
 
@@ -475,7 +495,95 @@
 .FAM-my-msg .FAM-msg-date { text-align:right; }
 
 
-/* -- 03. GITHUB PAGES -- */
+/* -- 03. TABS LIST -- */
+#FAM-tab-container {
+  height:30px;
+  position:relative;
+  border-bottom:1px solid #DDD;
+}
+
+#FAM-tab-add {
+  font-size:18px;
+  text-align:center;
+  border-left:1px solid #DDD;
+  position:absolute;
+  right:0;
+  top:0;
+  width:30px;
+  height:30px;
+  cursor:pointer;
+}
+#FAM-tab-add i { line-height:30px; }
+#FAM-tab-add:hover { color:#39F; }
+
+
+#FAM-tabs {
+  width:80%;
+  width:calc(100% - 30px);
+  white-space:nowrap;
+  overflow:hidden;
+}
+
+#FAM-tabs:hover {
+  overflow-x:auto;
+  position:relative;
+  z-index:1;
+}
+
+.FAM-tab {
+  background:#EEE;
+  border:1px solid #DDD;
+  border-left:none;
+  border-top:none;
+  position:relative;
+  display:inline-block;
+  width:120px;
+  height:30px;
+  line-height:30px;
+  cursor:pointer;
+}
+.FAM-tab:hover { background:#FFF; }
+
+.FAM-tab.FAM-tab-active {
+  font-weight:bold;
+  background:#FFF;
+  cursor:default;
+}
+
+.FAM-tab.FAM-tab-active:after {
+  content:"";
+  background:#39F;
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:-1px;
+  height:4px;
+}
+
+.FAM-tab-name {
+  font-size:12px;
+  display:inline-block;
+  padding:0 3px;
+  width:80%;
+  width:calc(100% - 16px);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.FAM-tab-close {
+  font-size:16px;
+  position:absolute;
+  top:50%;
+  margin-top:-8px !important;
+  right:3px;
+  cursor:pointer;
+}
+
+.FAM-tab-close:hover { color:#F33; }
+
+
+/* -- 04. GITHUB PAGES -- */
 #FAM-version-status i {
   font-size:32px;
   vertical-align:-6px;
