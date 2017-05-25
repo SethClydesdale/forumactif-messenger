@@ -1,5 +1,5 @@
 <div class="FAM-content-block">
-  <div class="FAM-title FAM-center"><a href="https://github.com/SethClydesdale/forumactif-messenger"><i class="fa fa-comments"></i> Forumactif Messenger</a></div>
+  <div class="FAM-title FAM-center"><a href="https://github.com/SethClydesdale/forumactif-messenger"><i class="fa fa-comments"></i> <b>Forum</b>actif <b>Messenger</b></a></div>
 
   <div id="FAM-version-data" class="FAM-center">
     <div id="FAM-version-current" class="FAM-row">
