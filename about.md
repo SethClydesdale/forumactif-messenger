@@ -2,9 +2,9 @@
   <div id="FAM-service-title" class="FAM-title FAM-center"><a href="https://github.com/SethClydesdale/forumactif-messenger"><i class="fa fa-comments"></i> <b>Forum</b>actif <b>Messenger</b></a></div>
 
   <div id="FAM-version-data" class="FAM-center">
-    <div id="FAM-version-current" class="FAM-row">
+    <div id="FAM-version-current" class="FAM-row FAM-center FAM-connected-buttons">
       <span id="FAM-version">{CLIENT_VERSION}</span>
-      <span id="FAM-version-notes"><a href="https://github.com/SethClydesdale/forumactif-messenger/releases">Release Notes</a></span>
+      <span id="FAM-version-notes"><a href="https://github.com/SethClydesdale/forumactif-messenger/releases">Releases</a></span>
     </div>
 
     <div id="FAM-version-card" class="FAM-row">
