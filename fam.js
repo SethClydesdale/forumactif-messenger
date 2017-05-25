@@ -7,11 +7,15 @@
       chat_page : '',
       main_title : 'Select a Group',
       embed : '',
+
       tabs : true,
+      initial_tabs : [],
 
       refresh : 7500,
       timeout : 10*60*1000,
       flood_control : 5000,
+
+      max_attachments : 10,
 
       ignore_announcements : false,
       ignore_firstpost : true,
@@ -32,6 +36,22 @@
         no_tabs_title : 'Open a new tab',
         no_tabs : 'Uh-oh! You have no tabs opened! Click here to open a new one.',
 
+        attach_image : 'Add an Image',
+        attach_gif : 'Add a GIF',
+        attach_video : 'Add a Video',
+        attach_remove : 'Manage Attachments',
+        attach_upload : 'Upload',
+        attach_uploading : 'The image uploader is already open.',
+        attach_searchYT : 'Search YouTube',
+        attach_searchingYT : 'Youtube is already open.',
+        attach_max : 'You have reached the maximum number of attachments for this message.',
+        attach_success : 'Attachment Added!',
+        attach_none : 'There are no attachments',
+
+        giphy_search : 'Search for a GIF...',
+        giphy_searching : 'Searching...',
+        giphy_not_found : 'No results found.',
+
         tooltip_openFAM : 'Forumactif Messenger',
         tooltip_back : 'Click to go back',
         tooltip_menu : 'Open menu',
@@ -51,7 +71,7 @@
         FAM.cache.chat.dataset.hidden = false;
 
         if (!FAM.history.restore() && !FAM.history.log['tab' + FAM.tab.active]) {
-          FAM.tab.add();
+          FAM.tab.initial();
         }
 
       } else {
@@ -105,7 +125,7 @@
 
       // reset the message log
       if (type == 'topic') {
-        FAM.msgLog = {};
+        FAM.message.log = {};
       }
 
       // get the page
@@ -120,7 +140,7 @@
         for (; i < j; i++) {
           // message structure
           if (type == 'topic') {
-            html += FAM.msgLog[a[i].className.replace(/.*?(post--\d+).*/, '$1')] = FAM.message.parse(a[i]);
+            html += FAM.message.log[a[i].className.replace(/.*?(post--\d+).*/, '$1')] = FAM.message.parse(a[i]);
 
           // forum and category structure
           } else {
@@ -135,7 +155,7 @@
                       /t\d+-/.test(a[i].href) ? 'topic' : 'unknown';
 
               html +=
-              '<div class="FAM-chat FAM-' + type2 + '" onclick="FAM.get(\'' + a[i].href + ( type2 == 'topic' ? '?view=newest' : '' ) + '\', \'' + a[i].innerText + '\');">'+
+              '<div class="FAM-chat FAM-' + type2 + '" onclick="FAM.get(\'' + a[i].href + ( type2 == 'topic' ? '?view=newest' : '' ) + '\', this.querySelector(\'.FAM-chat-title\').innerText);">'+
                 '<span class="FAM-chat-icon fa-stack fa-lg">'+
                   '<i class="fa fa-circle fa-stack-2x"></i>'+
                   '<i class="fa fa-' + ( type2 == 'topic' ? 'comments' : 'folder' ) + ' fa-stack-1x fa-inverse"></i>'+
@@ -158,9 +178,9 @@
         if (type == 'topic') {
           FAM.cache.content.innerHTML = html;
           FAM.cache.actions.innerHTML =
-          '<button id="FAM-attachment" type="button" title="' + FAM.config.lang.tooltip_attachments + '"><i class="fa fa-paperclip"></i></button>'+
+          '<button id="FAM-attachment" type="button" onclick="FAM.attachments.open(this);" title="' + FAM.config.lang.tooltip_attachments + '"><i class="fa fa-paperclip"></i><span id="FAM-attachment-total">0</span></button>'+
           '<button id="FAM-emoji" type="button" onclick="FAM.message.emoji(this);" title="' + FAM.config.lang.tooltip_emoji + '"><i class="fa fa-smile-o"></i></button>'+
-          '<textarea id="FAM-msg" placeholder="' + FAM.config.lang.msg_placeholder + '" onkeyup="FAM.message.validate(this.value, event);"></textarea>'+
+          '<textarea id="FAM-msg" placeholder="' + FAM.config.lang.msg_placeholder + '" onkeydown="FAM.message.handleKeys(event);" onkeyup="FAM.message.validate(this.value);"></textarea>'+
           '<button id="FAM-send" type="button" onclick="FAM.message.send();" data-disabled="true" title="' + FAM.config.lang.tooltip_send + '"><i class="fa fa-paper-plane"></i></button>'+
           ( form ? form.outerHTML.replace(/id=".*?"|name=".*?"/, '').replace('<form', '<form name="fampost" style="display:none"') : '' );
 
@@ -216,22 +236,42 @@
       },
 
 
-      // validate a message to make sure that sending it is okay
-      validate : function (message, e) {
-        var send = FAM.cache.actions.querySelector('#FAM-send');
+      // inserts the user @handle into the textarea after clicking a username
+      mention : function (caller) {
+        FAM.message.insert('@"' + caller.innerText + '"', true);
+      },
 
-        if (message && send.dataset.disabled == 'true') {
+
+      // handles key events for the message field
+      handleKeys : function (e) {
+        if (e) {
+          var key = e.key || e.which || e.keyCode;
+
+          // handle ENTER key
+          if ({
+            'Enter' : 1,
+            '13' : 1
+          }[key] && !e.shiftKey) {
+            FAM.cache.actions.querySelector('#FAM-send').dataset.disabled != 'true' && FAM.message.send();
+            e.preventDefault();
+          }
+
+        }
+      },
+
+
+      // validate a message to make sure there's enough content to post it
+      validate : function (message) {
+        message = message || FAM.attachments.list.length || null;
+
+        var send = FAM.cache.actions.querySelector('#FAM-send'),
+            disabled = send.dataset.disabled == 'true';
+
+        if (message && disabled) {
           send.dataset.disabled = false;
 
-        } else if (!message && send.dataset.disabled == 'false') {
+        } else if (!message && !disabled) {
           send.dataset.disabled = true;
-        }
-
-        if (e && FAM.cache.actions.querySelector('#FAM-send').dataset.disabled != 'true' && e.ctrlKey && {
-          'Enter' : 1,
-          '13' : 1
-        }[e.key || e.keyCode]) {
-          FAM.message.send();
         }
       },
 
@@ -245,8 +285,24 @@
         }
 
         var msg = document.getElementById('FAM-msg'),
-            val = msg.value;
+            val = msg.value,
+            attachments = '',
+            i = 0,
+            j = FAM.attachments.list.length;
 
+        // add attachments to message value
+        if (j) {
+          for (; i < j; i++) {
+            attachments += '[tr][td]' + FAM.attachments.list[i] + '[/td][/tr]';
+          }
+
+          val += '\n[table class="FAM-attachment"]' + attachments + '[/table]';
+
+          FAM.attachments.list = [];
+          FAM.cache.actions.querySelector('#FAM-attachment-total').innerText = 0;
+        }
+
+        // reset message field value
         msg.value = '';
         FAM.message.validate();
 
@@ -275,7 +331,7 @@
             FAM.message.scroll();
 
             // wait the specified time before sending another message
-            window.setTimeout(function () {
+            setTimeout(function () {
               FAM.message.sending = false;
             }, FAM.config.flood_control);
           });
@@ -315,11 +371,13 @@
 
           '<div class="FAM-msg-box">'+
             '<div class="FAM-msg-name">'+
-              (pLink ? pLink : '')+
-                (group ? group : '')+
-                  name+
-                (group ? '</strong></span>' : '')+
-              (pLink ? '</a>' : '')+
+              '<span class="FAM-name-mention" onclick="FAM.message.mention(this);">'+
+                (pLink ? pLink : '').replace('<a', '<a onclick="return false;"')+
+                  (group ? group : '')+
+                    name+
+                  (group ? '</strong></span>' : '')+
+                (pLink ? '</a>' : '')+
+              '</span>'+
             '</div>'+
             '<div class="FAM-msg-content">'+
               '<div class="FAM-msg-text">' + ( msg ? msg.innerHTML.replace(/<br>/g, '\n').replace(/^\n+|\n+$|^\s+|\s+$/g, '').replace(/\n/g, '<br>') : '' ) + '</div>'+
@@ -338,15 +396,15 @@
             msg = FAM.message.parse(a[i]);
 
             // check for edited messages and update them
-            if (FAM.msgLog[pid]) {
-              if (FAM.msgLog[pid] != msg) {
-                FAM.msgLog[pid] = msg;
+            if (FAM.message.log[pid]) {
+              if (FAM.message.log[pid] != msg) {
+                FAM.message.log[pid] = msg;
                 FAM.cache.content.querySelector('.FAM-msg.' + pid).outerHTML = msg;
               }
 
             // add in new messages if there are any
             } else {
-              FAM.msgLog[pid] = msg;
+              FAM.message.log[pid] = msg;
               FAM.cache.content.insertAdjacentHTML('beforeend', msg);
               FAM.message.scroll();
             }
@@ -418,7 +476,7 @@
 
       // call the emoji list to the specified element (caller)
       emoji : function (caller) {
-        var active = document.getElementById('FAM-emoji-list'),
+        var active = FAM.cache.actions.querySelector('#FAM-emoji-list'),
             selector;
 
         if (active) {
@@ -456,6 +514,429 @@
           caller.parentNode.insertBefore(selector, caller);
         }
 
+      }
+    },
+
+
+    // attachment methods and data
+    attachments : {
+      list : [], // list of attachments to add
+
+      // opens the attachment drop down
+      open : function (caller) {
+        var active = FAM.cache.actions.querySelector('#FAM-attach-options'),
+            attach;
+
+        if (active) {
+          active.style.display = active.style.display == 'none' ? 'block' : 'none';
+
+        } else {
+          attach = document.createElement('DIV');
+          attach.id = 'FAM-attach-options';
+          attach.className = 'FAM-dropdown';
+          attach.innerHTML =
+          '<div class="FAM-dropdown-title">' + FAM.config.lang.tooltip_attachments + '</div>'+
+          '<div class="FAM-block-option" onclick="FAM.attachments.addImage();"><span class="FAM-option-icon"><i class="fa fa-camera"></i></span> ' + FAM.config.lang.attach_image + '</div>'+
+          '<div class="FAM-block-option" onclick="FAM.attachments.addGIF();"><span class="FAM-option-icon FAM-text-icon">GIF</span> ' + FAM.config.lang.attach_gif + '</div>'+
+          '<div class="FAM-block-option" onclick="FAM.attachments.addVideo();"><span class="FAM-option-icon"><i class="fa fa-film"></i></span> ' + FAM.config.lang.attach_video + '</div>'+
+          '<div class="FAM-block-option" onclick="FAM.attachments.manage();"><span class="FAM-option-icon"><i class="fa fa-wrench"></i></span> ' + FAM.config.lang.attach_remove + '</div>';
+
+          caller.parentNode.insertBefore(attach, caller);
+        }
+      },
+
+
+      // completely deletes the old attachment drop down
+      close : function () {
+        var attach = FAM.cache.actions.querySelector('#FAM-attach-options');
+
+        if (attach) {
+          FAM.cache.actions.removeChild(attach);
+        }
+      },
+
+
+      // go back to the attachments page
+      back : function () {
+        FAM.attachments.close();
+        FAM.attachments.open(FAM.cache.actions.querySelector('#FAM-attachment'));
+      },
+
+
+      // adds an attachment to the attachment list
+      add : function (caller, tag) {
+        if (FAM.attachments.list.length >= FAM.config.max_attachments) {
+          return alert(FAM.config.lang.attach_max);
+        }
+
+        var value = caller.tagName == 'INPUT' ? caller.value :
+                    caller.tagName == 'IMG' ? caller.src :
+                    null;
+
+        // change tags and edit values based on video host
+        if (tag == 'video') {
+          if (/youtube/.test(value)) {
+            tag = 'youtube';
+
+          } else if (/dailymotion/.test(value)) {
+            tag = 'dailymotion';
+            value = value.split('_')[0].split('/').pop();
+
+          } else {
+            tag = 'url';
+          }
+        }
+
+        if (value) {
+          FAM.attachments.list.push('[' + tag + ']' + ( /giphy/.test(value) ? value.replace('200w.gif', 'giphy.gif') : value) + '[/' + tag + ']');
+          FAM.message.validate();
+
+          if (caller.tagName == 'INPUT') {
+            caller.value = '';
+          }
+
+          FAM.cache.actions.querySelector('#FAM-attachment-total').innerText = FAM.attachments.list.length;
+
+          // show success notification so the user knows the attachment was added
+          if (!FAM.cache.actions.querySelector('#FAM-attach-success')) {
+            FAM.cache.actions.querySelector('#FAM-attach-options').insertAdjacentHTML('beforeend',
+              '<div id="FAM-attach-success"><i class="fa fa-check-circle"></i>' + FAM.config.lang.attach_success + '</div>'
+            );
+
+            // remove success message after 300ms
+            setTimeout(function () {
+              var success = FAM.cache.actions.querySelector('#FAM-attach-success');
+
+              if (success) {
+                success.parentNode.removeChild(success);
+              }
+            }, 300);
+          }
+        }
+      },
+
+
+      // remove an attachment from the attachment list
+      remove : function (caller) {
+        var row = caller.parentNode,
+            parent = row.parentNode,
+            index = Array.prototype.indexOf.call(parent.children, row);
+
+        FAM.attachments.list.splice(index, 1);
+        FAM.message.validate();
+        FAM.cache.actions.querySelector('#FAM-attachment-total').innerText = FAM.attachments.list.length;
+
+        parent.removeChild(row);
+
+        if (!parent.children.length) {
+          parent.innerHTML = '<p class="FAM-center">' + FAM.config.lang.attach_none + '</p>';
+        }
+      },
+
+
+      // update the selected attachment when its value changes
+      update : function (caller) {
+        var thumb = caller.previousSibling,
+            row = caller.parentNode,
+            index = Array.prototype.indexOf.call(row.parentNode.children, row),
+            val = caller.value,
+            tag = 'img';
+
+        if (thumb.tagName == 'IMG') {
+          thumb.src = val.replace('giphy.gif', '100w_s.gif');
+
+        } else {
+          if (/youtube/.test(val)) {
+            tag = 'youtube';
+
+          } else if (/dailymotion/.test(val)) {
+            tag = 'dailymotion';
+            val = val.split('_')[0].split('/').pop();
+
+          } else {
+            tag = 'url';
+          }
+
+          thumb.href = (tag == 'dailymotion' ? 'http://www.dailymotion.com/video/' : '') + val;
+          thumb.firstChild.className = thumb.firstChild.className.replace(/fa-.*/,
+            'fa-' + (tag == 'dailymotion' ? 'film' : tag == 'youtube' ? 'youtube-play' : 'external-link')
+          );
+        }
+
+        FAM.attachments.list[index] = '[' + tag + ']' + val + '[/' + tag + ']';
+      },
+
+
+      // opens the image manager for attaching images
+      addImage : function () {
+        var attach = FAM.cache.actions.querySelector('#FAM-attach-options');
+
+        attach.innerHTML =
+        '<div class="FAM-dropdown-inner">'+
+          '<div class="FAM-dropdown-title"><span class="FAM-toolbar-button FAM-dropdown-back" onclick="FAM.attachments.back();"><i class="fa fa-arrow-left"></i></span>' + FAM.config.lang.attach_image + '</div>'+
+          '<div class="FAM-button-input FAM-row">'+
+            '<input type="text" class="FAM-inputbox" placeholder="' + FAM.config.lang.attach_image + '">'+
+            '<button class="FAM-button" onclick="FAM.attachments.add(this.previousSibling, \'img\');"><i class="fa fa-plus"></i></button>'+
+          '</div>'+
+          '<div class="FAM-row">'+
+            '<button id="FAM-upload" class="FAM-button" onclick="FAM.attachments.upload();"><i class="fa fa-upload"></i> ' + FAM.config.lang.attach_upload + '</button>'+
+          '</div>'+
+        '</div>';
+      },
+
+
+      // opens Giphy search for attaching a GIF
+      addGIF : function () {
+        var attach = FAM.cache.actions.querySelector('#FAM-attach-options');
+
+        attach.innerHTML =
+        '<div class="FAM-dropdown-inner">'+
+          '<div class="FAM-dropdown-title"><span class="FAM-toolbar-button FAM-dropdown-back" onclick="FAM.attachments.back();"><i class="fa fa-arrow-left"></i></span>' + FAM.config.lang.attach_gif + '</div>'+
+          '<div class="FAM-row">'+
+            '<input type="text" id="FAM-giphy-search" class="FAM-inputbox" onkeyup="FAM.attachments.giphy.keyHandler(this, event);" placeholder="' + FAM.config.lang.giphy_search + '">'+
+          '</div>'+
+          '<div class="FAM-row">'+
+            '<div id="FAM-giphy-results" onscroll="FAM.attachments.giphy.scrolling(this);"></div>'+
+            '<div id="FAM-giphy-mark"></div>'+
+          '</div>'+
+        '</div>';
+
+        attach.querySelector('#FAM-giphy-search').focus();
+      },
+
+
+      // opens the video manager for attaching videos
+      addVideo : function () {
+        var attach = FAM.cache.actions.querySelector('#FAM-attach-options');
+
+        attach.innerHTML =
+        '<div class="FAM-dropdown-inner">'+
+          '<div class="FAM-dropdown-title"><span class="FAM-toolbar-button FAM-dropdown-back" onclick="FAM.attachments.back();"><i class="fa fa-arrow-left"></i></span>' + FAM.config.lang.attach_video + '</div>'+
+          '<div class="FAM-button-input FAM-row">'+
+            '<input type="text" class="FAM-inputbox" placeholder="' + FAM.config.lang.attach_video + '">'+
+            '<button class="FAM-button" onclick="FAM.attachments.add(this.previousSibling, \'video\');"><i class="fa fa-plus"></i></button>'+
+          '</div>'+
+          '<div class="FAM-row">'+
+            '<button id="FAM-youtube" class="FAM-button" onclick="FAM.attachments.openYoutube();"><i class="fa fa-search"></i> ' + FAM.config.lang.attach_searchYT + '</button>'+
+          '</div>'+
+        '</div>';
+      },
+
+
+      // opens the attachment manager so the user can delete attachments
+      manage : function () {
+        var attach = FAM.cache.actions.querySelector('#FAM-attach-options'),
+            i = 0,
+            j = FAM.attachments.list.length,
+            attachments = '',
+            manager,
+            dmotion,
+            val;
+
+        attach.innerHTML =
+        '<div class="FAM-dropdown-inner">'+
+          '<div class="FAM-dropdown-title"><span class="FAM-toolbar-button FAM-dropdown-back" onclick="FAM.attachments.back();"><i class="fa fa-arrow-left"></i></span>' + FAM.config.lang.attach_remove + '</div>'+
+          '<div id="FAM-attachment-manager"></div>'+
+        '</div>';
+
+        manager = attach.querySelector('#FAM-attachment-manager');
+
+        if (j) {
+          for (attachments = ''; i < j; i++) {
+            val = FAM.attachments.list[i].replace(/\[.*?\]/g, '');
+            dmotion = ( /dailymotion/.test(FAM.attachments.list[i]) ? 'http://www.dailymotion.com/video/' : '' );
+
+            attachments +=
+            '<div id="FAM-attachment-' + i + '" class="FAM-row">'+
+              (/\[img\]/.test(FAM.attachments.list[i]) ?
+                '<img class="FAM-attachment-thumb" src="' + val.replace('giphy.gif', '100w_s.gif') + '" alt="attachment ' + i + '" onmouseover="this.src=this.src.replace(\'100w_s.gif\', \'100w.gif\')" onmouseout="this.src=this.src.replace(\'100w.gif\', \'100w_s.gif\')">' :
+                '<a href="' + dmotion + val + '" class="FAM-attachment-thumb" target="_blank"><i class="fa fa-' + ( dmotion ? 'film' : /youtube/.test(val) ? 'youtube-play' : 'external-link' ) + '"></i></a>'
+              )+
+              '<input class="FAM-inputbox" type="text" value="' + dmotion + val + '" onkeyup="FAM.attachments.update(this);">'+
+              '<span class="FAM-attachment-delete fa-stack" onclick="FAM.attachments.remove(this);">'+
+                '<i class="fa fa-circle fa-stack-2x"></i>'+
+                '<i class="fa fa-times fa-stack-1x fa-inverse"></i>'+
+              '</span>'+
+            '</div>';
+          }
+
+        } else {
+          attachments = '<p class="FAM-center">' + FAM.config.lang.attach_none + '</p>';
+        }
+
+        manager.innerHTML = attachments;
+      },
+
+
+      // opens youtube in a new window
+      openYoutube : function (caller) {
+        if (FAM.attachments.youtube && !FAM.attachments.youtube.closed) {
+          return alert(FAM.config.lang.attach_searchingYT);
+        }
+
+        FAM.attachments.youtube = window.open('https://www.youtube.com/', '', 'scrollbars=yes,resizable=yes,width=780,height=530');
+      },
+
+
+      // call the servimg image uploader
+      upload : function () {
+        if (FAM.attachments.uploader && !FAM.attachments.uploader.closed) {
+          return alert(FAM.config.lang.attach_uploading);
+        }
+
+        var uploader = 'https://www.servimg.com/',
+            settings = 'scrollbars=yes,resizable=yes,width=780,height=530',
+            upload = FAM.cache.actions.querySelector('#FAM-upload');
+
+        upload.onclick = null;
+
+        if (_userdata.session_logged_in) {
+          $.get(FAM.history.log['tab' + FAM.tab.active][FAM.history.log['tab' + FAM.tab.active].length - 1].url, function (data) {
+            var servImgData = {
+              account : data.match(/servImgAccount = '(.*?)'/),
+              id : data.match(/servImgId = '(.*?)'/),
+              f : data.match(/servImgF = '(.*?)'/),
+              mode : data.match(/servImgMode = '(.*?)'/)
+            },
+            authorization = 'multiupload.php?',
+            denied = false, i;
+
+            for (i in servImgData) {
+              if (servImgData[i] && servImgData[i][0] && servImgData[i][1]) {
+                authorization += i + '=' + servImgData[i][1] + '&';
+              } else {
+                denied = true;
+                break;
+              }
+            }
+
+            FAM.attachments.uploader = window.open(uploader + (denied ? '' : authorization.slice(0, authorization.length - 1)), '', settings);
+            upload.onclick = FAM.attachments.upload;
+          });
+        } else {
+          FAM.attachments.uploader = window.open(uploader, '', settings);
+          upload.onclick = FAM.attachments.upload;
+        }
+      },
+
+
+      // giphy search methods and data
+      giphy : {
+        key : 'dc6zaTOxFJmzC', // PUBLIC BETA KEY
+        limit : 26, // max image results
+        delay : 200, // delay before searches commence (200ms)
+
+        // search for a GIPHY gif
+        search : function (query) {
+          if (FAM.attachments.giphy.timeout) {
+            FAM.attachments.giphy.abort(); // abort ongoing searches and requests
+          }
+
+          if (query) {
+
+            // set a small timeout in case the user is still typing
+            FAM.attachments.giphy.timeout = setTimeout(function () {
+              FAM.attachments.giphy.reset(true, FAM.config.lang.giphy_searching);
+              FAM.attachments.giphy.query = encodeURIComponent(query);
+
+              FAM.attachments.giphy.request = $.get('http://api.giphy.com/v1/gifs/search?q=' + FAM.attachments.giphy.query + '&limit=' + FAM.attachments.giphy.limit + '&rating=pg-13&api_key=' + FAM.attachments.giphy.key, function(data) {
+                // update global data such as page offsets for scrolling
+                FAM.attachments.giphy.request = null;
+                FAM.attachments.giphy.offset = data.pagination.offset + FAM.attachments.giphy.limit;
+                FAM.attachments.giphy.offset_total = data.pagination.total_count;
+
+                FAM.attachments.giphy.reset(true); // reset HTML content
+                FAM.attachments.giphy.addGIF(data); // send data to be parsed
+              });
+
+            }, FAM.attachments.giphy.delay);
+
+          } else {
+            FAM.attachments.giphy.reset(true);
+          }
+        },
+
+
+        // abort ongoing searches and requests
+        abort : function () {
+          if (FAM.attachments.giphy.timeout) {
+            window.clearInterval(FAM.attachments.giphy.timeout);
+            FAM.attachments.giphy.timeout = null;
+          }
+
+          if (FAM.attachments.giphy.request) {
+            FAM.attachments.giphy.request.abort();
+            FAM.attachments.giphy.request = null;
+          }
+        },
+
+
+        // add gifs to the result list
+        addGIF : function (data, loadMore) {
+          // setup data and begin parsing results
+          var gif = data.data,
+              i = 0,
+              j = gif.length,
+              list = $('<div class="FAM-giphy-imagelist" />')[0];
+
+          if (j) {
+            for (; i < j; i++) {
+              list.appendChild($('<img id="' + gif[i].id + '" src="' + gif[i].images.fixed_width.url + '" />').click(function() {
+                FAM.attachments.add(this, 'img');
+              })[0]);
+            }
+          } else if (!loadMore) {
+            FAM.attachments.giphy.reset(true, FAM.config.lang.giphy_not_found);
+          }
+
+          // add results to the result list
+          $('#FAM-giphy-results', FAM.cache.actions).append(list);
+        },
+
+
+        // listen to the scrolling so we can add more gifs when the user reaches the bottom
+        scrolling : function (that) {
+          if (that.scrollHeight - that.scrollTop === that.clientHeight) {
+            FAM.attachments.giphy.loadMore();
+          }
+        },
+
+
+        // load more results once the user has scrolled through the last results
+        loadMore : function () {
+          if (FAM.attachments.giphy.offset < FAM.attachments.giphy.offset_total) {
+            FAM.attachments.giphy.request = $.get('http://api.giphy.com/v1/gifs/search?q=' + FAM.attachments.giphy.query + '&offset=' + FAM.attachments.giphy.offset + '&limit=' + FAM.attachments.giphy.limit + '&rating=pg-13&api_key=' + FAM.attachments.giphy.key, function (data) {
+              FAM.attachments.giphy.request = null;
+              FAM.attachments.giphy.offset = data.pagination.offset + FAM.attachments.giphy.limit;
+              FAM.attachments.giphy.offset_total = data.pagination.total_count;
+
+              FAM.attachments.giphy.addGIF(data, true); // send data to be parsed
+            });
+          }
+        },
+
+
+        // reset the dropdown fields
+        reset : function (resultsOnly, newContent) {
+          $('#FAM-giphy-results', FAM.cache.actions).html(newContent ? newContent : '');
+
+          if (!resultsOnly) {
+            $('#FAM-giphy-search', FAM.cache.actions).val('');
+          }
+        },
+
+
+        // key handler for search input
+        keyHandler : function (caller, e) {
+          var k = e.which || e.keyCode;
+
+          // ignore specific key inputs to prevent unnecessary requests
+          if (k && (k == 16 || k == 17 || k == 18 || k == 20 || k == 37 || k == 38 || k == 39 || k == 40)) {
+            return;
+          } else {
+            FAM.attachments.giphy.search(caller.value);
+          }
+        }
       }
     },
 
@@ -553,20 +1034,22 @@
           '</div>';
 
           $.get('https://raw.githubusercontent.com/SethClydesdale/forumactif-messenger/master/about.md', function (data) {
-            FAM.cache.content.innerHTML = data.replace(/<a/g, '<a target="_blank"')
+            FAM.cache.content.innerHTML = data.replace(/\n\s*?</g, '<')
+                                              .replace(/<a/g, '<a target="_blank"')
+                                              .replace('<textarea', '<textarea style="display:none;"')
                                               .replace('{CLIENT_VERSION}', '<a href="https://github.com/SethClydesdale/forumactif-messenger/releases/tag/' + FAM.version + '" target="_blank">' + FAM.version + '</a>');
 
             var status = FAM.cache.content.querySelector('#FAM-version-status'),
-                code = FAM.cache.content.querySelector('#FAM-update-code');
+                icon = FAM.cache.content.querySelector('#FAM-version-status-icon');
 
             if (FAM.version != FAM.cache.content.querySelector('#FAM-version-github').innerText) {
-              status.innerHTML = '<i class="fa fa-exclamation-circle"></i> A new version of Forumactif Messenger is available!';
-              code.value = 'Click the UPDATE button to get the latest release from Github';
+              status.innerHTML = 'A new version of Forumactif Messenger is available!';
+              icon.innerHTML = '<i class="fa fa-exclamation-circle"></i>';
               FAM.cache.content.querySelector('#FAM-update').innerHTML = '<i class="fa fa-arrow-circle-up"></i> Update';
 
             } else {
-              status.innerHTML = '<i class="fa fa-check-circle"></i> Forumactif Messenger is up to date!';
-              code.value = 'Click the SYNC button to sync Forumactif Messenger with the latest release from Github.'
+              status.innerHTML = 'Forumactif Messenger is up to date!';
+              icon.innerHTML = '<i class="fa fa-check-circle"></i>';
             }
           });
         },
@@ -580,6 +1063,7 @@
             var config = data.replace(/[\s\S]*?(config.*?:.*?\{[\s\S]*?\},)[\s\S]*/, '$1').replace(/config.*?:/, 'window.fam_new_config = ').replace(/,$/, ';'),
                 lang = data.replace(/[\s\S]*?(lang.*?:.*?\{[\s\S]*?\})[\s\S]*/, '$1').replace(/lang.*?:/, 'window.fam_new_lang = '),
                 script = document.createElement('SCRIPT'),
+                update = FAM.cache.content.querySelector('#FAM-update-code'),
                 k;
 
             script.type = 'text/javascript';
@@ -598,8 +1082,14 @@
               }
             }
 
-            FAM.cache.content.querySelector('#FAM-update').outerHTML = '<p>Replace your current Forumactif Messenger script with the one below. It should be applied in <strong>Admin Panel > Modules > JavaScript codes management</strong>.</p>';
-            FAM.cache.content.querySelector('#FAM-update-code').value = data.replace(/config.*?:.*?\{[\s\S]*?\},/, 'config : ' + JSON.stringify(FAM.config, null, 2) + ',');
+            FAM.cache.content.querySelector('#FAM-update').outerHTML =
+            '<div class="FAM-row">'+
+              'Replace your current Forumactif Messenger script with the one below.<br>'+
+              'It should be applied in <strong>Admin Panel > Modules > JavaScript codes management</strong>.'+
+            '</div>';
+
+            update.value = data.replace(/config.*?:.*?\{[\s\S]*?\},/, 'config : ' + JSON.stringify(FAM.config, null, 2) + ',');
+            update.style.display = '';
           });
         }
       },
@@ -724,11 +1214,35 @@
       active : 0, // currently active tab
       total : 0, // total tabs created (used for assigning unique ids)
 
+      // sets up the initial tabs for Forumactif Messenger
+      initial : function () {
+        FAM.tab.add(); // initial chat_page tab
+
+        for (var i = 0, j = FAM.config.initial_tabs.length, id, title; i < j; i++) {
+          id = ++FAM.tab.total; // unique tab id
+
+          // initial history entry
+          FAM.history.log['tab' + id] = [{
+            url : FAM.config.chat_page,
+            title : FAM.config.main_title
+          }];
+
+          // custom history entry
+          FAM.config.initial_tabs[i].url = FAM.config.initial_tabs[i].url || '';
+          FAM.config.initial_tabs[i].title = FAM.config.initial_tabs[i].title || 'Tab ' + id;
+          FAM.history.log['tab' + id].push(FAM.config.initial_tabs[i]);
+
+          // creates a new tab w/the custom history entry via the "restore" method
+          FAM.tab.add(id, FAM.config.initial_tabs[i].title);
+        }
+      },
+
 
       // add a new tab
       add : function (restore, title) {
         var id = restore || ++FAM.tab.total;
 
+        // general tab markup
         FAM.cache.tabs.insertAdjacentHTML('beforeend',
           '<div id="FAM-tab-' + id + '" class="FAM-tab">'+
             '<span class="FAM-tab-name" onclick="FAM.tab.focus(' + id + ')">' + ( title ? title : FAM.config.lang.loading ) + '</span>'+
@@ -736,7 +1250,7 @@
           '</div>'
         );
 
-
+        // doesn't log history or focus the tab if it was "restored" from localStorage
         if (!restore) {
           FAM.history.log['tab' + id] = [];
           FAM.tab.focus(id);
@@ -821,7 +1335,7 @@
             frag = document.createDocumentFragment();
 
         chat.id = 'FAM';
-        chat.className = FAM.config.embed ? 'FAM-embeded' : '';
+        chat.className = FAM.config.embed ? 'FAM-embedded' : '';
         chat.dataset.hidden = FAM.config.embed ? false : true;
         chat.innerHTML =
         '<div id="FAM-toolbar">'+
@@ -959,10 +1473,11 @@
           ][FAM.fVersion]
         };
 
-        (FAM.config.embed ? document.querySelector(FAM.config.embed) : document.body).appendChild(frag);
+        var embed = FAM.config.embed ? document.querySelector(FAM.config.embed) : null;
+        (embed ? embed : document.body).appendChild(frag);
 
         if (FAM.config.embed) {
-          !FAM.history.restore() && FAM.tab.add();
+          !FAM.history.restore() && FAM.tab.initial();
         }
 
         delete FAM.init;
@@ -990,7 +1505,7 @@
 
     },
 
-    version : 'v0.4.0'
+    version : 'v0.5.0'
   };
 
 
@@ -1004,8 +1519,9 @@
   $(document).on('mousedown', function (e) {
     // drop down should be the first element in the arrays, other elements are those that should be excluded
     var close = [
-      [FAM.cache.chat.querySelector('#FAM-menu'), FAM.cache.chat.querySelector('#FAM-menu-toggle')],
-      [FAM.cache.chat.querySelector('#FAM-emoji-list'), FAM.cache.chat.querySelector('#FAM-emoji')]
+      [FAM.cache.toolbar.querySelector('#FAM-menu'), FAM.cache.toolbar.querySelector('#FAM-menu-toggle')],
+      [FAM.cache.actions.querySelector('#FAM-emoji-list'), FAM.cache.actions.querySelector('#FAM-emoji')],
+      [FAM.cache.actions.querySelector('#FAM-attach-options'), FAM.cache.actions.querySelector('#FAM-attachment')]
     ], i = 0, j = close.length, a;
 
     for (; i < j; i++) {
@@ -1024,5 +1540,5 @@
 
 
   // FAM styles
-  $('head').append('<style>@import url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css);#modernbb #FAM i.fa,#modernbb #FAM-button i.fa,#modernbb #FAM-send{margin:initial;vertical-align:initial}#FAM a{color:#06d;text-decoration:none}#FAM a:hover{color:#04a;text-decoration:underline}#FAM a:active{color:#028}#FAM,#FAM *{box-sizing:border-box}#FAM{color:#333;font-size:13px;font-family:Arial,sans-serif;background:#fff;border:1px solid #ddd;position:fixed;height:70%;width:40%;min-height:400px;min-width:300px;right:3px;z-index:99999;visibility:visible;opacity:1;bottom:35px;transition:500ms}#FAM[data-hidden=true]{visibility:hidden;opacity:0;bottom:-100%}#FAM.FAM-embeded{position:relative;bottom:0;right:0;width:100%;height:400px;margin:12px 0;z-index:1}#FAM-button,#FAM-toolbar{color:#fff;background:#39f}#FAM-button{font-size:18px;text-align:center;position:fixed;width:30px;right:3px;bottom:3px;cursor:pointer;z-index:99999;height:30px}#FAM-button i,#FAM-tab-add i{line-height:30px}#FAM-button:hover{background-color:#28e}#FAM-button:active{background-color:#17d}#FAM-toolbar{border-bottom:1px solid #28e;height:40px;margin:-1px -1px 0}.FAM-maintitle{color:#fff;font-size:18px;text-align:center;width:70%;margin:0 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.FAM-toolbar-button{color:#fff;font-size:24px;position:absolute;top:-1px;height:40px;cursor:pointer}#FAM-toolbar,.FAM-toolbar-button i{line-height:40px}.FAM-toolbar-button i:hover{color:#eee}.FAM-toolbar-button i:active{color:#ddd}#FAM-back{left:10px}#FAM-menu-toggle{right:10px}#FAM-menu{color:#666;background:#fff;border:1px solid #ccc;position:absolute;right:-1px;top:39px;min-width:75px;z-index:2}.FAM-menu-option{font-size:30px;text-align:center;padding:4px;cursor:pointer}.FAM-menu-option:hover{color:#333}.FAM-menu-option:active{color:#000}#FAM-back[style*=none]~#FAM-menu .FAM-menu-option:first-child{display:none}#FAM-content{height:90%;height:calc(100% - 70px);overflow-y:auto;overflow-x:hidden}#FAM-content.FAM-viewing-topic{height:calc(100% - 110px)}#FAM-tab-container[style*=none]+#FAM-content{height:calc(100% - 40px)}#FAM-tab-container[style*=none]+#FAM-content.FAM-viewing-topic{height:calc(100% - 80px)}.FAM-content-block{font-size:14px;padding:12px}.FAM-loading{font-size:18px;font-weight:700;display:flex;justify-content:center;align-items:center;text-align:center;position:absolute;top:0;left:0;right:0;bottom:0}.FAM-loading i{display:block;margin-bottom:12px}#FAM-no-tabs{cursor:pointer}#FAM-idle,.FAM-button{color:#fff;cursor:pointer}#FAM-idle{background:rgba(0,0,0,.7);transition:300ms}#FAM-idle:hover{background:rgba(0,0,0,.6)}.FAM-button{font-size:16px;font-weight:700;text-transform:uppercase;background:#39f;border:none;border-radius:4px;display:block;height:40px;padding:0 12px;margin:3px auto;outline:none}.FAM-button:hover{background:#28e}.FAM-button:active{background:#17d}#FAM .FAM-inputbox{color:#333;font-size:14px;font-family:Arial,sans-serif;background:#fff;border:1px solid #ddd;border-radius:4px;padding:8px;width:100%;cursor:text;outline:none}#FAM textarea.FAM-inputbox{height:150px;resize:none}#FAM .FAM-inputbox:hover{border-color:#ccc}#FAM .FAM-inputbox:focus{border-color:#39f}.FAM-center{text-align:center}.FAM-row{margin:12px 0}#FAM ::-webkit-scrollbar{width:8px;height:8px}#FAM ::-webkit-scrollbar-track{background-color:#ddd}#FAM ::-webkit-scrollbar-thumb{background-color:rgba(0,0,0,.1);border:none}#FAM ::-webkit-scrollbar-button:single-button{height:0;width:0}#FAM ::-webkit-scrollbar-thumb:hover{background-color:rgba(0,0,0,.2)}#FAM ::-webkit-scrollbar-thumb:active{background-color:rgba(0,0,0,.3)}#FAM-actions{height:40px;border-top:1px solid #ddd;display:none}.FAM-viewing-forum+#FAM-actions,.FAM-viewing-topic+#FAM-actions{display:block}.FAM-viewing-forum+#FAM-actions{height:0}#FAM-new-topic{position:absolute;right:8px;bottom:3px;cursor:pointer}#FAM-new-topic .fa-plus{line-height:57px}#FAM-new-topic .fa-circle{color:#39f}#FAM-new-topic:hover .fa-circle{color:#28e}#FAM-new-topic:active .fa-circle{color:#17d}#FAM-actions button{color:#333;font-size:18px;background:#fff;border:none;border-left:1px solid #ddd;height:40px;width:40px;cursor:pointer;outline:none}#FAM-actions button:first-child{border:none}#FAM-actions button:hover{background:#eee}#FAM-actions button:active{background:#ddd}#FAM-actions button[data-disabled=true]{pointer-events:none}#FAM-actions button[data-disabled=true]>*{opacity:.5}#FAM-actions .FAM-dropdown{background:#fff;border:1px solid #ddd;position:absolute;left:0;bottom:40px;width:250px;height:300px;z-index:2}#FAM-msg{color:#333;font-size:14px;font-family:Arial,sans-serif;background:#fff;border:none;border-left:1px solid #ddd!important;height:40px;width:calc(100% - 120px);margin:0;padding:6px;vertical-align:top;outline:none;resize:none}.FAM-chat{color:#333;border-bottom:2px solid #ddd;position:relative;padding:12px;height:80px;cursor:pointer}.FAM-chat:hover{background-color:#eee}.FAM-chat-icon{position:absolute;left:1px;bottom:0;z-index:1}.FAM-chat-icon .fa-circle{color:#999}.FAM-chat-avatar{position:absolute;left:10px;top:50%;margin-top:-20px;height:40px;width:40px;overflow:hidden}.FAM-chat-avatar img,.FAM-msg-avatar img{height:100%;width:100%}.FAM-chat-date,.FAM-chat-title{position:absolute;left:0;width:100%;padding:0 12px 0 60px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.FAM-chat-title{font-size:14px;font-weight:700;top:20px}.FAM-chat-date{bottom:20px}.FAM-msg{position:relative;padding:12px}.FAM-msg:after{content:"";display:table;clear:both}.FAM-msg-avatar{height:40px;width:40px;margin-top:16px;overflow:hidden;float:left}.FAM-my-msg .FAM-msg-avatar{margin-top:0;float:right}.FAM-msg-box{float:right;width:80%;width:calc(100% - 40px);padding-left:15px}.FAM-my-msg .FAM-msg-box{float:left;padding:0 15px 0 0}.FAM-msg-content{color:#000;background:#ddd;border-radius:4px;padding:8px 12px;margin:3px 0;min-height:36px;max-width:80%;position:relative;float:left}.FAM-msg-content:before{content:"";height:0;width:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-right:10px solid #ddd;position:absolute;top:13px;left:-10px}.FAM-my-msg .FAM-msg-content{color:#fff;background:#07c;float:right}.FAM-my-msg .FAM-msg-content:before{border-right:none;border-left:10px solid #07c;top:12px;left:auto;right:-10px}.FAM-msg-text{font-size:14px;line-height:20px;white-space:pre-wrap;word-wrap:break-word}.FAM-msg-text .fa-circle-o-notch{font-size:20px}#FAM .FAM-msg-text a{color:inherit;text-decoration:underline}#FAM .FAM-msg-text a:hover{text-decoration:none}.FAM-msg-text *{max-width:100%}.FAM-msg-text img{max-height:200px}.FAM-msg-date{clear:both}.FAM-msg-date,.FAM-msg-name{font-size:12px;padding:0 3px;width:100%}.FAM-my-msg .FAM-msg-name{display:none}.FAM-my-msg .FAM-msg-date{text-align:right}#FAM-tab-container{height:30px;position:relative;border-bottom:1px solid #ddd}#FAM-tab-add{font-size:18px;text-align:center;border-left:1px solid #ddd;position:absolute;right:0;top:0;width:30px;height:30px;cursor:pointer}#FAM-tab-add:hover,#FAM-version-status i.fa-check-circle{color:#39f}#FAM-tabs{width:80%;width:calc(100% - 30px);white-space:nowrap;overflow:hidden}#FAM-tabs:hover{overflow-x:auto;position:relative;z-index:1}.FAM-tab{background:#eee;border:1px solid #ddd;border-left:none;border-top:none;position:relative;display:inline-block;width:120px;height:30px;line-height:30px;cursor:pointer}.FAM-tab:hover{background:#fff}.FAM-tab.FAM-tab-active{font-weight:700;background:#fff;cursor:default}.FAM-tab.FAM-tab-active:after{content:"";background:#39f;position:absolute;left:0;right:0;bottom:-1px;height:4px}.FAM-tab-name{font-size:12px;display:inline-block;padding:0 3px;width:80%;width:calc(100% - 16px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.FAM-tab-close{font-size:16px;position:absolute;top:50%;margin-top:-8px!important;right:3px;cursor:pointer}.FAM-tab-close:hover{color:#f33}#FAM-version-status i{font-size:32px;vertical-align:-6px;margin-right:3px}#FAM-version-status i.fa-exclamation-circle{color:#f93}#FAM-creator-info{text-align:center;margin-top:30px}#FAM-creator-info i,#FAM-update-help i{font-size:24px;vertical-align:-3px}</style>');
+  $('head').append('<style>@import url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css);#modernbb #FAM i.fa,#modernbb #FAM-button i.fa,#modernbb #FAM-send{margin:initial;vertical-align:initial}#FAM a{color:#06d;text-decoration:none}#FAM a:hover{color:#04a;text-decoration:underline}#FAM a:active{color:#028}#FAM,#FAM *{box-sizing:border-box}#FAM{color:#333;font-size:13px;font-family:Arial,sans-serif;background:#fff;border:1px solid #ddd;position:fixed;height:70%;width:40%;min-height:400px;min-width:300px;right:3px;z-index:99999;visibility:visible;opacity:1;bottom:35px;transition:500ms}#FAM[data-hidden=true]{visibility:hidden;opacity:0;bottom:-100%}#FAM.FAM-embedded{position:relative;bottom:0;right:0;width:100%;height:500px;margin:12px 0;z-index:1}#FAM-button,#FAM-toolbar{color:#fff;background:#39f}#FAM-button{font-size:18px;text-align:center;position:fixed;width:30px;right:3px;bottom:3px;cursor:pointer;z-index:99999;height:30px}#FAM-button i{line-height:30px}#FAM-button:hover{background-color:#28e}#FAM-button:active{background-color:#17d}#FAM-toolbar{border-bottom:1px solid #28e;height:40px;margin:-1px -1px 0}.FAM-maintitle{color:#fff;font-size:18px;text-align:center;width:70%;margin:0 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.FAM-toolbar-button{color:#fff;font-size:24px;position:absolute;top:-1px;height:40px;cursor:pointer}#FAM-toolbar,.FAM-toolbar-button i{line-height:40px}.FAM-toolbar-button i:hover{color:#eee}.FAM-toolbar-button i:active{color:#ddd}#FAM-back{left:10px}#FAM-menu-toggle{right:10px}#FAM-menu{color:#666;background:#fff;border:1px solid #ccc;position:absolute;right:-1px;top:39px;min-width:75px;z-index:2}.FAM-menu-option{font-size:30px;text-align:center;padding:4px;cursor:pointer}.FAM-menu-option:hover{color:#333}.FAM-menu-option:active{color:#000}#FAM-back[style*=none]~#FAM-menu .FAM-menu-option:first-child{display:none}#FAM-content{height:90%;height:calc(100% - 70px);overflow-y:auto;overflow-x:hidden}#FAM-content.FAM-viewing-topic{height:calc(100% - 110px)}#FAM-tab-container[style*=none]+#FAM-content{height:calc(100% - 40px)}#FAM-tab-container[style*=none]+#FAM-content.FAM-viewing-topic{height:calc(100% - 80px)}.FAM-content-block{font-size:14px;padding:12px}.FAM-loading{font-size:18px;font-weight:700;display:flex;justify-content:center;align-items:center;text-align:center;position:absolute;top:0;left:0;right:0;bottom:0}.FAM-loading i{display:block;margin-bottom:12px}#FAM-no-tabs{cursor:pointer}#FAM-idle,.FAM-button{color:#fff;cursor:pointer}#FAM-idle{background:rgba(0,0,0,.7);z-index:10;transition:300ms}#FAM-idle:hover{background:rgba(0,0,0,.6)}.FAM-button{font-size:16px;font-weight:700;text-transform:uppercase;background:#39f;border:none;border-radius:4px;display:block;height:40px;padding:0 12px;margin:3px auto;outline:none}.FAM-button:hover{background:#28e}.FAM-button:active{background:#17d}#FAM .FAM-inputbox{color:#333;font-size:14px;font-family:Arial,sans-serif;background:#fff;border:1px solid #ddd;border-radius:4px;padding:8px;width:100%;vertical-align:baseline;cursor:text;outline:none}#FAM textarea.FAM-inputbox{height:150px;resize:none}#FAM .FAM-inputbox:hover{border-color:#ccc}#FAM .FAM-inputbox:focus{border-color:#39f}#FAM .FAM-button-input .FAM-inputbox{width:79%;width:calc(100% - 40px);height:40px;margin:0;border-radius:4px 0 0 4px}#FAM .FAM-button-input .FAM-button{font-size:24px;vertical-align:-4px;width:40px;height:40px;display:inline-block;margin:0;padding:0;border-radius:0 4px 4px 0}.FAM-title{font-size:24px;font-weight:700;text-transform:uppercase;margin-bottom:12px}.FAM-title a{text-decoration:none!important}.FAM-title i{font-size:36px;vertical-align:-2px;margin-right:3px}#FAM .FAM-connected-buttons a{color:#333;background:#fff;border:1px solid #ddd;display:inline-block;height:30px;line-height:28px;padding:0 12px;margin-left:-1px;text-decoration:none}#FAM .FAM-connected-buttons a:hover{background:#eee;border-color:#ccc;position:relative}#FAM .FAM-connected-buttons a:active{background:#ddd;border-color:#bbb;position:relative}#FAM .FAM-connected-buttons>a:first-child,#FAM .FAM-connected-buttons>span:first-child>a{border-radius:4px 0 0 4px;margin-left:0}#FAM .FAM-connected-buttons>a:last-child,#FAM .FAM-connected-buttons>span:last-child>a{border-radius:0 4px 4px 0}#FAM .FAM-connected-buttons i{font-size:20px;margin-right:3px;vertical-align:-2px}.FAM-center{text-align:center}.FAM-row{margin:12px 0}#FAM ::-webkit-scrollbar{width:8px;height:8px}#FAM ::-webkit-scrollbar-track{background-color:#ddd}#FAM ::-webkit-scrollbar-thumb{background-color:rgba(0,0,0,.1);border:none}#FAM ::-webkit-scrollbar-button:single-button{height:0;width:0}#FAM ::-webkit-scrollbar-thumb:hover{background-color:rgba(0,0,0,.2)}#FAM ::-webkit-scrollbar-thumb:active{background-color:rgba(0,0,0,.3)}#FAM-actions{height:40px;border-top:1px solid #ddd;display:none}.FAM-viewing-forum+#FAM-actions,.FAM-viewing-topic+#FAM-actions{display:block}.FAM-viewing-forum+#FAM-actions{height:0}#FAM-new-topic{position:absolute;right:8px;bottom:3px;cursor:pointer}#FAM-new-topic .fa-plus{line-height:57px}#FAM-new-topic .fa-circle{color:#39f}#FAM-new-topic:hover .fa-circle{color:#28e}#FAM-new-topic:active .fa-circle{color:#17d}#FAM-actions>button{color:#333;font-size:18px;background:#fff;border:none;border-left:1px solid #ddd;height:40px;width:40px;cursor:pointer;outline:none}#FAM-actions>button:hover{background:#eee}#FAM-actions>button:active{background:#ddd}#FAM-actions>button[data-disabled=true]{pointer-events:none}#FAM-actions>button[data-disabled=true]>*{opacity:.5}#FAM-actions>button#FAM-attachment{border:none;position:relative}#FAM-attachment-total{color:#fff;font-size:12px;font-weight:700;background:#39f;border-radius:4px;position:absolute;bottom:1px;left:1px;padding:1px 3px}#FAM-attach-success,.FAM-dropdown-title{color:#fff;font-weight:700;text-align:center;height:40px;line-height:40px;padding:0 6px}#FAM-attach-success{background:#8b5;position:absolute;top:-1px;left:-1px;right:-1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:16px}#FAM-attach-success i{font-size:26px;margin-right:6px;vertical-align:-3px}#FAM-actions .FAM-dropdown{background:#fff;border:1px solid #ddd;position:absolute;left:0;bottom:40px;width:300px;height:400px;z-index:2}.FAM-dropdown .FAM-dropdown-inner{padding:6px}.FAM-dropdown-title{font-size:18px;background:#39f;margin:-1px -1px 0}.FAM-dropdown-back{left:3px}.FAM-dropdown-inner .FAM-dropdown-title{margin:-7px -7px 12px}.FAM-block-option{color:#666;font-size:16px;font-weight:700;border-bottom:1px solid #ddd;width:100%;height:40px;line-height:40px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}.FAM-block-option:hover{color:#333;background:#eee}.FAM-block-option:active{color:#000;background:#ddd}.FAM-option-icon{font-size:20px;font-weight:400;text-align:center;display:inline-block;width:50px;height:40px;line-height:40px;float:left}.FAM-option-icon i{line-height:40px}.FAM-option-icon.FAM-text-icon{font-size:18px;font-weight:700;font-stretch:condensed}#FAM-giphy-results{height:260px;margin:10px auto;text-align:center;overflow-x:hidden;overflow-y:auto}.FAM-giphy-imagelist{line-height:0;column-count:2;column-gap:3px}.FAM-giphy-imagelist img{width:100%;margin-bottom:3px;cursor:pointer}#FAM #FAM-giphy-mark{background:url(http://i35.servimg.com/u/f35/18/21/60/73/powere11.png) no-repeat 50% 50%!important;height:22px!important;width:100%!important;min-width:200px!important;display:block!important;visibility:visible!important;opacity:1!important}#FAM-attachment-manager{height:340px;overflow-y:auto;overflow-x:hidden}#FAM-attachment-manager .FAM-inputbox{width:65%}.FAM-attachment-thumb{text-align:center;border:1px solid #ddd;border-radius:4px;display:inline-block;width:50px;height:50px;margin-right:6px;object-fit:cover;vertical-align:-20px}a.FAM-attachment-thumb{vertical-align:-5px}.FAM-attachment-thumb i{font-size:24px;line-height:50px}.FAM-attachment-delete{margin-left:6px;cursor:pointer}.FAM-attachment-delete:hover .fa-circle{color:#f33}#FAM-msg{color:#333;font-size:14px;font-family:Arial,sans-serif;background:#fff;border:none;border-left:1px solid #ddd!important;height:40px;width:calc(100% - 120px);margin:0;padding:6px;vertical-align:top;outline:none;resize:none}.FAM-chat{color:#333;border-bottom:2px solid #ddd;position:relative;padding:12px;height:80px;cursor:pointer}.FAM-chat:hover{background-color:#eee}.FAM-chat-icon{position:absolute;left:1px;bottom:0;z-index:1}.FAM-chat-icon .fa-circle{color:#999}.FAM-chat-avatar{position:absolute;left:10px;top:50%;margin-top:-20px;height:40px;width:40px;overflow:hidden}.FAM-chat-avatar img,.FAM-msg-avatar img{height:100%;width:100%}.FAM-chat-date,.FAM-chat-title{position:absolute;left:0;width:100%;padding:0 12px 0 60px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.FAM-chat-title{font-size:14px;font-weight:700;top:20px}.FAM-chat-date{bottom:20px}.FAM-msg{position:relative;padding:12px}.FAM-msg:after{content:"";display:table;clear:both}.FAM-msg-avatar{height:40px;width:40px;margin-top:16px;overflow:hidden;float:left}.FAM-my-msg .FAM-msg-avatar{margin-top:0;float:right}.FAM-msg-box{float:right;width:80%;width:calc(100% - 40px);padding-left:15px}.FAM-my-msg .FAM-msg-box{float:left;padding:0 15px 0 0}.FAM-msg-content{color:#000;background:#ddd;border-radius:4px;padding:8px 12px;margin:3px 0;min-height:36px;max-width:80%;position:relative;float:left}.FAM-msg-content:before{content:"";height:0;width:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-right:10px solid #ddd;position:absolute;top:13px;left:-10px}.FAM-my-msg .FAM-msg-content{color:#fff;background:#07c;float:right}.FAM-my-msg .FAM-msg-content:before{border-right:none;border-left:10px solid #07c;top:12px;left:auto;right:-10px}.FAM-msg-text{font-size:14px;line-height:20px;white-space:pre-wrap;word-wrap:break-word}.FAM-msg-text .fa-circle-o-notch{font-size:20px}#FAM .FAM-msg-text a{color:inherit;text-decoration:underline}#FAM .FAM-msg-text a:hover{text-decoration:none}.FAM-msg-text *{max-width:100%}.FAM-msg-text img{max-height:200px}.FAM-msg-date{clear:both}.FAM-msg-date,.FAM-msg-name{font-size:12px;padding:0 3px;width:100%}.FAM-name-mention{cursor:pointer}.FAM-my-msg .FAM-msg-name{display:none}.FAM-my-msg .FAM-msg-date{text-align:right}.FAM-msg-text .FAM-attachment,.FAM-msg-text .FAM-attachment *{display:block}.FAM-msg-text .FAM-attachment tbody{line-height:0;column-count:2;column-gap:5px}.FAM-msg-text .FAM-attachment tr{background:#fff;width:100%;max-height:200px;padding:3px;margin-bottom:5px;border-radius:4px;overflow:hidden;-webkit-column-break-inside:avoid;page-break-inside:avoid;break-inside:avoid}.FAM-msg-text .FAM-attachment tr:only-child{column-span:all;margin:0}.FAM-msg-text .FAM-attachment td{overflow:hidden;border-radius:4px;max-height:194px}.FAM-msg-text .FAM-attachment td *{width:100%;object-fit:cover;border-radius:4px;max-height:194px}#FAM .FAM-msg-text .FAM-attachment td a{color:#333;font-size:18px;min-height:20px;line-height:20px;max-width:99%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#FAM-tab-container{height:30px;position:relative;border-bottom:1px solid #ddd}#FAM-tab-add{font-size:18px;text-align:center;border-left:1px solid #ddd;position:absolute;right:0;top:0;width:30px;height:30px;cursor:pointer}#FAM-tab-add i,.FAM-tab{line-height:30px}#FAM-tab-add:hover{color:#39f}#FAM-tabs{width:80%;width:calc(100% - 30px);white-space:nowrap;overflow:hidden}#FAM-tabs:hover{overflow-x:auto;position:relative;z-index:1}.FAM-tab{background:#eee;border:1px solid #ddd;border-left:none;border-top:none;position:relative;display:inline-block;width:120px;height:30px;cursor:pointer}.FAM-tab:hover{background:#fff}.FAM-tab.FAM-tab-active{font-weight:700;background:#fff;cursor:default}.FAM-tab.FAM-tab-active:after{content:"";background:#39f;position:absolute;left:0;right:0;bottom:-1px;height:4px}.FAM-tab-name{font-size:12px;display:inline-block;padding:0 3px;width:80%;width:calc(100% - 16px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.FAM-tab-close{font-size:16px;position:absolute;top:50%;margin-top:-8px!important;right:3px;cursor:pointer}.FAM-tab-close:hover{color:#f33}#FAM #FAM-service-title a{color:#333;font-weight:400}#FAM-service-title b,#FAM-service-title i{color:#39c}#FAM-service-title b:last-child{color:#39f}#FAM-version-card{border:1px solid #ddd;border-radius:4px;text-align:left;width:80%;margin:30px auto 12px;white-space:nowrap;overflow-x:auto;position:relative}#FAM-version-status-icon{text-align:center;position:absolute;width:50px;left:0;top:50%;margin-top:-18px}#FAM-version-status-icon i{font-size:36px}#FAM-version-status-icon .fa-check-circle{color:#39f}#FAM-version-status-icon .fa-exclamation-circle{color:#f93}#FAM-version-info{width:100%;padding-left:50px}#FAM-version-info>div{margin:10px 0}#FAM-version-status{font-weight:700}#FAM-creator-info{text-align:center;margin-top:30px}#FAM-creator-info i{font-size:18px;vertical-align:middle}</style>');
 }());
