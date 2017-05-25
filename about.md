@@ -1,5 +1,5 @@
 <div class="FAM-content-block">
-  <div class="FAM-title FAM-center"><a href="https://github.com/SethClydesdale/forumactif-messenger"><i class="fa fa-comments"></i> <b>Forum</b>actif <b>Messenger</b></a></div>
+  <div id="FAM-service-title" class="FAM-title FAM-center"><a href="https://github.com/SethClydesdale/forumactif-messenger"><i class="fa fa-comments"></i> <b>Forum</b>actif <b>Messenger</b></a></div>
 
   <div id="FAM-version-data" class="FAM-center">
     <div id="FAM-version-current" class="FAM-row">
@@ -8,7 +8,7 @@
     </div>
 
     <div id="FAM-version-card" class="FAM-row">
-      <div id="FAM-version-status-icon"></div>
+      <div id="FAM-version-status-icon"><i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw"></i></div>
       <div id="FAM-version-info">
         <div id="FAM-version-status"></div>
         <div id="FAM-version-latest">Latest Release <a id="FAM-version-github" href="https://github.com/SethClydesdale/forumactif-messenger/releases/tag/v0.4.0">v0.4.0</a> (Official Build)</div>
