@@ -20,7 +20,7 @@
     <div class="FAM-row"><button id="FAM-update" class="FAM-button" onclick="FAM.update ? FAM.update() : FAM.page.about.update();"><i class="fa fa-refresh"></i> Sync</button></div>
     <div class="FAM-row"><textarea id="FAM-update-code" class="FAM-inputbox" onclick="this.select()" readonly></textarea></div>
     <div class="FAM-row FAM-center FAM-connected-buttons">
-      <a href="https://github.com/SethClydesdale/forumactif-messenger/wiki/Updating"><i class="fa fa-question-circle"></i> How to Update</a>
+      <a href="https://github.com/SethClydesdale/forumactif-messenger/wiki/Updating"><i class="fa fa-question"></i> How to Update</a>
       <a href="http://help.forumotion.com/t152951-forumactif-messenger-instant-message-application-for-forumotion#1047237"><i class="fa fa-bug"></i> Report Bug</a>
     </div>
   </div>
