@@ -11,7 +11,7 @@
       <div id="FAM-version-status-icon"><i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw"></i></div>
       <div id="FAM-version-info">
         <div id="FAM-version-status"></div>
-        <div id="FAM-version-latest">Latest Release <a id="FAM-version-github" href="https://github.com/SethClydesdale/forumactif-messenger/releases/tag/v0.5.0">v0.5.0</a> (Official Build)</div>
+        <div id="FAM-version-latest">Latest Release <a id="FAM-version-github" href="https://github.com/SethClydesdale/forumactif-messenger/releases/tag/v0.6.0">v0.6.0</a> (Official Build)</div>
       </div>
     </div>
   </div>

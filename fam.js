@@ -21,7 +21,7 @@
       ignore_firstpost : true,
 
       no_avatar : 'https://illiweb.com/fa/invision/pp-blank-thumb.png',
-      no_name : 'Anon',
+      no_name : 'Anonymous',
 
       lang : {
         loading : 'Loading...',
@@ -60,7 +60,14 @@
         tooltip_about : 'About',
         tooltip_attachments : 'Add attachment',
         tooltip_emoji : 'Add emoticon',
-        tooltip_send : 'Send message'
+        tooltip_send : 'Send message',
+
+        error_sending : 'An error occurred that prevented your message from being sent. Do you want to resend it?',
+        error_resend : 'Resend',
+        error_delete : 'Delete',
+        error_report : 'Report',
+
+        guest : 'Guest'
       }
     },
 
@@ -91,6 +98,18 @@
     },
 
 
+    // abort ongoing requests
+    clearRequest : function () {
+      if (FAM.request) {
+        if (!FAM.request.statusText) {
+          FAM.request.abort();
+        }
+
+        delete FAM.request;
+      }
+    },
+
+
     // get the specified page and load the contents into FAM
     get : function (url, title, noHistory) {
       var type = /\/c\d+/.test(url) ? 'category' :
@@ -105,14 +124,10 @@
         });
       }
 
-      // stop listening for message changes
-      FAM.message.listener.stop();
-
-      // show / hide back button
-      FAM.history.toggleBack();
-
-      // update the main title
-      FAM.tab.title(title);
+      FAM.clearRequest(); // abort ongoing requests
+      FAM.message.listener.stop(); // stop listening for message changes
+      FAM.history.toggleBack(); // show / hide back button
+      FAM.tab.title(title); // update the main title
 
       // display loading texts and change content class
       FAM.cache.content.className = 'FAM-viewing-' + type;
@@ -129,13 +144,13 @@
       }
 
       // get the page
-      $.get(url, function (data) {
+      FAM.request = $.get(url, function (data) {
         var a = $(type == 'topic' ? '.post[class*="post--"]' : 'a.forum' + ( FAM.fVersion == 0 ? 'link' : 'title' ) + ', a.topictitle', data),
             form = type == 'topic' ? $('form[action="/post"]', data)[0] : null,
             i = 0,
             j = a.length,
             html = '',
-            row, avatar, date, pages, newTopic, type2;
+            row, avatar, date, pages, newTopic, postReply, type2, k, l;
 
         for (; i < j; i++) {
           // message structure
@@ -144,16 +159,22 @@
 
           // forum and category structure
           } else {
-            row = $(a[i]).closest(FAM.selector.row);
+            row = $(a[i]).closest(FAM.select.row);
 
             if (!row.find('.AD_LastPA')[0]) { // exclude ad forums
               row = row[0];
               avatar = $('.lastpost-avatar img', row)[0];
-              date = $(FAM.selector.row_date, row)[0];
+              date = $(FAM.select.row_date, row)[0];
               type2 = /c\d+-/.test(a[i].href) ? 'category' :
                       /f\d+-/.test(a[i].href) ? 'forum' :
                       /t\d+-/.test(a[i].href) ? 'topic' : 'unknown';
 
+              // remove dfn texts on phpbb3 and modernbb
+              if (date && (FAM.fVersion == 1 || FAM.fVersion == 5) && /dfn/.test(date.innerHTML)) {
+                date.querySelector('dfn').innerText = '';
+              }
+
+              // build the markup for forum and topic containers
               html +=
               '<div class="FAM-chat FAM-' + type2 + '" onclick="FAM.get(\'' + a[i].href + ( type2 == 'topic' ? '?view=newest' : '' ) + '\', this.querySelector(\'.FAM-chat-title\').innerText);">'+
                 '<span class="FAM-chat-icon fa-stack fa-lg">'+
@@ -167,7 +188,7 @@
 
                 '<div class="FAM-chat-title">' + a[i].innerText + '</div>'+
 
-                '<div class="FAM-chat-date">' + ( date ? date.innerText : '' ) + '</div>'+
+                '<div class="FAM-chat-date">' + ( date ? date.innerText.split('\n').join('<span class="FAM-separator"></span>').replace(/^\s+|\s+$/g, '').replace(/\s+/g, ' ') : '' ) + '</div>'+
               '</div>';
             }
           }
@@ -176,18 +197,51 @@
 
         // add message actions if the opened url is a topic
         if (type == 'topic') {
+          postReply = $(FAM.select.post_reply, data)[0];
+
           FAM.cache.content.innerHTML = html;
-          FAM.cache.actions.innerHTML =
-          '<button id="FAM-attachment" type="button" onclick="FAM.attachments.open(this);" title="' + FAM.config.lang.tooltip_attachments + '"><i class="fa fa-paperclip"></i><span id="FAM-attachment-total">0</span></button>'+
-          '<button id="FAM-emoji" type="button" onclick="FAM.message.emoji(this);" title="' + FAM.config.lang.tooltip_emoji + '"><i class="fa fa-smile-o"></i></button>'+
-          '<textarea id="FAM-msg" placeholder="' + FAM.config.lang.msg_placeholder + '" onkeydown="FAM.message.handleKeys(event);" onkeyup="FAM.message.validate(this.value);"></textarea>'+
-          '<button id="FAM-send" type="button" onclick="FAM.message.send();" data-disabled="true" title="' + FAM.config.lang.tooltip_send + '"><i class="fa fa-paper-plane"></i></button>'+
-          ( form ? form.outerHTML.replace(/id=".*?"|name=".*?"/, '').replace('<form', '<form name="fampost" style="display:none"') : '' );
 
-          FAM.message.scroll();
+          if (postReply) {
+            FAM.cache.content.className += ' FAM-reply-open';
+            FAM.cache.actions.innerHTML =
+            '<button id="FAM-attachment" type="button" onclick="FAM.attachments.open(this);" title="' + FAM.config.lang.tooltip_attachments + '"><i class="fa fa-paperclip"></i><span id="FAM-attachment-total">0</span></button>'+
+            '<button id="FAM-emoji" type="button" onclick="FAM.message.emoji(this);" title="' + FAM.config.lang.tooltip_emoji + '"><i class="fa fa-smile-o"></i></button>'+
+            '<textarea id="FAM-msg" placeholder="' + FAM.config.lang.msg_placeholder + '" onkeydown="FAM.message.handleKeys(event);" onkeyup="FAM.message.validate(this.value);"></textarea>'+
+            '<button id="FAM-send" type="button" onclick="FAM.message.send();" data-disabled="true" title="' + FAM.config.lang.tooltip_send + '"><i class="fa fa-paper-plane"></i></button>'+
+            ( form ? form.outerHTML.replace(/id=".*?"|name=".*?"/, '').replace('<form', '<form id="FAM-post-data" name="fampost" style="display:none"') : '<div id="FAM-post-data-placeholder"></div>' );
 
-          // listen for new posts and changes to existing messages
-          FAM.message.listener.start();
+            // authorize the guest for replies
+            if (!_userdata.session_logged_in) {
+              FAM.message.replyPage = (FAM.fVersion == 5 ? postReply : postReply.parentNode).href;
+              FAM.message.authorizeGuest();
+            }
+          } else {
+            FAM.cache.actions.innerHTML = '';
+          }
+
+          FAM.message.scroll(); // scroll to the newest message
+          FAM.message.listener.start(); // listen for new posts and changes to existing messages
+
+          // parse servimg data for use in uploading
+          var servImgData = {
+            account : data.match(/servImgAccount = '(.*?)'/),
+            id : data.match(/servImgId = '(.*?)'/),
+            f : data.match(/servImgF = '(.*?)'/),
+            mode : data.match(/servImgMode = '(.*?)'/)
+          },
+          authorization = 'multiupload.php?',
+          denied = false, i;
+
+          for (i in servImgData) {
+            if (servImgData[i] && servImgData[i][0] && servImgData[i][1]) {
+              authorization += i + '=' + servImgData[i][1] + '&';
+            } else {
+              denied = true;
+              break;
+            }
+          }
+
+          FAM.message.servImgData = denied ? '' : authorization;
 
         // standard forum / category view
         } else {
@@ -196,7 +250,7 @@
 
           // add new topic icon if available
           if (type == 'forum') {
-            newTopic = $(FAM.selector.new_topic, data)[0];
+            newTopic = $(FAM.select.new_topic, data)[0];
 
             if (newTopic) {
               FAM.cache.actions.innerHTML =
@@ -208,6 +262,8 @@
           }
 
         }
+
+        FAM.clearRequest();
       });
     },
 
@@ -239,6 +295,25 @@
       // inserts the user @handle into the textarea after clicking a username
       mention : function (caller) {
         FAM.message.insert('@"' + caller.innerText + '"', true);
+      },
+
+
+      // write a custom message into the chat for alerts and placeholders
+      write : function (message, id) {
+        var msg = document.createElement('DIV');
+        msg.className = 'FAM-msg FAM-my-msg ' + (id || '');
+        msg.innerHTML =
+        '<div class="FAM-msg-avatar">' + _userdata.avatar + '</div>'+
+        '<div class="FAM-msg-box">'+
+          '<div class="FAM-msg-content">'+
+            '<div class="FAM-msg-text">' + (message || '') + '</div>'+
+          '</div>'+
+          '<div class="FAM-msg-date"></div>'+
+        '</div>';
+
+        FAM.cache.content.appendChild(msg);
+        FAM.message.scroll();
+        return msg;
       },
 
 
@@ -277,65 +352,122 @@
 
 
       // send a message to the topic
-      send : function () {
+      send : function (resend, form) {
         if (FAM.message.sending) {
           return false;
         } else {
           FAM.message.sending = true;
         }
 
+        FAM.message.clearError(); // removes error messages
+
         var msg = document.getElementById('FAM-msg'),
-            val = msg.value,
+            placeholder = FAM.message.write('<i class="fa fa-circle-o-notch fa-spin fa-fw"></i>', 'FAM-msg-placeholder'), // show placeholder message until the sent message is ready
+            val = resend ? FAM.message.backup : msg.value,
             attachments = '',
             i = 0,
             j = FAM.attachments.list.length;
 
         // add attachments to message value
-        if (j) {
-          for (; i < j; i++) {
-            attachments += '[tr][td]' + FAM.attachments.list[i] + '[/td][/tr]';
+        if (!resend) {
+          if (j) {
+            for (; i < j; i++) {
+              attachments += '[tr][td]' + FAM.attachments.list[i] + '[/td][/tr]';
+            }
+
+            val += '\n[table class="FAM-attachment"]' + attachments + '[/table]';
+
+            FAM.attachments.list = [];
+            FAM.cache.actions.querySelector('#FAM-attachment-total').innerText = 0;
           }
 
-          val += '\n[table class="FAM-attachment"]' + attachments + '[/table]';
-
-          FAM.attachments.list = [];
-          FAM.cache.actions.querySelector('#FAM-attachment-total').innerText = 0;
+          // reset message field value
+          msg.value = '';
+          FAM.message.validate();
+          FAM.message.backup = val; // backup the current message in case of errors
         }
 
-        // reset message field value
-        msg.value = '';
-        FAM.message.validate();
-
-        // show placeholder message until the sent message is ready
-        FAM.cache.content.insertAdjacentHTML('beforeend',
-          '<div class="FAM-msg FAM-my-msg FAM-msg-placeholder">'+
-            '<div class="FAM-msg-avatar">' + _userdata.avatar + '</div>'+
-            '<div class="FAM-msg-box">'+
-              '<div class="FAM-msg-content">'+
-                '<div class="FAM-msg-text"><i class="fa fa-circle-o-notch fa-spin fa-fw"></i></div>'+
-              '</div>'+
-              '<div class="FAM-msg-date"></div>'+
-            '</div>'+
-          '</div>'
-        );
-        FAM.message.scroll();
-
         // post the message to the topic
-        $.post('/post', $(document.fampost).serialize().replace(
-          'message=',
-          'message=' + FAM.encode(val)
-        ) + '&post=1', function (data) {
-          // get the new message and remove the placeholder + sending restriction
-          FAM.message.check(function () {
-            FAM.cache.content.removeChild(FAM.cache.content.querySelector('.FAM-msg-placeholder'));
-            FAM.message.scroll();
+        $.post('/post', $(form || document.fampost).serialize().replace(
+          /message=.*?(?:&|$)/,
+          'message=' + FAM.encode(val) + '&'
+        ) + '&post=1&prevent_post=1', function (data) {
+          var success = $('a[href^="/viewtopic"]', data)[0],
+              captcha = $('#funcaptcha', data);
 
-            // wait the specified time before sending another message
-            setTimeout(function () {
+          // get the new message and remove the placeholder + sending restriction
+          if (success) {
+            FAM.message.check(function () {
+              FAM.cache.content.removeChild(placeholder);
+              FAM.message.scroll();
+
+              // wait the specified time before sending another message
+              setTimeout(function () {
+                FAM.message.sending = false;
+              }, FAM.config.flood_control);
+
+              // update form data for the guest
+              if (!_userdata.session_logged_in) {
+                FAM.message.authorizeGuest();
+              }
+            });
+
+          // insert the captcha form if it's what prevented the message from being sent
+          } else if (captcha.length) {
+            FAM.cache.content.removeChild(placeholder);
+
+            // cleanup the noscript captcha form for usage
+            FAM.message.error = FAM.message.write(
+              '<div class="FAM-center"><i class="fa fa-exclamation-circle fa-2x"></i></div>'+
+              captcha.closest('form')[0].outerHTML.replace(/<noscript>(.*?)<\/noscript>/g, function (match, s1) {
+                return s1.replace(/&lt;|&gt;/g, function (match) {
+                  return {
+                    '&lt;' : '<',
+                    '&gt;' : '>'
+                  }[match];
+                });
+              }),
+            'FAM-msg-error');
+
+            // submits the captcha form
+            FAM.message.error.querySelector('input[name="post"]').onclick = function () {
               FAM.message.sending = false;
-            }, FAM.config.flood_control);
-          });
+              FAM.message.send(true, $(this).closest('form').clone()[0]);
+              return false;
+            };
+
+          // ask to resend if the message was not sent successfully
+          } else {
+            FAM.message.sending = false;
+            FAM.cache.content.removeChild(placeholder);
+            FAM.message.error = FAM.message.write(
+              '<div class="FAM-center"><i class="fa fa-exclamation-circle fa-2x"></i></div>'+
+              FAM.config.lang.error_sending+
+              '<textarea id="FAM-resend-message" class="FAM-inputbox">' + FAM.message.backup + '</textarea>'+
+              '<a onclick="FAM.message.send(true);">' + FAM.config.lang.error_resend + '</a> | '+
+              '<a onclick="FAM.message.clearError();">' + FAM.config.lang.error_delete + '</a>'+
+              '<a href="https://github.com/SethClydesdale/forumactif-messenger/wiki/Reporting-Bugs" target="_blank" style="float:right;">' + FAM.config.lang.error_report + '</a>',
+            'FAM-msg-error');
+
+            console.log(data); // log response data for debugging
+          }
         });
+      },
+
+      // removes unsent message error
+      clearError : function () {
+        if (FAM.message.error) {
+          if (FAM.cache.content.querySelector('.FAM-msg-error')) {
+            var txt = FAM.message.error.querySelector('#FAM-resend-message');
+            if (txt) {
+              FAM.message.backup = txt.value;
+            }
+
+            FAM.cache.content.removeChild(FAM.message.error);
+          }
+
+          delete FAM.message.error;
+        }
       },
 
 
@@ -343,13 +475,13 @@
       parse : function (post) {
         var avatar, name, pLink, group, date, msg;
 
-        avatar = $(FAM.selector.post_avatar, post)[0];
+        avatar = $(FAM.select.post_avatar, post)[0];
 
         // get username
-        name = $(FAM.selector.post_name, post)[0];
+        name = $(FAM.select.post_name, post)[0];
 
         // check if the user link is available
-        pLink = name ? name.getElementsByTagName('A')[0] : null;
+        pLink = name ? name.querySelector('a[href]') : null;
         pLink = pLink ? '<a href="' + pLink.href + '">' : null;
 
         // check if the user is in a group
@@ -359,10 +491,10 @@
         // check if the username is available
         name = name ? name.innerText : FAM.config.no_name;
 
-        date = $(FAM.selector.post_date, post)[0];
-        msg = $(FAM.selector.post_message, post)[0];
+        date = $(FAM.select.post_date, post)[0];
+        msg = $(FAM.select.post_message, post)[0];
 
-        return '<div class="FAM-msg' + ( name == _userdata.username ? ' FAM-my-msg' : '' ) + ' ' + post.className.replace(/.*?(post--\d+).*/, '$1') + '">'+
+        return '<div class="FAM-msg' + ( (name == _userdata.username || !_userdata.session_logged_in && name == FAM.config.lang.guest) ? ' FAM-my-msg' : '' ) + ' ' + post.className.replace(/.*?(post--\d+).*/, '$1') + '">'+
           '<div class="FAM-msg-avatar">'+
             (pLink ? pLink : '')+
             '<img src="' + ( avatar ? avatar.src : FAM.config.no_avatar ) + '" alt="avatar">'+
@@ -380,9 +512,17 @@
               '</span>'+
             '</div>'+
             '<div class="FAM-msg-content">'+
-              '<div class="FAM-msg-text">' + ( msg ? msg.innerHTML.replace(/<br>/g, '\n').replace(/^\n+|\n+$|^\s+|\s+$/g, '').replace(/\n/g, '<br>') : '' ) + '</div>'+
+              '<div class="FAM-msg-text">' + (
+                msg ? msg.innerHTML.replace(/<br>/g, '\n')
+                                   .replace(/^\n+|\n+$|^\s+|\s+$/g, '')
+                                   .replace(/\n/g, '<br>')
+                                   .replace(/<img/g, '<img onclick="FAM.modal.open(this);"')
+                                   .replace(/(<table class="FAM-attachment">)([\s\S]*?)(<\/table>)/, function (match, s1, s2, s3) {
+                                     return s1 + s2.replace(/<td/g, '<td onclick="FAM.modal.open(this);"') + s3;
+                                   }) : ''
+              ) + '</div>'+
             '</div>'+
-            '<div class="FAM-msg-date">' + ( date ? date.innerText : '' ) + '</div>'+
+            '<div class="FAM-msg-date">' + ( date ? (FAM.fVersion == 5 ? date.innerHTML.split('<').shift() : date.innerHTML.split('>').pop()).replace(/^\s+|\s+$/g, '') : '' ) + '</div>'+
           '</div>'+
         '</div>';
       },
@@ -390,7 +530,7 @@
 
       // check for new messages / edits and update the message list
       check : function (callback) {
-        $.get(FAM.history.log['tab' + FAM.tab.active][FAM.history.log['tab' + FAM.tab.active].length - 1].url, function (data) {
+        FAM.request = $.get(FAM.history.log['tab' + FAM.tab.active][FAM.history.log['tab' + FAM.tab.active].length - 1].url, function (data) {
           for (var a = $('.post[class*="post--"]', data), i = 0, j = a.length, pid, msg; i < j; i++) {
             pid = a[i].className.replace(/.*?(post--\d+).*/, '$1');
             msg = FAM.message.parse(a[i]);
@@ -414,6 +554,8 @@
           if (typeof callback === 'function') {
             callback();
           }
+
+          FAM.clearRequest();
         });
       },
 
@@ -459,18 +601,30 @@
           FAM.message.listener.idling = setTimeout(function () {
             FAM.message.listener.stop();
             FAM.cache.chat.insertAdjacentHTML('beforeend',
-              '<div id="FAM-idle" class="FAM-loading" onclick="FAM.message.listener.start(); FAM.cache.chat.removeChild(this);">'+
+              '<div id="FAM-idle" class="FAM-loading" onclick="FAM.message.listener.resume();">'+
                 '<p><i class="fa fa-moon-o fa-3x"></i>' + FAM.config.lang.idle + '</p>'+
               '</div>'
             );
           }, FAM.config.timeout > 15*60*1000 ? 15*60*1000 : FAM.config.timeout);
+        },
+
+
+        // resume listening after a period of inactivity
+        resume : function () {
+          var idle = FAM.cache.chat.querySelector('#FAM-idle');
+
+          if (idle) {
+            FAM.cache.chat.removeChild(idle);
+          }
+
+          FAM.message.check(FAM.message.listener.start);
         }
       },
 
 
       // scroll to the newest message or specified amount
       scroll : function (amount) {
-        FAM.cache.content.scrollTop = amount || FAM.cache.content.scrollHeight;
+        FAM.cache.content.scrollTop = amount || FAM.cache.content.lastChild.offsetTop - 60;
       },
 
 
@@ -480,7 +634,7 @@
             selector;
 
         if (active) {
-          active.style.display = active.style.display == 'none' ? 'block' : 'none';
+          active.style.visibility = active.style.visibility == 'hidden' ? 'visible' : 'hidden';
 
         } else {
           selector = document.createElement('IFRAME');
@@ -514,6 +668,19 @@
           caller.parentNode.insertBefore(selector, caller);
         }
 
+      },
+
+
+      // gets the form data for guests
+      authorizeGuest : function () {
+        $.get(FAM.message.replyPage, function (data) {
+          var form = $('form[action="/post"]', data)[0];
+
+          if (form) {
+            FAM.cache.actions.querySelector('#FAM-post-data-placeholder').innerHTML = form.outerHTML.replace(/id=".*?"|name=".*?"/, '').replace('<form', '<form id="FAM-post-data" name="fampost" style="display:none"');
+            document.fampost.username.value = _userdata.username;
+          }
+        });
       }
     },
 
@@ -528,7 +695,7 @@
             attach;
 
         if (active) {
-          active.style.display = active.style.display == 'none' ? 'block' : 'none';
+          active.style.visibility = active.style.visibility == 'hidden' ? 'visible' : 'hidden';
 
         } else {
           attach = document.createElement('DIV');
@@ -784,39 +951,7 @@
           return alert(FAM.config.lang.attach_uploading);
         }
 
-        var uploader = 'https://www.servimg.com/',
-            settings = 'scrollbars=yes,resizable=yes,width=780,height=530',
-            upload = FAM.cache.actions.querySelector('#FAM-upload');
-
-        upload.onclick = null;
-
-        if (_userdata.session_logged_in) {
-          $.get(FAM.history.log['tab' + FAM.tab.active][FAM.history.log['tab' + FAM.tab.active].length - 1].url, function (data) {
-            var servImgData = {
-              account : data.match(/servImgAccount = '(.*?)'/),
-              id : data.match(/servImgId = '(.*?)'/),
-              f : data.match(/servImgF = '(.*?)'/),
-              mode : data.match(/servImgMode = '(.*?)'/)
-            },
-            authorization = 'multiupload.php?',
-            denied = false, i;
-
-            for (i in servImgData) {
-              if (servImgData[i] && servImgData[i][0] && servImgData[i][1]) {
-                authorization += i + '=' + servImgData[i][1] + '&';
-              } else {
-                denied = true;
-                break;
-              }
-            }
-
-            FAM.attachments.uploader = window.open(uploader + (denied ? '' : authorization.slice(0, authorization.length - 1)), '', settings);
-            upload.onclick = FAM.attachments.upload;
-          });
-        } else {
-          FAM.attachments.uploader = window.open(uploader, '', settings);
-          upload.onclick = FAM.attachments.upload;
-        }
+        FAM.attachments.uploader = window.open('https://www.servimg.com/' + FAM.message.servImgData, '', 'scrollbars=yes,resizable=yes,width=780,height=530');
       },
 
 
@@ -860,7 +995,7 @@
         // abort ongoing searches and requests
         abort : function () {
           if (FAM.attachments.giphy.timeout) {
-            window.clearInterval(FAM.attachments.giphy.timeout);
+            clearInterval(FAM.attachments.giphy.timeout);
             FAM.attachments.giphy.timeout = null;
           }
 
@@ -956,6 +1091,7 @@
           });
         }
 
+        FAM.clearRequest();
         FAM.history.toggleBack();
         FAM.tab.title(FAM.config.lang.new_topic);
 
@@ -967,7 +1103,7 @@
         '</div>';
         FAM.cache.actions.innerHTML = '';
 
-        $.get(url, function (data) {
+        FAM.request = $.get(url, function (data) {
           var form = $('form[action="/post"]', data)[0];
 
           FAM.cache.content.innerHTML =
@@ -979,6 +1115,8 @@
               '<div style="display:none">' + $('input[name="auth[]"]', form)[0].parentNode.innerHTML + '</div>'+
             '</form>'+
           '</div>';
+
+          FAM.clearRequest();
         });
       },
 
@@ -1022,6 +1160,7 @@
             });
           }
 
+          FAM.clearRequest();
           FAM.history.toggleBack();
           FAM.message.listener.stop();
           FAM.tab.title('About');
@@ -1033,7 +1172,7 @@
             '<span class="sr-only">' + FAM.config.lang.loading + '</span>'+
           '</div>';
 
-          $.get('https://raw.githubusercontent.com/SethClydesdale/forumactif-messenger/master/about.md', function (data) {
+          FAM.request = $.get('https://raw.githubusercontent.com/SethClydesdale/forumactif-messenger/master/about.md', function (data) {
             FAM.cache.content.innerHTML = data.replace(/\n\s*?</g, '<')
                                               .replace(/<a/g, '<a target="_blank"')
                                               .replace('<textarea', '<textarea style="display:none;"')
@@ -1051,6 +1190,8 @@
               status.innerHTML = 'Forumactif Messenger is up to date!';
               icon.innerHTML = '<i class="fa fa-check-circle"></i>';
             }
+
+            FAM.clearRequest();
           });
         },
 
@@ -1324,6 +1465,122 @@
     },
 
 
+    // modal methods and data
+    modal : {
+      // opens the modal
+      open : function (caller) {
+        // closes media modal if it's already open
+        if (FAM.modal.box) {
+          FAM.modal.close();
+        }
+
+        // selects the media element inside the attachment cell
+        if (caller.tagName == 'TD') {
+          caller = caller.querySelector('img, iframe, a') || caller;
+        }
+
+        var box = document.createElement('DIV'),
+            attachments = $(caller).closest('.FAM-attachment')[0];
+
+        box.id = 'FAM-modal';
+        box.innerHTML =
+        '<div id="FAM-modal-overlay"></div>'+
+        '<div id="FAM-modal-content">'+
+          '<div id="FAM-media-viewer">'+
+            '<i id="FAM-modal-prev" class="FAM-modal-controls FAM-modal-arrows fa fa-arrow-left fa-2x" onclick="FAM.modal.showMedia(-1, true);" style="display:none;"></i>'+
+            '<i id="FAM-modal-next" class="FAM-modal-controls FAM-modal-arrows fa fa-arrow-right fa-2x" onclick="FAM.modal.showMedia(+1, true);" style="display:none;"></i>'+
+            '<i id="FAM-modal-close" class="FAM-modal-controls fa fa-times fa-2x" onclick="FAM.modal.close();"></i>'+
+            '<a id="FAM-view-media" class="FAM-modal-controls" href="#" target="_blank"><i class="fa fa-external-link-square fa-2x"></i></a>'+
+            '<div id="FAM-media-list"></div>'+
+          '</div>'+
+        '</div>';
+
+        FAM.modal.box = box;
+        FAM.modal.list = box.querySelector('#FAM-media-list');
+        FAM.modal.view = box.querySelector('#FAM-view-media');
+        FAM.modal.media = [];
+        FAM.modal.mediaIndex = 0;
+
+        if (attachments) {
+          for (var a = attachments.querySelectorAll('img, iframe, a'), i = 0, j = a.length; i < j; i++) {
+            FAM.modal.addMedia(a[i]);
+
+            if (a[i] == caller) {
+              FAM.modal.mediaIndex = i;
+            }
+          }
+
+        } else {
+          FAM.modal.addMedia(caller);
+        }
+
+        if (FAM.modal.media.length) {
+          FAM.modal.showMedia(FAM.modal.mediaIndex);
+          document.body.appendChild(FAM.modal.box);
+          document.body.style.overflow = 'hidden';
+        } else {
+          delete FAM.modal.box;
+        }
+      },
+
+
+      // closes the modal
+      close : function () {
+        if (FAM.modal.box) {
+          document.body.removeChild(FAM.modal.box);
+          document.body.style.overflow = '';
+          delete FAM.modal.box;
+        }
+      },
+
+
+      // adds media to the media list
+      addMedia : function (media) {
+        media = media.cloneNode(true);
+        media.style.display = 'none';
+        media.onclick = null;
+
+        FAM.modal.media.push(media);
+        FAM.modal.list.appendChild(media);
+      },
+
+
+      // show the specified media
+      showMedia : function (id, arrow) {
+        var back = FAM.modal.box.querySelector('#FAM-modal-prev'),
+            next = FAM.modal.box.querySelector('#FAM-modal-next'),
+            max = FAM.modal.media.length - 1;
+
+        FAM.modal.media[FAM.modal.mediaIndex].style.display = 'none'; // hide the old media
+        FAM.modal.mediaIndex = arrow ? FAM.modal.mediaIndex + id : id; // update media index
+
+        // hide arrows and reset index if it has reached the max or min value
+        if (FAM.modal.mediaIndex >= max) {
+          next.style.display = 'none';
+          FAM.modal.mediaIndex = max;
+        } else if (FAM.modal.mediaIndex <= 0) {
+          back.style.display = 'none';
+          FAM.modal.mediaIndex = 0;
+        }
+
+        // show arrows if they're hidden
+        if (next.style.display == 'none' && FAM.modal.mediaIndex < max) {
+          next.style.display = '';
+        }
+
+        if (back.style.display == 'none' && FAM.modal.mediaIndex > 0) {
+          back.style.display = '';
+        }
+
+        // update view media link
+        FAM.modal.view.href = FAM.modal.media[FAM.modal.mediaIndex][/IMG|IFRAME/.test(FAM.modal.media[FAM.modal.mediaIndex].tagName) ? 'src' : 'href'];
+
+        // show newly active media
+        FAM.modal.media[FAM.modal.mediaIndex].style.display = '';
+      }
+    },
+
+
     // initial setup of FAM
     init : function () {
       var initialized = false;
@@ -1343,7 +1600,7 @@
             '<span id="FAM-back" class="FAM-toolbar-button" onclick="FAM.history.back()" style="display:none" title="' + FAM.config.lang.tooltip_back + '"><i class="fa fa-arrow-left"></i></span>'+
             '<h1 class="FAM-maintitle"></h1>'+
             '<span id="FAM-menu-toggle" class="FAM-toolbar-button" title="' + FAM.config.lang.tooltip_menu + '"><i class="fa fa-ellipsis-h"></i></span>'+
-            '<div id="FAM-menu" style="display:none;">'+
+            '<div id="FAM-menu" style="visibility:hidden;">'+
               '<div class="FAM-menu-option" onclick="FAM.history.back(true)" title="' + FAM.config.lang.tooltip_home + '"><i class="fa fa-home"></i></div>'+
               '<div class="FAM-menu-option" onclick="FAM.page.settings.open()" title="' + FAM.config.lang.tooltip_settings + '"><i class="fa fa-cog"></i></div>'+
               '<div class="FAM-menu-option" onclick="FAM.page.about.open()" title="' + FAM.config.lang.tooltip_about + '"><i class="fa fa-question-circle"></i></div>'+
@@ -1380,7 +1637,7 @@
         // toggle FAM menu on click
         chat.querySelector('#FAM-menu-toggle').onclick = function () {
           var menu = FAM.cache.toolbar.querySelector('#FAM-menu');
-          menu.style.display = menu.style.display == 'none' ? 'block' : 'none';
+          menu.style.visibility = menu.style.visibility == 'hidden' ? 'visible' : 'hidden';
           return false;
         };
 
@@ -1400,7 +1657,7 @@
         }
 
         // css selectors by version
-        FAM.selector = {
+        FAM.select = {
           row : [
             'tr', // phpbb2
             '.row', // phpbb3
@@ -1429,11 +1686,12 @@
           ][FAM.fVersion],
 
           post_reply : [
-            '', // phpbb2
-            '', // phpbb3
-            '', // punbb
-            '', // forumactif edge
-            '' // modernbb
+            '#i_reply', // phpbb2
+            '.i_reply', // phpbb3
+            '.i_reply', // punbb
+            '.i_reply', // invision
+            '.i_reply', // forumactif edge
+            'a.ion-reply[href$="mode=reply"]' // modernbb
           ][FAM.fVersion],
 
           post_avatar : [
@@ -1505,7 +1763,7 @@
 
     },
 
-    version : 'v0.5.0'
+    version : 'v0.6.0'
   };
 
 
@@ -1525,11 +1783,11 @@
     ], i = 0, j = close.length, a;
 
     for (; i < j; i++) {
-      if (close[i][0] && close[i][0].style.display != 'none') {
+      if (close[i][0] && close[i][0].style.visibility != 'hidden') {
         a = $(close[i]);
 
         if (!a.is(e.target) && !a.has(e.target)[0]) {
-          close[i][0].style.display = 'none';
+          close[i][0].style.visibility = 'hidden';
         }
       }
     }
@@ -1540,5 +1798,5 @@
 
 
   // FAM styles
-  $('head').append('<style>@import url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css);#modernbb #FAM i.fa,#modernbb #FAM-button i.fa,#modernbb #FAM-send{margin:initial;vertical-align:initial}#FAM a{color:#06d;text-decoration:none}#FAM a:hover{color:#04a;text-decoration:underline}#FAM a:active{color:#028}#FAM,#FAM *{box-sizing:border-box}#FAM{color:#333;font-size:13px;font-family:Arial,sans-serif;background:#fff;border:1px solid #ddd;position:fixed;height:70%;width:40%;min-height:400px;min-width:300px;right:3px;z-index:99999;visibility:visible;opacity:1;bottom:35px;transition:500ms}#FAM[data-hidden=true]{visibility:hidden;opacity:0;bottom:-100%}#FAM.FAM-embedded{position:relative;bottom:0;right:0;width:100%;height:500px;margin:12px 0;z-index:1}#FAM-button,#FAM-toolbar{color:#fff;background:#39f}#FAM-button{font-size:18px;text-align:center;position:fixed;width:30px;right:3px;bottom:3px;cursor:pointer;z-index:99999;height:30px}#FAM-button i{line-height:30px}#FAM-button:hover{background-color:#28e}#FAM-button:active{background-color:#17d}#FAM-toolbar{border-bottom:1px solid #28e;height:40px;margin:-1px -1px 0}.FAM-maintitle{color:#fff;font-size:18px;text-align:center;width:70%;margin:0 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.FAM-toolbar-button{color:#fff;font-size:24px;position:absolute;top:-1px;height:40px;cursor:pointer}#FAM-toolbar,.FAM-toolbar-button i{line-height:40px}.FAM-toolbar-button i:hover{color:#eee}.FAM-toolbar-button i:active{color:#ddd}#FAM-back{left:10px}#FAM-menu-toggle{right:10px}#FAM-menu{color:#666;background:#fff;border:1px solid #ccc;position:absolute;right:-1px;top:39px;min-width:75px;z-index:2}.FAM-menu-option{font-size:30px;text-align:center;padding:4px;cursor:pointer}.FAM-menu-option:hover{color:#333}.FAM-menu-option:active{color:#000}#FAM-back[style*=none]~#FAM-menu .FAM-menu-option:first-child{display:none}#FAM-content{height:90%;height:calc(100% - 70px);overflow-y:auto;overflow-x:hidden}#FAM-content.FAM-viewing-topic{height:calc(100% - 110px)}#FAM-tab-container[style*=none]+#FAM-content{height:calc(100% - 40px)}#FAM-tab-container[style*=none]+#FAM-content.FAM-viewing-topic{height:calc(100% - 80px)}.FAM-content-block{font-size:14px;padding:12px}.FAM-loading{font-size:18px;font-weight:700;display:flex;justify-content:center;align-items:center;text-align:center;position:absolute;top:0;left:0;right:0;bottom:0}.FAM-loading i{display:block;margin-bottom:12px}#FAM-no-tabs{cursor:pointer}#FAM-idle,.FAM-button{color:#fff;cursor:pointer}#FAM-idle{background:rgba(0,0,0,.7);z-index:10;transition:300ms}#FAM-idle:hover{background:rgba(0,0,0,.6)}.FAM-button{font-size:16px;font-weight:700;text-transform:uppercase;background:#39f;border:none;border-radius:4px;display:block;height:40px;padding:0 12px;margin:3px auto;outline:none}.FAM-button:hover{background:#28e}.FAM-button:active{background:#17d}#FAM .FAM-inputbox{color:#333;font-size:14px;font-family:Arial,sans-serif;background:#fff;border:1px solid #ddd;border-radius:4px;padding:8px;width:100%;vertical-align:baseline;cursor:text;outline:none}#FAM textarea.FAM-inputbox{height:150px;resize:none}#FAM .FAM-inputbox:hover{border-color:#ccc}#FAM .FAM-inputbox:focus{border-color:#39f}#FAM .FAM-button-input .FAM-inputbox{width:79%;width:calc(100% - 40px);height:40px;margin:0;border-radius:4px 0 0 4px}#FAM .FAM-button-input .FAM-button{font-size:24px;vertical-align:-4px;width:40px;height:40px;display:inline-block;margin:0;padding:0;border-radius:0 4px 4px 0}.FAM-title{font-size:24px;font-weight:700;text-transform:uppercase;margin-bottom:12px}.FAM-title a{text-decoration:none!important}.FAM-title i{font-size:36px;vertical-align:-2px;margin-right:3px}#FAM .FAM-connected-buttons a{color:#333;background:#fff;border:1px solid #ddd;display:inline-block;height:30px;line-height:28px;padding:0 12px;margin-left:-1px;text-decoration:none}#FAM .FAM-connected-buttons a:hover{background:#eee;border-color:#ccc;position:relative}#FAM .FAM-connected-buttons a:active{background:#ddd;border-color:#bbb;position:relative}#FAM .FAM-connected-buttons>a:first-child,#FAM .FAM-connected-buttons>span:first-child>a{border-radius:4px 0 0 4px;margin-left:0}#FAM .FAM-connected-buttons>a:last-child,#FAM .FAM-connected-buttons>span:last-child>a{border-radius:0 4px 4px 0}#FAM .FAM-connected-buttons i{font-size:20px;margin-right:3px;vertical-align:-2px}.FAM-center{text-align:center}.FAM-row{margin:12px 0}#FAM ::-webkit-scrollbar{width:8px;height:8px}#FAM ::-webkit-scrollbar-track{background-color:#ddd}#FAM ::-webkit-scrollbar-thumb{background-color:rgba(0,0,0,.1);border:none}#FAM ::-webkit-scrollbar-button:single-button{height:0;width:0}#FAM ::-webkit-scrollbar-thumb:hover{background-color:rgba(0,0,0,.2)}#FAM ::-webkit-scrollbar-thumb:active{background-color:rgba(0,0,0,.3)}#FAM-actions{height:40px;border-top:1px solid #ddd;display:none}.FAM-viewing-forum+#FAM-actions,.FAM-viewing-topic+#FAM-actions{display:block}.FAM-viewing-forum+#FAM-actions{height:0}#FAM-new-topic{position:absolute;right:8px;bottom:3px;cursor:pointer}#FAM-new-topic .fa-plus{line-height:57px}#FAM-new-topic .fa-circle{color:#39f}#FAM-new-topic:hover .fa-circle{color:#28e}#FAM-new-topic:active .fa-circle{color:#17d}#FAM-actions>button{color:#333;font-size:18px;background:#fff;border:none;border-left:1px solid #ddd;height:40px;width:40px;cursor:pointer;outline:none}#FAM-actions>button:hover{background:#eee}#FAM-actions>button:active{background:#ddd}#FAM-actions>button[data-disabled=true]{pointer-events:none}#FAM-actions>button[data-disabled=true]>*{opacity:.5}#FAM-actions>button#FAM-attachment{border:none;position:relative}#FAM-attachment-total{color:#fff;font-size:12px;font-weight:700;background:#39f;border-radius:4px;position:absolute;bottom:1px;left:1px;padding:1px 3px}#FAM-attach-success,.FAM-dropdown-title{color:#fff;font-weight:700;text-align:center;height:40px;line-height:40px;padding:0 6px}#FAM-attach-success{background:#8b5;position:absolute;top:-1px;left:-1px;right:-1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:16px}#FAM-attach-success i{font-size:26px;margin-right:6px;vertical-align:-3px}#FAM-actions .FAM-dropdown{background:#fff;border:1px solid #ddd;position:absolute;left:0;bottom:40px;width:300px;height:400px;z-index:2}.FAM-dropdown .FAM-dropdown-inner{padding:6px}.FAM-dropdown-title{font-size:18px;background:#39f;margin:-1px -1px 0}.FAM-dropdown-back{left:3px}.FAM-dropdown-inner .FAM-dropdown-title{margin:-7px -7px 12px}.FAM-block-option{color:#666;font-size:16px;font-weight:700;border-bottom:1px solid #ddd;width:100%;height:40px;line-height:40px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}.FAM-block-option:hover{color:#333;background:#eee}.FAM-block-option:active{color:#000;background:#ddd}.FAM-option-icon{font-size:20px;font-weight:400;text-align:center;display:inline-block;width:50px;height:40px;line-height:40px;float:left}.FAM-option-icon i{line-height:40px}.FAM-option-icon.FAM-text-icon{font-size:18px;font-weight:700;font-stretch:condensed}#FAM-giphy-results{height:260px;margin:10px auto;text-align:center;overflow-x:hidden;overflow-y:auto}.FAM-giphy-imagelist{line-height:0;column-count:2;column-gap:3px}.FAM-giphy-imagelist img{width:100%;margin-bottom:3px;cursor:pointer}#FAM #FAM-giphy-mark{background:url(http://i35.servimg.com/u/f35/18/21/60/73/powere11.png) no-repeat 50% 50%!important;height:22px!important;width:100%!important;min-width:200px!important;display:block!important;visibility:visible!important;opacity:1!important}#FAM-attachment-manager{height:340px;overflow-y:auto;overflow-x:hidden}#FAM-attachment-manager .FAM-inputbox{width:65%}.FAM-attachment-thumb{text-align:center;border:1px solid #ddd;border-radius:4px;display:inline-block;width:50px;height:50px;margin-right:6px;object-fit:cover;vertical-align:-20px}a.FAM-attachment-thumb{vertical-align:-5px}.FAM-attachment-thumb i{font-size:24px;line-height:50px}.FAM-attachment-delete{margin-left:6px;cursor:pointer}.FAM-attachment-delete:hover .fa-circle{color:#f33}#FAM-msg{color:#333;font-size:14px;font-family:Arial,sans-serif;background:#fff;border:none;border-left:1px solid #ddd!important;height:40px;width:calc(100% - 120px);margin:0;padding:6px;vertical-align:top;outline:none;resize:none}.FAM-chat{color:#333;border-bottom:2px solid #ddd;position:relative;padding:12px;height:80px;cursor:pointer}.FAM-chat:hover{background-color:#eee}.FAM-chat-icon{position:absolute;left:1px;bottom:0;z-index:1}.FAM-chat-icon .fa-circle{color:#999}.FAM-chat-avatar{position:absolute;left:10px;top:50%;margin-top:-20px;height:40px;width:40px;overflow:hidden}.FAM-chat-avatar img,.FAM-msg-avatar img{height:100%;width:100%}.FAM-chat-date,.FAM-chat-title{position:absolute;left:0;width:100%;padding:0 12px 0 60px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.FAM-chat-title{font-size:14px;font-weight:700;top:20px}.FAM-chat-date{bottom:20px}.FAM-msg{position:relative;padding:12px}.FAM-msg:after{content:"";display:table;clear:both}.FAM-msg-avatar{height:40px;width:40px;margin-top:16px;overflow:hidden;float:left}.FAM-my-msg .FAM-msg-avatar{margin-top:0;float:right}.FAM-msg-box{float:right;width:80%;width:calc(100% - 40px);padding-left:15px}.FAM-my-msg .FAM-msg-box{float:left;padding:0 15px 0 0}.FAM-msg-content{color:#000;background:#ddd;border-radius:4px;padding:8px 12px;margin:3px 0;min-height:36px;max-width:80%;position:relative;float:left}.FAM-msg-content:before{content:"";height:0;width:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-right:10px solid #ddd;position:absolute;top:13px;left:-10px}.FAM-my-msg .FAM-msg-content{color:#fff;background:#07c;float:right}.FAM-my-msg .FAM-msg-content:before{border-right:none;border-left:10px solid #07c;top:12px;left:auto;right:-10px}.FAM-msg-text{font-size:14px;line-height:20px;white-space:pre-wrap;word-wrap:break-word}.FAM-msg-text .fa-circle-o-notch{font-size:20px}#FAM .FAM-msg-text a{color:inherit;text-decoration:underline}#FAM .FAM-msg-text a:hover{text-decoration:none}.FAM-msg-text *{max-width:100%}.FAM-msg-text img{max-height:200px}.FAM-msg-date{clear:both}.FAM-msg-date,.FAM-msg-name{font-size:12px;padding:0 3px;width:100%}.FAM-name-mention{cursor:pointer}.FAM-my-msg .FAM-msg-name{display:none}.FAM-my-msg .FAM-msg-date{text-align:right}.FAM-msg-text .FAM-attachment,.FAM-msg-text .FAM-attachment *{display:block}.FAM-msg-text .FAM-attachment tbody{line-height:0;column-count:2;column-gap:5px}.FAM-msg-text .FAM-attachment tr{background:#fff;width:100%;max-height:200px;padding:3px;margin-bottom:5px;border-radius:4px;overflow:hidden;-webkit-column-break-inside:avoid;page-break-inside:avoid;break-inside:avoid}.FAM-msg-text .FAM-attachment tr:only-child{column-span:all;margin:0}.FAM-msg-text .FAM-attachment td{overflow:hidden;border-radius:4px;max-height:194px}.FAM-msg-text .FAM-attachment td *{width:100%;object-fit:cover;border-radius:4px;max-height:194px}#FAM .FAM-msg-text .FAM-attachment td a{color:#333;font-size:18px;min-height:20px;line-height:20px;max-width:99%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#FAM-tab-container{height:30px;position:relative;border-bottom:1px solid #ddd}#FAM-tab-add{font-size:18px;text-align:center;border-left:1px solid #ddd;position:absolute;right:0;top:0;width:30px;height:30px;cursor:pointer}#FAM-tab-add i,.FAM-tab{line-height:30px}#FAM-tab-add:hover{color:#39f}#FAM-tabs{width:80%;width:calc(100% - 30px);white-space:nowrap;overflow:hidden}#FAM-tabs:hover{overflow-x:auto;position:relative;z-index:1}.FAM-tab{background:#eee;border:1px solid #ddd;border-left:none;border-top:none;position:relative;display:inline-block;width:120px;height:30px;cursor:pointer}.FAM-tab:hover{background:#fff}.FAM-tab.FAM-tab-active{font-weight:700;background:#fff;cursor:default}.FAM-tab.FAM-tab-active:after{content:"";background:#39f;position:absolute;left:0;right:0;bottom:-1px;height:4px}.FAM-tab-name{font-size:12px;display:inline-block;padding:0 3px;width:80%;width:calc(100% - 16px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.FAM-tab-close{font-size:16px;position:absolute;top:50%;margin-top:-8px!important;right:3px;cursor:pointer}.FAM-tab-close:hover{color:#f33}#FAM #FAM-service-title a{color:#333;font-weight:400}#FAM-service-title b,#FAM-service-title i{color:#39c}#FAM-service-title b:last-child{color:#39f}#FAM-version-card{border:1px solid #ddd;border-radius:4px;text-align:left;width:80%;margin:30px auto 12px;white-space:nowrap;overflow-x:auto;position:relative}#FAM-version-status-icon{text-align:center;position:absolute;width:50px;left:0;top:50%;margin-top:-18px}#FAM-version-status-icon i{font-size:36px}#FAM-version-status-icon .fa-check-circle{color:#39f}#FAM-version-status-icon .fa-exclamation-circle{color:#f93}#FAM-version-info{width:100%;padding-left:50px}#FAM-version-info>div{margin:10px 0}#FAM-version-status{font-weight:700}#FAM-creator-info{text-align:center;margin-top:30px}#FAM-creator-info i{font-size:18px;vertical-align:middle}</style>');
+  $('head').append('<style>@import url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css);#modernbb #FAM i.fa,#modernbb #FAM-button i.fa,#modernbb #FAM-send{margin:initial;vertical-align:initial}#FAM a{color:#06d;text-decoration:none}#FAM a:hover{color:#04a;text-decoration:underline}#FAM a:active{color:#028}#FAM,#FAM *{box-sizing:border-box}#FAM{color:#333;font-size:13px;font-family:Arial,sans-serif;background:#fff;border:1px solid #ddd;position:fixed;height:70%;width:40%;min-height:400px;min-width:300px;right:3px;z-index:99999;visibility:visible;opacity:1;bottom:35px;transition:500ms}#FAM[data-hidden=true]{visibility:hidden;opacity:0;bottom:-100%}#FAM.FAM-embedded{position:relative;bottom:0;right:0;width:100%;height:500px;margin:12px 0;z-index:1}#FAM-button,#FAM-toolbar{color:#fff;background:#39f}#FAM-button{font-size:18px;text-align:center;position:fixed;width:30px;right:3px;bottom:3px;cursor:pointer;z-index:99999;height:30px}#FAM-button i{line-height:30px}#FAM-button:hover{background-color:#28e}#FAM-button:active{background-color:#17d}#FAM-toolbar{border-bottom:1px solid #28e;height:40px;margin:-1px -1px 0}.FAM-maintitle{color:#fff;font-size:18px;text-align:center;width:70%;margin:0 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.FAM-toolbar-button{color:#fff;font-size:24px;position:absolute;top:-1px;height:40px;cursor:pointer}#FAM-toolbar,.FAM-toolbar-button i{line-height:40px}.FAM-toolbar-button i:hover{color:#eee}.FAM-toolbar-button i:active{color:#ddd}#FAM-back{left:10px}#FAM-menu-toggle{right:10px}#FAM-menu{color:#666;background:#fff;border:1px solid #ccc;position:absolute;right:-1px;top:39px;min-width:75px;z-index:2}.FAM-menu-option{font-size:30px;text-align:center;padding:4px;cursor:pointer}.FAM-menu-option:hover{color:#333}.FAM-menu-option:active{color:#000}#FAM-back[style*=none]~#FAM-menu .FAM-menu-option:first-child{display:none}#FAM-content{height:90%;height:calc(100% - 69px);overflow-y:auto;overflow-x:hidden}#FAM-content.FAM-reply-open{height:calc(100% - 110px)}#FAM-tab-container[style*=none]+#FAM-content{height:calc(100% - 39px)}#FAM-tab-container[style*=none]+#FAM-content.FAM-reply-open{height:calc(100% - 80px)}.FAM-content-block{font-size:14px;padding:12px}.FAM-loading{font-size:18px;font-weight:700;display:flex;justify-content:center;align-items:center;text-align:center;position:absolute;top:0;left:0;right:0;bottom:0}.FAM-loading i{display:block;margin-bottom:12px}#FAM-no-tabs{cursor:pointer}#FAM-idle,.FAM-button{color:#fff;cursor:pointer}#FAM-idle{background:rgba(0,0,0,.7);z-index:10;transition:300ms}#FAM-idle:hover{background:rgba(0,0,0,.6)}.FAM-button{font-size:16px;font-weight:700;text-transform:uppercase;background:#39f;border:none;border-radius:4px;display:block;height:40px;padding:0 12px;margin:3px auto;outline:none}.FAM-button:hover{background:#28e}.FAM-button:active{background:#17d}#FAM .FAM-inputbox{color:#333;font-size:14px;font-family:Arial,sans-serif;background:#fff;border:1px solid #ddd;border-radius:4px;padding:8px;width:100%;vertical-align:baseline;cursor:text;outline:none}#FAM textarea.FAM-inputbox{height:150px;resize:none}#FAM .FAM-inputbox:hover{border-color:#ccc}#FAM .FAM-inputbox:focus{border-color:#39f}#FAM .FAM-button-input .FAM-inputbox{width:79%;width:calc(100% - 40px);height:40px;margin:0;border-radius:4px 0 0 4px}#FAM .FAM-button-input .FAM-button{font-size:24px;vertical-align:-4px;width:40px;height:40px;display:inline-block;margin:0;padding:0;border-radius:0 4px 4px 0}.FAM-title{font-size:24px;font-weight:700;text-transform:uppercase;margin-bottom:12px}.FAM-title a{text-decoration:none!important}.FAM-title i{font-size:36px;vertical-align:-2px;margin-right:3px}#FAM .FAM-connected-buttons a{color:#333;background:#fff;border:1px solid #ddd;display:inline-block;height:30px;line-height:28px;padding:0 12px;margin-left:-1px;text-decoration:none}#FAM .FAM-connected-buttons a:hover{background:#eee;border-color:#ccc;position:relative}#FAM .FAM-connected-buttons a:active{background:#ddd;border-color:#bbb;position:relative}#FAM .FAM-connected-buttons>a:first-child,#FAM .FAM-connected-buttons>span:first-child>a{border-radius:4px 0 0 4px;margin-left:0}#FAM .FAM-connected-buttons>a:last-child,#FAM .FAM-connected-buttons>span:last-child>a{border-radius:0 4px 4px 0}#FAM .FAM-connected-buttons i{font-size:20px;margin-right:3px;vertical-align:-2px}.FAM-center{text-align:center}.FAM-row{margin:12px 0}.FAM-separator:after{content:" ";color:#ccc}.FAM-forum .FAM-separator:after{content:" | "}#FAM ::-webkit-scrollbar{width:8px;height:8px}#FAM ::-webkit-scrollbar-track{background-color:#ddd}#FAM ::-webkit-scrollbar-thumb{background-color:rgba(0,0,0,.1);border:none}#FAM ::-webkit-scrollbar-button:single-button{height:0;width:0}#FAM ::-webkit-scrollbar-thumb:hover{background-color:rgba(0,0,0,.2)}#FAM ::-webkit-scrollbar-thumb:active{background-color:rgba(0,0,0,.3)}#FAM-actions{height:40px;border-top:1px solid #ddd;display:none}.FAM-viewing-forum+#FAM-actions,.FAM-viewing-topic+#FAM-actions{display:block}.FAM-viewing-forum+#FAM-actions{height:0}#FAM-new-topic{position:absolute;right:8px;bottom:3px;cursor:pointer}#FAM-new-topic .fa-plus{line-height:57px}#FAM-new-topic .fa-circle{color:#39f}#FAM-new-topic:hover .fa-circle{color:#28e}#FAM-new-topic:active .fa-circle{color:#17d}#FAM-actions>button{color:#333;font-size:18px;background:#fff;border:none;border-left:1px solid #ddd;height:40px;width:40px;cursor:pointer;outline:none}#FAM-actions>button:hover{background:#eee}#FAM-actions>button:active{background:#ddd}#FAM-actions>button[data-disabled=true]{pointer-events:none}#FAM-actions>button[data-disabled=true]>*{opacity:.5}#FAM-actions>button#FAM-attachment{border:none;position:relative}#FAM-attachment-total{color:#fff;font-size:12px;font-weight:700;background:#39f;border-radius:4px;position:absolute;bottom:1px;left:1px;padding:1px 3px}#FAM-attach-success,.FAM-dropdown-title{color:#fff;font-weight:700;text-align:center;height:40px;line-height:40px;padding:0 6px}#FAM-attach-success{background:#8b5;position:absolute;top:-1px;left:-1px;right:-1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:16px}#FAM-attach-success i{font-size:26px;margin-right:6px;vertical-align:-3px}#FAM-actions .FAM-dropdown{background:#fff;border:1px solid #ddd;position:absolute;left:0;bottom:40px;width:300px;height:400px;z-index:2}.FAM-dropdown .FAM-dropdown-inner{padding:6px}.FAM-dropdown-title{font-size:18px;background:#39f;margin:-1px -1px 0}.FAM-dropdown-back{left:3px}.FAM-dropdown-inner .FAM-dropdown-title{margin:-7px -7px 12px}.FAM-block-option{color:#666;font-size:16px;font-weight:700;border-bottom:1px solid #ddd;width:100%;height:40px;line-height:40px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}.FAM-block-option:hover{color:#333;background:#eee}.FAM-block-option:active{color:#000;background:#ddd}.FAM-option-icon{font-size:20px;font-weight:400;text-align:center;display:inline-block;width:50px;height:40px;line-height:40px;float:left}.FAM-option-icon i{line-height:40px}.FAM-option-icon.FAM-text-icon{font-size:18px;font-weight:700;font-stretch:condensed}#FAM-giphy-results{height:260px;margin:10px auto;text-align:center;overflow-x:hidden;overflow-y:auto}.FAM-giphy-imagelist{line-height:0;column-count:2;column-gap:3px}.FAM-giphy-imagelist img{width:100%;margin-bottom:3px;cursor:pointer}#FAM #FAM-giphy-mark{background:url(http://i35.servimg.com/u/f35/18/21/60/73/powere11.png) no-repeat 50% 50%;height:22px;width:100%}#FAM-attachment-manager{height:340px;overflow-y:auto;overflow-x:hidden}#FAM-attachment-manager .FAM-inputbox{width:65%}.FAM-attachment-thumb{text-align:center;border:1px solid #ddd;border-radius:4px;display:inline-block;width:50px;height:50px;margin-right:6px;object-fit:cover;vertical-align:-20px}a.FAM-attachment-thumb{vertical-align:-5px}.FAM-attachment-thumb i{font-size:24px;line-height:50px}.FAM-attachment-delete{margin-left:6px;cursor:pointer}.FAM-attachment-delete:hover .fa-circle{color:#f33}#FAM-msg{color:#333;font-size:14px;font-family:Arial,sans-serif;background:#fff;border:none;border-left:1px solid #ddd!important;height:40px;width:calc(100% - 120px);margin:0;padding:6px;vertical-align:top;outline:none;resize:none}.FAM-chat{color:#333;border-bottom:2px solid #ddd;position:relative;padding:12px;height:80px;cursor:pointer}.FAM-chat:hover{background-color:#eee}.FAM-chat-icon{position:absolute;left:1px;bottom:0;z-index:1}.FAM-chat-icon .fa-circle{color:#999}.FAM-chat-avatar{position:absolute;left:10px;top:50%;margin-top:-20px;height:40px;width:40px;overflow:hidden}.FAM-chat-avatar img,.FAM-msg-avatar img{height:100%;width:100%}.FAM-chat-date,.FAM-chat-title{position:absolute;left:0;width:100%;padding:0 12px 0 60px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.FAM-chat-title{font-size:14px;font-weight:700;top:20px}.FAM-chat-date{bottom:20px}.FAM-msg{position:relative;padding:12px}.FAM-msg:after{content:"";display:table;clear:both}.FAM-msg-avatar{height:40px;width:40px;margin-top:16px;overflow:hidden;float:left}.FAM-my-msg .FAM-msg-avatar{margin-top:0;float:right}.FAM-msg-box{float:right;width:80%;width:calc(100% - 40px);padding-left:15px}.FAM-my-msg .FAM-msg-box{float:left;padding:0 15px 0 0}.FAM-msg-content{color:#000;background:#ddd;border-radius:4px;padding:8px 12px;margin:3px 0;min-height:36px;max-width:80%;position:relative;float:left}.FAM-msg-content:before{content:"";height:0;width:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-right:10px solid #ddd;position:absolute;top:13px;left:-10px}.FAM-my-msg .FAM-msg-content{color:#fff;background:#07c;float:right}.FAM-my-msg .FAM-msg-content:before{border-right:none;border-left:10px solid #07c;top:12px;left:auto;right:-10px}.FAM-msg-text{font-size:14px;line-height:20px;white-space:pre-wrap;word-wrap:break-word}.FAM-msg-text .fa-circle-o-notch{font-size:20px}#FAM .FAM-msg-text a{color:inherit;text-decoration:underline;cursor:pointer}#FAM .FAM-msg-text a:hover{text-decoration:none}.FAM-msg-text *{max-width:100%}.FAM-msg-text img{max-height:200px}.FAM-msg-date{clear:both}.FAM-msg-date,.FAM-msg-name{font-size:12px;padding:0 3px;width:100%}#FAM [onclick="FAM.modal.open(this);"],.FAM-name-mention{cursor:pointer}.FAM-my-msg .FAM-msg-name{display:none}.FAM-my-msg .FAM-msg-date{text-align:right}.FAM-msg-error .FAM-msg-content{background:#f33}.FAM-msg-error .FAM-msg-content:before{border-left-color:#f33}.FAM-msg-text .FAM-attachment,.FAM-msg-text .FAM-attachment *{display:block}.FAM-msg-text .FAM-attachment tbody{line-height:0;column-count:2;column-gap:5px}.FAM-msg-text .FAM-attachment tr{background:#fff;width:100%;max-height:200px;padding:3px;margin-bottom:5px;border-radius:4px;overflow:hidden;-webkit-column-break-inside:avoid;page-break-inside:avoid;break-inside:avoid}.FAM-msg-text .FAM-attachment tr:only-child{column-span:all;margin:0}.FAM-msg-text .FAM-attachment td{color:#333;font-size:18px;min-height:20px;line-height:20px;position:relative;white-space:nowrap;border-radius:4px;max-height:194px}.FAM-msg-text .FAM-attachment td *{width:100%;object-fit:cover;border-radius:4px;max-height:194px}.FAM-msg-text .FAM-attachment td:after{content:"";position:absolute;top:0;left:0;right:0;bottom:0;cursor:pointer}.FAM-msg-text .FAM-attachment td,.FAM-msg-text .FAM-attachment td a{overflow:hidden;text-overflow:ellipsis}#FAM-tab-container{height:30px;position:relative;border-bottom:1px solid #ddd}#FAM-tab-add{font-size:18px;text-align:center;border-left:1px solid #ddd;position:absolute;right:0;top:0;width:30px;height:30px;cursor:pointer}#FAM-tab-add i,.FAM-tab{line-height:30px}#FAM-tab-add:hover{color:#39f}#FAM-tabs{width:80%;width:calc(100% - 30px);white-space:nowrap;overflow:hidden}#FAM-tabs:hover{overflow-x:auto;position:relative;z-index:1}.FAM-tab{background:#eee;border:1px solid #ddd;border-left:none;border-top:none;position:relative;display:inline-block;width:120px;height:30px;cursor:pointer}.FAM-tab:hover{background:#fff}.FAM-tab.FAM-tab-active{font-weight:700;background:#fff;cursor:default}.FAM-tab.FAM-tab-active:after{content:"";background:#39f;position:absolute;left:0;right:0;bottom:-1px;height:4px}.FAM-tab-name{font-size:12px;display:inline-block;padding:0 3px;width:80%;width:calc(100% - 16px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.FAM-tab-close{font-size:16px;position:absolute;top:50%;margin-top:-8px!important;right:3px;cursor:pointer}.FAM-tab-close:hover{color:#f33}#FAM #FAM-service-title a{color:#333;font-weight:400}#FAM-service-title b,#FAM-service-title i{color:#39c}#FAM-service-title b:last-child{color:#39f}#FAM-version-card{border:1px solid #ddd;border-radius:4px;text-align:left;width:80%;margin:30px auto 12px;white-space:nowrap;overflow-x:auto;position:relative}#FAM-version-status-icon{text-align:center;position:absolute;width:50px;left:0;top:50%;margin-top:-18px}#FAM-version-status-icon i{font-size:36px}#FAM-version-status-icon .fa-check-circle{color:#39f}#FAM-version-status-icon .fa-exclamation-circle{color:#f93}#FAM-version-info{width:100%;padding-left:50px}#FAM-version-info>div{margin:10px 0}#FAM-version-status{font-weight:700}#FAM-creator-info{text-align:center;margin-top:30px}#FAM-creator-info i{font-size:18px;vertical-align:middle}#FAM-modal-content,#FAM-modal-overlay{position:fixed;z-index:999999;top:0;left:0;right:0;bottom:0}#FAM-modal-overlay{background:rgba(0,0,0,.8)}#FAM-media-viewer,#FAM-modal-content,.FAM-modal-arrows{display:flex;justify-content:center;align-items:center;text-align:center}#FAM-media-viewer{background:#fff;border-radius:8px;position:relative;min-width:100px;min-height:100px;max-width:100%;max-width:calc(100% - 96px);max-height:100%;max-height:calc(100% - 96px);padding:16px}#FAM-media-list{width:100%;max-height:100vh;max-height:calc(100vh - 96px);overflow:hidden}#FAM-media-list>iframe,#FAM-media-list>img{max-width:100%;max-height:100vh;max-height:calc(100vh - 96px)}#FAM-media-list>a{font-size:24px;max-width:90%;display:inline-block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.FAM-modal-controls{color:#999;position:absolute;cursor:pointer;opacity:1}.FAM-modal-controls:hover{color:#fff}.FAM-modal-arrows{top:0;bottom:0;width:41px}#FAM-modal-prev{left:-25px;justify-content:flex-start}#FAM-modal-next{right:-25px;justify-content:flex-end}#FAM-modal-close{top:0;right:-25px;z-index:1}#FAM-view-media{top:30px;right:-26px;z-index:1}</style>');
 }());
