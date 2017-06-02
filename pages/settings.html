@@ -1,16 +1,20 @@
 <div class="FAM-content-block">
   <div class="FAM-row">
     <label for="FAM-fullscreen" class="FAM-label">{settings_fullscreen}</label>
-    <input id="FAM-fullscreen" type="checkbox" {fam_fullscreen}>
+    <div class="FAM-label-value"><input id="FAM-fullscreen" type="checkbox" onclick="FAM.page.settings.update(this);" {fam_fullscreen}></div>
   </div>
 
   <div class="FAM-row">
     <label for="FAM-window-width" class="FAM-label">{settings_width}</label>
-    <input id="FAM-window-width" class="FAM-inputbox" type="text" value="{fam_window_width}">
+    <div class="FAM-label-value"><input id="FAM-window-width" class="FAM-inputbox" type="text" value="{fam_window_width}" onkeyup="FAM.page.settings.update(this);"></div>
   </div>
 
   <div class="FAM-row">
     <label for="FAM-window-height" class="FAM-label">{settings_height}</label>
-    <input id="FAM-window-height" class="FAM-inputbox" type="text" value="{fam_window_height}">
+    <div class="FAM-label-value"><input id="FAM-window-height" class="FAM-inputbox" type="text" value="{fam_window_height}" onkeyup="FAM.page.settings.update(this);"></div>
+  </div>
+
+  <div class="FAM-row FAM-center">
+    <button id="FAM-settings-default" class="FAM-button" onclick="FAM.page.settings.reset();">{settings_default}</button>
   </div>
 </div>
