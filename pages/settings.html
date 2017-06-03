@@ -1,17 +1,23 @@
 <div class="FAM-content-block">
   <div class="FAM-row">
     <label for="FAM-fullscreen" class="FAM-label">{settings_fullscreen}</label>
-    <div class="FAM-label-value"><input id="FAM-fullscreen" type="checkbox" onclick="FAM.page.settings.update(this);" {fam_fullscreen}></div>
+    <div class="FAM-label-value">
+      <input id="FAM-fullscreen" type="checkbox" onclick="FAM.page.settings.update(this);" {fam_fullscreen}>
+    </div>
   </div>
 
   <div class="FAM-row">
     <label for="FAM-window-width" class="FAM-label">{settings_width}</label>
-    <div class="FAM-label-value"><input id="FAM-window-width" class="FAM-inputbox" type="text" value="{fam_window_width}" onkeyup="FAM.page.settings.update(this);"></div>
+    <div class="FAM-label-value">
+      <input id="FAM-window-width" class="FAM-inputbox" type="number" min="0" max="100" value="{fam_window_width}" oninput="FAM.page.settings.update(this);">
+    </div>
   </div>
 
   <div class="FAM-row">
     <label for="FAM-window-height" class="FAM-label">{settings_height}</label>
-    <div class="FAM-label-value"><input id="FAM-window-height" class="FAM-inputbox" type="text" value="{fam_window_height}" onkeyup="FAM.page.settings.update(this);"></div>
+    <div class="FAM-label-value">
+      <input id="FAM-window-height" class="FAM-inputbox" type="number" min="0" max="100" value="{fam_window_height}" oninput="FAM.page.settings.update(this);">
+    </div>
   </div>
 
   <div class="FAM-row FAM-center">
