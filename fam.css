@@ -32,7 +32,11 @@
 #FAM a:active { color:#028; }
 
 /* FAM primary styles */
-#FAM, #FAM * { box-sizing:border-box; }
+#FAM, #FAM * {
+  box-sizing:border-box;
+  transition:0ms;
+}
+
 #FAM {
   color:#333;
   font-size:13px;
@@ -72,6 +76,17 @@
   z-index:1;
 }
 
+/* fullscreen chat style */
+#FAM.FAM-fullscreen {
+  position:fixed;
+  right:0;
+  bottom:0;
+  margin:0;
+  height:100% !important;
+  width:100% !important;
+  z-index:99999;
+}
+
 /* toggle chat button */
 #FAM-button {
   color:#FFF;
@@ -85,10 +100,23 @@
   bottom:3px;
   cursor:pointer;
   z-index:99999;
+  transition-property:right;
+  transition-duration:500ms;
 }
 #FAM-button i { line-height:30px; }
 #FAM-button:hover { background-color:#28E; }
 #FAM-button:active { background-color:#17D; }
+
+/* fullscreen button style */
+#FAM.FAM-fullscreen[data-hidden="false"] + #FAM-button {
+  background:none;
+  top:5px;
+  right:35px;
+  bottom:auto;
+}
+
+#FAM.FAM-fullscreen[data-hidden="false"] + #FAM-button:hover { color:#EEE; }
+#FAM.FAM-fullscreen[data-hidden="false"] + #FAM-button:active { color:#DDD; }
 
 /* toolbar */
 #FAM-toolbar {
@@ -167,9 +195,12 @@
   padding:12px;
 }
 
-.FAM-loading {
+.FAM-loading, .FAM-loading p {
   font-size:18px;
   font-weight:bold;
+}
+
+.FAM-loading {
   display:flex;
   justify-content:center;
   align-items:center;
@@ -214,6 +245,11 @@
 }
 .FAM-button:hover { background:#28E; }
 .FAM-button:active { background:#17D; }
+
+.FAM-inline-buttons .FAM-button {
+  display:inline-block;
+  margin:3px;
+}
 
 #FAM .FAM-inputbox {
   color:#333;
@@ -311,9 +347,33 @@
   vertical-align:-2px;
 }
 
+/* labels / values */
+.FAM-label {
+  font-weight:bold;
+  text-align:right;
+  display:inline-block;
+  width:30%;
+  padding-right:6px;
+  margin:0;
+}
+
+.FAM-label-value {
+  display:inline-block;
+  width:70%;
+}
+
+#FAM .FAM-label-value .FAM-inputbox {
+  width:60%;
+}
+
 /* alignment / separation */
 .FAM-center { text-align:center; }
+.FAM-right { text-align:right; }
 .FAM-row { margin:12px 0; }
+
+/* pointer events */
+.FAM-noclick { pointer-events:none; }
+.FAM-clickable { pointer-events:all; }
 
 /* separators for content */
 .FAM-separator:after {
@@ -571,16 +631,32 @@ a.FAM-attachment-thumb { vertical-align:-5px; }
   color:#333;
   font-size:14px;
   font-family:Arial, sans-serif;
-  background:#FFF;
+  background:none;
   border:none;
-  border-left:1px solid #DDD !important;
   height:40px;
-  width:calc(100% - 120px);
+  width:100%;
   margin:0;
   padding:6px;
-  vertical-align:top;
   outline:none;
   resize:none;
+}
+
+#FAM-msg-container {
+  border-left:1px solid #DDD;
+  display:inline-block;
+  height:40px;
+  width:calc(100% - 120px);
+  vertical-align:top;
+  position:relative;
+}
+
+#FAM-timeout-bar {
+  background:#CCC;
+  position:absolute;
+  left:0;
+  bottom:0;
+  width:5px;
+  z-index:-1;
 }
 
 
@@ -635,6 +711,29 @@ a.FAM-attachment-thumb { vertical-align:-5px; }
 }
 
 .FAM-chat-date { bottom:20px; }
+
+/* pagination */
+.FAM-pagination {
+  text-align:center;
+  border-bottom:2px solid #DDD;
+}
+
+#FAM a.FAM-page-link, .FAM-page-link {
+  color:#FFF;
+  font-size:18px;
+  font-weight:bold;
+  text-decoration:none;
+  background:#39F;
+  display:inline-block;
+  height:25px;
+  line-height:26px;
+  padding:0 8px;
+  margin:3px 1px;
+}
+
+#FAM a.FAM-page-link:hover { background:#28E; }
+#FAM a.FAM-page-link:active { background:#17D; }
+strong.FAM-page-link, b.FAM-page-link { background:#999; }
 
 
 /* -- 02. MESSAGE LIST -- */
@@ -739,6 +838,7 @@ a.FAM-attachment-thumb { vertical-align:-5px; }
   cursor:pointer;
 }
 #FAM .FAM-msg-text a:hover { text-decoration:none; }
+
 .FAM-msg-text * { max-width:100%; }
 .FAM-msg-text img { max-height:200px; }
 
@@ -825,6 +925,113 @@ a.FAM-attachment-thumb { vertical-align:-5px; }
 .FAM-msg-text .FAM-attachment td a {
   overflow:hidden;
   text-overflow:ellipsis;
+}
+
+/* lists */
+.FAM-msg-text ul, .FAM-msg-text ol {
+  padding-left:30px;
+  margin:12px 0;
+}
+
+.FAM-msg-text ul > br:first-child, .FAM-msg-text ol > br:first-child {
+  display:none;
+}
+
+/* quote and code boxes */
+.FAM-codebox, .FAM-spoiler {
+  color:#333;
+  background:#FFF;
+  border:1px solid #CCC;
+  border-radius:4px;
+  padding:0;
+  margin:12px 0;
+  overflow:hidden;
+}
+
+.FAM-codebox dt a, .FAM-codebox cite a { color:#333 !important; }
+.FAM-codebox dt, .FAM-spoiler dt, .FAM-codebox cite {
+  color:#333;
+  font-size:14px;
+  font-weight:bold;
+  background:#CCC;
+  padding:3px;
+  margin:0;
+  cursor:auto !important;
+}
+
+.FAM-codebox dd, .FAM-spoiler dd {
+  padding:3px;
+  margin:0;
+}
+
+.FAM-codebox code {
+  display:block;
+  max-height:150px;
+  max-width:none;
+  padding:3px;
+  margin:-3px;
+  overflow:auto;
+}
+
+/* quote box padding and title margin fix */
+blockquote.FAM-codebox { padding:3px; }
+blockquote.FAM-codebox cite {
+  margin:-3px -3px 0px -3px;
+  max-width:none;
+}
+
+blockquote.FAM-codebox > div { margin:0; }
+
+/* hidecode title */
+.FAM-hidecode > dt:after {
+  content:"Hidden:";
+}
+
+/* post box icons */
+.FAM-codebox:before { content:""; } /* hide modernbb icons */
+.FAM-codebox > dt:before, .FAM-spoiler dt:before, .FAM-codebox cite:before, .FAM-attachbox > dt:before {
+  content:"\\f086";
+  font-family:FontAwesome;
+  margin-right:3px;
+}
+
+.FAM-codebox cite:before { content:"\\f10d"; }
+.FAM-codebox > dt:before { content:"\\f121"; }
+.FAM-spoiler > dt:before { content:"\\f071"; }
+.FAM-hidecode > dt:before { content:"\\f070"; }
+.FAM-attachbox > dt:before { content:"\\f0c6"; }
+
+/* spoiler content blackout */
+.FAM-spoiler_content {
+  position:relative;
+  display:inline-block;
+}
+
+.FAM-spoiler_content:after {
+  content:"";
+  background:#000;
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+  visibility:visible;
+}
+
+.FAM-spoiler_content:hover:after { visibility:hidden; }
+
+/* force default message color */
+.FAM-msg-text .FAM-post-content, .FAM-msg-text font[color] {
+  color:inherit;
+}
+
+/* captcha styles */
+.FAM-captcha p { margin:12px 0; }
+#fc-token.FAM-inputbox { width:308px; }
+.FAM-captcha p:first-child strong, .FAM-captcha p:first-child b {
+  font-size:24px;
+  display:inline-block;
+  margin-bottom:6px;
 }
 
 
