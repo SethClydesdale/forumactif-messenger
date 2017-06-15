@@ -61,8 +61,8 @@
         settings_guide : 'View Settings Guide',
 
         search_view : 'View all results',
-        search_searching : 'Searching topics for "{keywords}"...',
-        search_no_results : 'No results were found for "{keywords}"',
+        search_searching : 'Searching...',
+        search_no_results : 'No results were found.',
         search_tip : 'Use the search bar above to find a topic.',
         search_help : 'View Search Guide',
 
@@ -1628,7 +1628,7 @@
 
           // only perform search with 3 letter (or greater) words
           if (str.length >= 3) {
-            FAM.page.search.results.innerHTML = '<p class="FAM-center">' + FAM.config.lang.search_searching.replace('{keywords}', FAM.page.search.data.key) + '</p>';
+            FAM.page.search.results.innerHTML = '<p class="FAM-center">' + FAM.config.lang.search_searching + '</p>';
 
             // show view search button
             if (FAM.page.search.button.style.display == 'none') {
@@ -1649,7 +1649,7 @@
                   html += FAM.topic.parse(a[i]);
                 }
 
-                FAM.page.search.results.innerHTML = html ? html : '<p class="FAM-center">' + FAM.config.lang.search_no_results.replace('{keywords}', FAM.page.search.data.key) + '</p>';
+                FAM.page.search.results.innerHTML = html ? html : '<p class="FAM-center">' + FAM.config.lang.search_no_results + '</p>';
               });
 
             }, 100);
