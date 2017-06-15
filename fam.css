@@ -18,6 +18,9 @@
   vertical-align:initial;
 }
 
+/* p margin */
+#FAM p { margin:12px 0; }
+
 /* link styles */
 #FAM a {
   color:#06D;
@@ -72,16 +75,16 @@
   right:0;
   width:100%;
   height:500px;
-  margin:12px 0;
+  margin:12px auto;
   z-index:1;
 }
 
 /* fullscreen chat style */
 #FAM.FAM-fullscreen {
   position:fixed;
-  right:0;
-  bottom:0;
-  margin:0;
+  right:0 !important;
+  bottom:0 !important;
+  margin:0 !important;
   height:100% !important;
   width:100% !important;
   z-index:99999;
@@ -678,6 +681,7 @@ a.FAM-attachment-thumb { vertical-align:-5px; }
   z-index:1;
 }
 .FAM-chat-icon .fa-circle { color:#999; }
+.FAM-chat-icon.FAM-new-post .fa-circle { color:#39F; }
 
 .FAM-chat-avatar {
   position:absolute;
@@ -790,6 +794,7 @@ strong.FAM-page-link, b.FAM-page-link { background:#999; }
   position:relative;
   float:left;
 }
+.FAM-msg-editing .FAM-msg-content { width:100%; }
 
 /* normal message arrow */
 .FAM-msg-content:before {
@@ -907,6 +912,41 @@ strong.FAM-page-link, b.FAM-page-link { background:#999; }
   border-radius:4px;
   max-height:194px;
 }
+
+/* message actions */
+#FAM .FAM-msg-actions {
+  background:inherit;
+  border-radius:4px;
+  position:absolute;
+  left:0;
+  bottom:0px;
+  height:25px;
+  white-space:nowrap;
+  visibility:hidden;
+  opacity:0;
+  transition:300ms;
+}
+
+#FAM .FAM-msg:hover .FAM-msg-actions {
+  visibility:visible;
+  opacity:1;
+  bottom:-20px;
+}
+
+#FAM .FAM-my-msg .FAM-msg-actions {
+  left:auto;
+  right:0;
+}
+
+.FAM-msg-button {
+  font-size:16px;
+  padding:0 6px;
+  cursor:pointer;
+}
+
+.FAM-msg-button:hover { opacity:0.7; }
+
+.FAM-msg-button i { line-height:25px; }
 
 /* attachment overlay for openning media viewer */
 .FAM-msg-text .FAM-attachment td:after {
@@ -1026,7 +1066,6 @@ blockquote.FAM-codebox > div { margin:0; }
 }
 
 /* captcha styles */
-.FAM-captcha p { margin:12px 0; }
 #fc-token.FAM-inputbox { width:308px; }
 .FAM-captcha p:first-child strong, .FAM-captcha p:first-child b {
   font-size:24px;
@@ -1174,6 +1213,27 @@ blockquote.FAM-codebox > div { margin:0; }
 #FAM-creator-info i {
   font-size:18px;
   vertical-align:middle;
+}
+
+
+/* SEARCH PAGE */
+#FAM #FAM-search-keywords {
+  font-size:18px;
+  height:40px;
+  padding:0 8px
+}
+
+#FAM-search-results {
+  border:1px solid #DDD;
+  max-height:300px;
+  overflow:auto;
+}
+
+#FAM-search-results .FAM-chat-avatar, .FAM-viewing-search .FAM-chat-avatar { display:none; }
+#FAM-search-results .FAM-chat-icon, .FAM-viewing-search .FAM-chat-icon {
+  left:10px;
+  top:50%;
+  margin-top:-17px;
 }
 
 
