@@ -1,19 +1,19 @@
 <div class="FAM-content-block FAM-center">
   <form name="fam_form_login">
     <div class="FAM-row">
-      <input id="FAM-username" class="FAM-inputbox" placeholder="{login_username}" name="username">
+      <input id="FAM-login-username" class="FAM-inputbox" placeholder="{login_username}" name="username">
     </div>
 
     <div class="FAM-row">
-      <input id="FAM-password" class="FAM-inputbox" placeholder="{login_password}" name="password">
+      <input id="FAM-login-password" class="FAM-inputbox" placeholder="{login_password}" name="password">
     </div>
 
     <div class="FAM-row">
-      <label for="FAM-autologin">{login_auto}</label>
-      <input id="FAM-autologin" type="checkbox" name="autologin" checked>
+      <label for="FAM-login-autologin">{login_auto}</label>
+      <input id="FAM-login-autologin" type="checkbox" name="autologin" checked>
     </div>
 
-    <button class="FAM-button" type="button" onclick="FAM.page.login.submit();">{login_sign_in}</button>
+    <button id="FAM-login-submit" class="FAM-button" type="button" onclick="FAM.page.login.submit();">{login_sign_in}</button>
     
     <p id="FAM-login-error" style="display:none;">{login_error}</p>
 
