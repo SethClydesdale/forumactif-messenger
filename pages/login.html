@@ -1,11 +1,11 @@
 <div class="FAM-content-block FAM-center">
   <form name="fam_form_login">
     <div class="FAM-row">
-      <input id="FAM-login-username" class="FAM-inputbox" placeholder="{login_username}" name="username">
+      <input id="FAM-login-username" class="FAM-inputbox" placeholder="{login_username}" name="username" type="text">
     </div>
 
     <div class="FAM-row">
-      <input id="FAM-login-password" class="FAM-inputbox" placeholder="{login_password}" name="password">
+      <input id="FAM-login-password" class="FAM-inputbox" placeholder="{login_password}" name="password" type="password">
     </div>
 
     <div class="FAM-row">
@@ -15,7 +15,7 @@
 
     <button id="FAM-login-submit" class="FAM-button" type="button" onclick="FAM.page.login.submit();">{login_sign_in}</button>
     
-    <p id="FAM-login-error" style="display:none;">{login_error}</p>
+    <p id="FAM-login-error" class="FAM-error" style="display:none;">{login_error}</p>
 
     <div class="FAM-row">
       <a href="/profile?mode=sendpassword">{login_forgot}</a>
