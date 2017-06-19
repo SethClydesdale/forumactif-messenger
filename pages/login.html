@@ -1,5 +1,5 @@
 <div class="FAM-content-block FAM-center">
-  <form name="fam_form_login">
+  <form action="/login" name="fam_form_login" method="post" onsubmit="FAM.page.login.submit(); return false;">
     <div class="FAM-row">
       <input id="FAM-login-username" class="FAM-inputbox" placeholder="{login_username}" name="username" type="text">
     </div>
@@ -13,7 +13,7 @@
       <input id="FAM-login-autologin" type="checkbox" name="autologin" checked>
     </div>
 
-    <button id="FAM-login-submit" class="FAM-button" type="button" onclick="FAM.page.login.submit();">{login_sign_in}</button>
+    <button id="FAM-login-submit" class="FAM-button" type="submit">{login_sign_in}</button>
     
     <p id="FAM-login-error" class="FAM-error" style="display:none;">{login_error}</p>
 
