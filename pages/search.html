@@ -7,6 +7,16 @@
     <p class="FAM-center">{search_tip}</p>
   </div>
   
+  <div class="FAM-row">
+    <a href="/search?search_id=newposts" onclick="FAM.get(this.href, this.innerText); return false;">{search_last_visit}</a>
+    &nbsp;&bull;&nbsp;
+    <a href="/search?search_id=activetopics" onclick="FAM.get(this.href, this.innerText); return false;">{search_active}</a>
+    &nbsp;&bull;&nbsp;
+    <a href="/search?search_id=egosearch" onclick="FAM.get(this.href, this.innerText); return false;">{search_my_posts}</a>
+    &nbsp;&bull;&nbsp;
+    <a href="/search?search_id=unanswered" onclick="FAM.get(this.href, this.innerText); return false;">{search_unanswered}</a>
+  </div>
+  
   <button id="FAM-search-view" class="FAM-button" type="button" onclick="FAM.page.search.get();" style="display:none;">{search_view}</button>
 
   <div class="FAM-row FAM-center">

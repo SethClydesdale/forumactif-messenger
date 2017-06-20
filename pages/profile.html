@@ -18,6 +18,17 @@
     <div class="FAM-label-value">{fam_profile_reputation}</div>
   </div>
   
+  <div class="FAM-row FAM-clear">
+    <a href="/st/{username}" onclick="FAM.get(this.href, this.innerText); return false;">{profile_my_topics}</a>
+    &nbsp;&bull;&nbsp;
+    <a href="/sta/{username}" onclick="FAM.get(this.href, this.innerText); return false;">{profile_my_posts}</a>
+    
+    <div class="/?mark=forums" onclick="FAM.page.profile.markForums(this); return false;">{profile_mark}</a>
+      &nbsp;&bull;&nbsp;
+      <a href="/?mode=delete_cookies" onclick="FAM.page.profile.deleteCookies(this); return false;">{profile_cookies}</a>
+    </div>
+  </div>
+  
   <div class="FAM-row">
     <button id="FAM-profile-logout" class="FAM-button" type="button" onclick="FAM.page.profile.logout();">{profile_sign_out}</button>
   </div>
