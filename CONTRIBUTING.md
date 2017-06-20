@@ -56,12 +56,26 @@ You will need to fork the main Forumactif Messenger repository and clone it to y
 
 Further instructions for contributing are given below.
 
+### Files to Modify
+Forumactif Messenger is linked directly to the master branch, as such we must take care in the files we modify. Below is a list of files which you can contribute to without issue.
+
+- [fam.css](https://github.com/SethClydesdale/forumactif-messenger/blob/master/fam.css) for proposing changes to Forumactif Messenger's design.
+- [fam-dev.js](https://github.com/SethClydesdale/forumactif-messenger/blob/master/fam-dev.js) for proposing code changes to Forumactif Messenger.
+
+See our [todo list](https://github.com/SethClydesdale/forumactif-messenger/wiki/Todo-List) for ideas and [open a new issue](https://github.com/SethClydesdale/forumactif-messenger/issues/new) for discussing changes you want to make to the above files. It's best to discuss things beforehand so everyone is on the same page.
+
+#### Files to be careful when Modifying
+The files below will affect production when pushed to the master branch, so be sure to discuss your changes with the community before modifying them.
+
+- [fam.js](https://github.com/SethClydesdale/forumactif-messenger/blob/master/fam.js) should only be updated when a new version is released. Basically fam-dev.js will replace fam.js right before a new release is published.
+- [pages](https://github.com/SethClydesdale/forumactif-messenger/tree/master/pages) can be updated with little impact on the user-end, however, please note that your changes to these pages WILL be visible to Forumactif Messenger users, unless of course the page is new. If adding or making changes to existing pages, please discuss them with the community beforehand.
+
 ### Submitting your Changes
-Once you feel you changes are ready to submit for review :
+Once you feel your changes are ready to submit for review :
 
 1. **Test your changes**
 
-   Testing is an important process of developing software and ensuring that your changes work. Before submitting your code for review, we recommend test running your changes on your forum. You can do this by going to **Admin Panel > Modules > JS Codes Management** and creating a new script with your modified code. 
+   Testing is an important process of developing software and ensuring that your changes work. Before submitting your code for review, we recommend test running your changes on your forum. You can do this by going to **Admin Panel > Modules > JS Codes Management** and creating a new script with your modified version of fam-dev.js. 
    
    Once the code is installed on your forum, open the browser console (F12 or CTRL+SHIFT+I) and reload the page. If the code executes and there are no errors in your console that means your changes are ready to be submitted !
   
@@ -69,9 +83,9 @@ Once you feel you changes are ready to submit for review :
    
    When you're ready to submit your changes for review, Push your local changes to your forked copy of the repository and submit [a pull request](https://help.github.com/articles/about-pull-requests/). In the pull request, choose a title which sums up the changes that you have made, and in the body provide more details about what your changes do. 
 
-Once your pull request is submitted all you need to do is sit back and wait for a reply. There may be a discussion about the pull request and if any changes are needed, we will help work with you to get your pull request merged. 
+Once your pull request is submitted all you need to do is sit back and wait for a reply. We'll discuss the pull request and if any changes are needed, we will help work with you to get your pull request merged. 
    
 ---
 
 ## Questions
-If you have any questions about contributing to Forumactif Messenger, please open a new issue by [clicking here](https://github.com/SethClydesdale/forumactif-messenger/issues/new). We'll gladly answer any questions that you may have!
+If you have any questions about contributing to Forumactif Messenger, please open a new issue by [clicking here](https://github.com/SethClydesdale/forumactif-messenger/issues/new). We'll gladly answer any questions that you may have, so don't be afraid to ask !
