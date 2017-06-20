@@ -18,12 +18,15 @@
     <div class="FAM-label-value">{fam_profile_reputation}</div>
   </div>
   
-  <div class="FAM-row FAM-clear">
-    <a href="/st/{username}" onclick="FAM.get(this.href, this.innerText); return false;">{profile_my_topics}</a>
-    &nbsp;&bull;&nbsp;
-    <a href="/sta/{username}" onclick="FAM.get(this.href, this.innerText); return false;">{profile_my_posts}</a>
+  <div class="FAM-row FAM-left FAM-clear">
+    <div class="FAM-float-left">
+      <a href="/st/{username}" onclick="FAM.get(this.href, this.innerText); return false;">{profile_my_topics}</a>
+      &nbsp;&bull;&nbsp;
+      <a href="/sta/{username}" onclick="FAM.get(this.href, this.innerText); return false;">{profile_my_posts}</a>
+    </div>
     
-    <div class="/?mark=forums" onclick="FAM.page.profile.markForums(this); return false;">{profile_mark}</a>
+    <div class="FAM-float-right">
+      <a href="/?mark=forums" onclick="FAM.page.profile.markForums(this); return false;">{profile_mark}</a>
       &nbsp;&bull;&nbsp;
       <a href="/?mode=delete_cookies" onclick="FAM.page.profile.deleteCookies(this); return false;">{profile_cookies}</a>
     </div>
