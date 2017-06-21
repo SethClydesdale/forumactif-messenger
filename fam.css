@@ -18,9 +18,6 @@
   vertical-align:initial;
 }
 
-/* p margin */
-#FAM p { margin:12px 0; }
-
 /* link styles */
 #FAM a {
   color:#06D;
@@ -176,8 +173,16 @@
   padding:4px;
   cursor:pointer;
 }
-.FAM-menu-option:hover { color:#333; }
-.FAM-menu-option:active { color:#000; }
+
+.FAM-menu-option:hover {
+  opacity:0.9;
+  background:#EEE;
+}
+
+.FAM-menu-option:active {
+  opacity:0.8;
+  background:#DDD;
+}
 
 /* hide home button when no history */
 #FAM-back[style*="none"] ~ #FAM-menu .FAM-menu-option:first-child { display:none; }
@@ -310,6 +315,33 @@
   margin-right:3px;
 }
 
+/* list styles */
+#FAM .FAM-list {
+  margin:0;
+  padding:0 0 0 40px;
+  list-style-type:none;
+}
+
+#FAM .FAM-list li {
+  margin:0;
+  padding:3px 0;
+  position:relative;
+}
+
+#FAM .FAM-list li:before {
+  content:"";
+  background:#39F;
+  position:absolute;
+  width:8px;
+  height:8px;
+  left:-16px;
+  top:50%;
+  margin-top:-4px;
+  border-radius:100%;
+}
+
+#FAM .FAM-list li:hover:before { background:#06C; }
+
 /* connected buttons */
 #FAM .FAM-connected-buttons a {
   color:#333;
@@ -369,10 +401,37 @@
   width:60%;
 }
 
-/* alignment / separation */
-.FAM-center { text-align:center; }
+/* symmetrical labels */
+.FAM-symmetrical-label .FAM-label, .FAM-symmetrical-label .FAM-label-value {
+  width:50%;
+}
+
+.FAM-symmetrical-label .FAM-label-value {
+  text-align:left;
+}
+
+/* alignment, separation, and special classes */
+.FAM-left { text-align:left; }
 .FAM-right { text-align:right; }
-.FAM-row { margin:12px 0; }
+.FAM-center { text-align:center; }
+
+.FAM-float-left { float:left; }
+.FAM-float-right { float:right; }
+.FAM-clear { clear:both; }
+.FAM-clear:after {
+  content:"";
+  display:table;
+  clear:both;
+}
+
+.FAM-row, #FAM p { margin:12px 0; }
+#FAM .FAM-center-block {
+  width:50%;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.FAM-error { color:#F66; }
 
 /* pointer events */
 .FAM-noclick { pointer-events:none; }
@@ -1163,6 +1222,37 @@ blockquote.FAM-codebox > div { margin:0; }
 
 
 /* -- 04. GITHUB PAGES -- */
+/* PROFILE PAGE */
+#FAM-profile-username {
+  font-size:18px;
+  font-weight:bold;
+}
+#FAM-profile-rank { font-weight:bold; }
+
+#FAM-profile-avatar {
+  display:inline-block;
+  width:108px;
+  height:108px;
+  padding:2px;
+  border:2px solid #DDD;
+  border-radius:100px;
+  overflow:hidden;
+}
+
+#FAM-menu-avatar {
+  display:inline-block;
+  height:30px;
+  width:30px;
+  border-radius:30px;
+  overflow:hidden;
+}
+
+#FAM-menu-avatar img, #FAM-profile-avatar img {
+  width:100%;
+  height:100%;
+  border-radius:100%;
+}
+
 /* ABOUT FAM */
 #FAM #FAM-service-title a {
   color:#333;
