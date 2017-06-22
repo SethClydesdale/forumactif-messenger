@@ -33,8 +33,8 @@
     
     <div class="FAM-row">
       <label for="FAM-theme-color" class="FAM-label">{settings_color}</label>
-      <div class="FAM-button-input FAM-label-value">
-        <input id="FAM-theme-color" class="FAM-inputbox" type="color" value="{fam_theme_color}" oninput="FAM.page.settings.update(this);">
+      <div class="FAM-label-value FAM-inline-buttons">
+        <input id="FAM-theme-color" class="FAM-color-picker" type="color" value="{fam_theme_color}" oninput="FAM.page.settings.update(this);">
         <button class="FAM-button" onclick="FAM.page.settings.resetColor(this);" type="button">{reset}</button>
       </div>
     </div>
