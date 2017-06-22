@@ -19,6 +19,26 @@
       <input id="FAM-window-height" class="FAM-inputbox" type="number" min="0" max="100" value="{fam_window_height}" oninput="FAM.page.settings.update(this);">
     </div>
   </div>
+  
+  <div style="/*v1.0.0*/display:none;">
+    <div class="FAM-row">
+      <label class="FAM-label">{settings_theme}</label>
+      <div class="FAM-label-value">
+        <select id="FAM-select-theme" onchange="FAM.page.settings.update(this);">
+          <option value="light">{settings_theme_default}</option>
+          <option value="dark">{settings_theme_dark}</option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="FAM-row">
+      <label for="FAM-theme-color" class="FAM-label">{settings_color}</label>
+      <div class="FAM-button-input FAM-label-value">
+        <input id="FAM-theme-color" class="FAM-inputbox" type="color" value="{fam_theme_color}" oninput="FAM.page.settings.update(this);">
+        <button class="FAM-button" onclick="FAM.page.settings.resetColor(this);" type="button">{reset}</button>
+      </div>
+    </div>
+  </div>
 
   <div class="FAM-row FAM-center">
     <button id="FAM-settings-default" class="FAM-button" onclick="FAM.page.settings.reset();" type="button">{settings_default}</button>
