@@ -273,6 +273,10 @@
   outline:none;
 }
 
+#FAM select.FAM-inputbox, #FAM .FAM-inputbox[type="color"] {
+  cursor:pointer;
+}
+
 #FAM textarea.FAM-inputbox {
   height:150px;
   resize:none;
@@ -298,6 +302,19 @@
   margin:0;
   padding:0;
   border-radius:0 4px 4px 0;
+}
+
+#FAM .FAM-button-input-small .FAM-inputbox {
+  width:50px;
+  height:30px;
+  padding:0px 2px;
+  vertical-align:top;
+}
+
+#FAM .FAM-button-input-small .FAM-button {
+  font-size:18px;
+  width:30px;
+  height:30px; 
 }
 
 .FAM-title {
@@ -397,7 +414,7 @@
   width:70%;
 }
 
-#FAM .FAM-label-value .FAM-inputbox {
+#FAM .FAM-label-value .FAM-inputbox:not([type="color"]) {
   width:60%;
 }
 
