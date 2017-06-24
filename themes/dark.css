@@ -88,7 +88,7 @@
 
 
 /* -- 01. BACKGROUND COLORS -- */
-#FAM, #FAM-menu, #FAM .FAM-inputbox, #FAM .FAM-connected-buttons a, #FAM-actions > button, #FAM-actions .FAM-dropdown, .FAM-msg-text .FAM-attachment tr, .FAM-codebox, .FAM-spoiler, .FAM-tab:hover, .FAM-tab.FAM-tab-active, #FAM-media-viewer {
+#FAM, #FAM-menu, #FAM .FAM-inputbox, #FAM .FAM-connected-buttons a, #FAM-actions > button, #FAM-actions .FAM-dropdown, .FAM-msg-text .FAM-attachment tr, .FAM-codebox, .FAM-spoiler, .FAM-tab:hover, .FAM-tab.FAM-tab-active {
   background-color:#333;
 }
 
