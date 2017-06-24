@@ -5,6 +5,7 @@ Forumactif Messenger is an open source project, which means that you can help im
 - [Bug Reports](#bug-reports)
 - [Feature Requests and Suggestions](#feature-requests-and-suggestions)
 - [Contributing Code Changes](#contributing-code-changes)
+- [Contributing a Theme](#contributing-a-theme)
 - [Questions](#questions)
 
 ---
@@ -84,7 +85,50 @@ Once you feel your changes are ready to submit for review :
    When you're ready to submit your changes for review, Push your local changes to your forked copy of the repository and submit [a pull request](https://help.github.com/articles/about-pull-requests/). In the pull request, choose a title which sums up the changes that you have made, and in the body provide more details about what your changes do. 
 
 Once your pull request is submitted all you need to do is sit back and wait for a reply. We'll discuss the pull request and if any changes are needed, we will help work with you to get your pull request merged. 
-   
+
+---
+
+## Contributing a Theme
+Forumactif Messenger offers the ability to change the theme whenever you want, so you can have a more comfortable and personalized experience. Themes are created by the community, which means you can create and submit a theme that the community can use! Read on below to learn more about getting started with creating and submitting your theme.
+
+### Fork and Clone the Repository
+You will need to fork the main Forumactif Messenger repository and clone it to your desktop to contribute changes. See the [github help page](https://help.github.com/articles/fork-a-repo) for more information.
+
+### Creating your Theme
+There are two types of themes that you can create for Forumactif Messenger and you'll need a basic understanding of [CSS](https://developer.mozilla.org/en-US/docs/Web/CSS) to create a theme. The two types of themes that can be created are..
+
+1. **Color Themes** which are simple themes that only modify the main colors of Forumactif Messenger.
+2. **Advanced Themes** which are themes that customize more than just the colors of Forumactif Messenger.
+
+#### Getting Started
+To begin we'll start simple and create a **Color Theme** so you can get a feel for how creating a theme for Forumactif Messenger works. In your forked copy of the repository open the **themes** folder and copy the contents of [**light.css**](https://github.com/SethClydesdale/forumactif-messenger/blob/master/themes/light.css). This file will be used as a template for creating your theme.
+
+Once the contents are copied to your clipboard, create a new CSS file, **my-theme.css** for example, and paste the contents into this file. After you have done this, we'll be ready to start changing colors. Make sure to read over the notes in the comments of your file for hints and tips.
+
+#### Changing Colors
+When working with CSS it's usually best to have a live example, so you can see the results of what you've typed. To do this, go to your forum and open the developer tools. You can open your developer tools with one of the below commands.
+
+- F12
+- CTRL+SHIFT+I
+- Right Click > Inspect Element
+
+Once your devtools are opened, click the **Elements** tab to view the markup of the document. You can use this tab to see the classes and ids for elements, and the style rules which are currently applied to the selected element. We wont be needing this for the example though. Go ahead and click the little "+" icon in the styles column to create a new style rule, then click "inspector-stylesheet:..." to open the stylesheet.
+
+[![](https://i11.servimg.com/u/f11/18/21/41/30/captur12.png)](https://i11.servimg.com/u/f11/18/21/41/30/captur12.png)
+
+Delete everything in this stylesheet and paste the CSS from your new theme instead. From here on, all you need to do is change the colors in the CSS ; any changes you make will be reflected on page. To get a feel for what changes what, it's best to just play around with the colors and see what they change. If you're already familar with CSS and the devtools you can have a blast and change whatever you like !
+
+[![](https://i11.servimg.com/u/f11/18/21/41/30/captur13.png)](https://i11.servimg.com/u/f11/18/21/41/30/captur13.png)
+
+### Submitting your Theme
+Once you're satisfied with your theme you can submit it to Github for the community to use. To submit your theme for review you must push your local changes to your forked copy of the repository and submit [a pull request](https://help.github.com/articles/about-pull-requests/). In the pull request, choose a title which sums up the changes that you have made, and in the body include some basic information about your theme, such as..
+
+- The title of your theme. What would you like your theme to be called?
+- The author of the theme. Were you the only one who worked on the theme, did someone else help you?
+- An image and/or description of your theme. (optional)
+
+Once your pull request is submitted all you need to do is sit back and wait for a reply. If any changes need to be made, we'll let you know and work with you to help get your pull request merged.
+
 ---
 
 ## Questions

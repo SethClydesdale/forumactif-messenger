@@ -47,7 +47,7 @@
   color:#028;
 }
 
-#FAM-button, #FAM-toolbar, .FAM-maintitle, .FAM-toolbar-button, #FAM-idle, .FAM-button, #FAM-attachment-total, #FAM-attach-success, .FAM-dropdown-title, #FAM a.FAM-page-link, .FAM-page-link, .FAM-my-msg .FAM-msg-content, .FAM-modal-controls:hover {
+#FAM-button, #FAM-toolbar, .FAM-maintitle, .FAM-toolbar-button, .FAM-button, #FAM-attachment-total, #FAM-attach-success, .FAM-dropdown-title, #FAM a.FAM-page-link, .FAM-page-link, .FAM-my-msg .FAM-msg-content {
   color:#FFF;
 }
 
@@ -63,7 +63,7 @@
   color:#CCC;
 }
 
-.FAM-chat-icon .fa-circle, .FAM-modal-controls {
+.FAM-chat-icon .fa-circle {
   color:#999;
 }
 
