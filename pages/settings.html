@@ -24,7 +24,7 @@
     <div class="FAM-row">
       <label class="FAM-label">{settings_theme}</label>
       <div class="FAM-label-value">
-        <select id="FAM-active-theme" onchange="FAM.page.settings.update(this);">
+        <select id="FAM-active-theme" class="FAM-inputbox" onchange="FAM.page.settings.update(this);">
           <option value="light">{settings_theme_default}</option>
           <option value="dark">{settings_theme_dark}</option>
         </select>
@@ -33,8 +33,9 @@
     
     <div class="FAM-row">
       <label for="FAM-theme-color" class="FAM-label">{settings_color}</label>
-      <div class="FAM-label-value">
-        <input id="FAM-theme-color" class="FAM-color-picker" type="color" value="{fam_theme_color}" oninput="FAM.page.settings.update(this);">
+      <div class="FAM-label-value FAM-button-input FAM-button-input-small">
+        <input id="FAM-theme-color" class="FAM-inputbox FAM-color-picker" type="color" value="{fam_theme_color}" oninput="FAM.page.settings.update(this);">
+        <button class="FAM-button" onclick="FAM.page.settings.resetColor(this);" type="button"><i class="fa fa-times"></i></button>
       </div>
     </div>
   </div>
