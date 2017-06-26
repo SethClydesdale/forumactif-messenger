@@ -180,6 +180,15 @@ strong.FAM-page-link, b.FAM-page-link {
   border-color:#39F;
 }
 
+/* online / offline colors */
+.FAM-msg-avatar {
+  border-color:#CCC;
+}
+
+.FAM-msg-online .FAM-msg-avatar {
+  border-color:#39F;
+}
+
 /* specific borders */
 #FAM-actions {
   border-top-color:#DDD;

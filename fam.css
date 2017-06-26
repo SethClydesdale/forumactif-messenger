@@ -829,27 +829,35 @@ strong.FAM-page-link, b.FAM-page-link { background:#999; }
 }
 
 .FAM-msg-avatar {
-  height:40px;
-  width:40px;
+  border:2px solid #CCC;
+  width:48px;
+  height:48px;
+  padding:2px;
   margin-top:16px;
+  border-radius:100%;
   overflow:hidden;
   float:left;
+}
+
+.FAM-msg-online .FAM-msg-avatar {
+  border-color:#39F;
 }
 
 .FAM-msg-avatar img {
   height:100%;
   width:100%;
+  border-radius:100%;
 }
 
 .FAM-my-msg .FAM-msg-avatar {
-  margin-top:0;
+  margin-top:-4px;
   float:right;
 }
 
 .FAM-msg-box {
   float:right;
   width:80%;
-  width:calc(100% - 40px);
+  width:calc(100% - 48px);
   padding-left:15px;
 }
 
@@ -924,10 +932,15 @@ strong.FAM-page-link, b.FAM-page-link { background:#999; }
 .FAM-msg-text img { max-height:200px; }
 
 .FAM-msg-date { clear:both; }
-.FAM-msg-name, .FAM-msg-date {
+.FAM-msg-date, .FAM-msg-name {
   font-size:12px;
-  padding:0 3px;
   width:100%;
+  height:20px;
+  line-height:20px;
+  padding:0 3px;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  overflow:hidden;
 }
 .FAM-name-mention { cursor:pointer; }
 
