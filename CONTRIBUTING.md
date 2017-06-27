@@ -120,6 +120,8 @@ Delete everything in this stylesheet and paste the CSS from your new theme inste
 
 [![](https://i11.servimg.com/u/f11/18/21/41/30/captur13.png)](https://i11.servimg.com/u/f11/18/21/41/30/captur13.png)
 
+If you need some examples or inspiration, open the [themes](https://github.com/SethClydesdale/forumactif-messenger/tree/master/themes) folder and take a look at the CSS for some of the existing themes. A good example of a Color Theme is [dark.css](https://github.com/SethClydesdale/forumactif-messenger/blob/master/themes/dark.css) and a good example of an Advanced Theme is [twitter.css](https://github.com/SethClydesdale/forumactif-messenger/blob/master/themes/twitter.css). If you have any questions or need help, feel free to open a [new issue](https://github.com/SethClydesdale/forumactif-messenger/issues/new) and we'll help you out!
+
 ### Submitting your Theme
 Once you're satisfied with your theme you can submit it to Github for the community to use. To submit your theme for review you must push your local changes to your forked copy of the repository and submit [a pull request](https://help.github.com/articles/about-pull-requests/). In the pull request, choose a title which sums up the changes that you have made, and in the body include some basic information about your theme, such as..
 
