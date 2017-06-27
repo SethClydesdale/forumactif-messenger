@@ -47,7 +47,7 @@
   color:#028;
 }
 
-#FAM-button, #FAM-toolbar, .FAM-maintitle, .FAM-toolbar-button, .FAM-button, #FAM-attachment-total, #FAM-attach-success, .FAM-dropdown-title, #FAM a.FAM-page-link, .FAM-page-link, .FAM-my-msg .FAM-msg-content {
+#FAM-button, #FAM-toolbar, .FAM-maintitle, .FAM-toolbar-button, .FAM-button, #FAM-attachment-total, #FAM-attach-success, .FAM-dropdown-title, #FAM a.FAM-page-link, .FAM-page-link, .FAM-my-msg .FAM-msg-content, #FAM-new-msg-notif {
   color:#FFF;
 }
 
@@ -79,7 +79,7 @@
   color:#000;
 }
 
-#FAM-new-topic .fa-circle, .FAM-chat-icon.FAM-new-post .fa-circle, #FAM-tab-add:hover, #FAM-version-status-icon .fa-check-circle {
+#FAM-new-topic .fa-circle, .FAM-chat-icon.FAM-new-post .fa-circle, #FAM-tab-add:hover, #FAM-version-status-icon .fa-check-circle, #FAM-new-msg-divider {
   color:#39F;
 }
 
@@ -134,7 +134,7 @@ strong.FAM-page-link, b.FAM-page-link {
   background-color:#000;
 }
 
-#FAM-button, #FAM-toolbar, .FAM-button, #FAM .FAM-list li:before, #FAM-attachment-total, .FAM-dropdown-title, #FAM a.FAM-page-link, .FAM-page-link, .FAM-tab.FAM-tab-active:after {
+#FAM-button, #FAM-toolbar, .FAM-button, #FAM .FAM-list li:before, #FAM-attachment-total, .FAM-dropdown-title, #FAM a.FAM-page-link, .FAM-page-link, .FAM-tab.FAM-tab-active:after, #FAM-new-msg-notif, #FAM-new-msg-divider:before, #FAM-new-msg-divider:after {
   background-color:#39F;
 }
 

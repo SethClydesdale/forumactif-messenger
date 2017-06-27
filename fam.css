@@ -55,7 +55,8 @@
   visibility:visible;
   opacity:1;
   bottom:35px;
-  transition:500ms;
+  transition-property:top, right, bottom, left, height, width, margin, opacity, visibility;
+  transition-duration:500ms;
 }
 
 /* hides chat */
@@ -448,7 +449,10 @@
   margin-right:auto;
 }
 
-.FAM-error { color:#F66; }
+.FAM-error {
+  color:#F66;
+  font-weight:bold;
+}
 
 /* pointer events */
 .FAM-noclick { pointer-events:none; }
@@ -493,7 +497,10 @@
   display:none;
 }
 .FAM-viewing-topic + #FAM-actions, .FAM-viewing-forum + #FAM-actions { display:block; }
-.FAM-viewing-forum + #FAM-actions { height:0; }
+.FAM-viewing-forum + #FAM-actions {
+  height:0;
+  border:none;
+}
 
 #FAM-new-topic {
   position:absolute;
@@ -922,7 +929,7 @@ strong.FAM-page-link, b.FAM-page-link { background:#999; }
 
 /* message content styles */
 #FAM .FAM-msg-text a {
-  color:inherit;
+  color:inherit !important;
   text-decoration:underline;
   cursor:pointer;
 }
@@ -1163,6 +1170,58 @@ blockquote.FAM-codebox > div { margin:0; }
 }
 
 
+/* new message notifications */
+#FAM-new-msg-notif {
+  color:#FFF;
+  font-size:14px;
+  font-weight:bold;
+  text-align:center;
+  background:#39F;
+  position:absolute;
+  height:30px;
+  line-height:30px;
+  left:0;
+  right:0;
+  z-index:1;
+  opacity:0.8;
+  cursor:pointer;
+}
+
+#FAM-new-msg-notif:after {
+  content:"\\f00d";
+  font-size:18px;
+  font-weight:normal;
+  font-family:FontAwesome;
+  position:absolute;
+  right:6px;
+}
+
+#FAM-new-msg-notif:hover { opacity:1; }
+#FAM-new-msg-notif + #FAM-content { padding-top:30px; }
+
+#FAM-new-msg-divider {
+  color:#39F;
+  font-size:18px;
+  text-align:center;
+  margin:12px;
+  white-space:nowrap;
+  overflow:hidden;
+}
+
+#FAM-new-msg-divider:before, #FAM-new-msg-divider:after {
+  content:"";
+  background:#39F;
+  display:inline-block;
+  width:25%;
+  height:2px;
+  position:relative;
+  top:-4px;
+}
+
+#FAM-new-msg-divider:before { margin-right:12px; }
+#FAM-new-msg-divider:after { margin-left:12px; }
+
+
 /* -- 03. TABS LIST -- */
 #FAM-tab-container {
   height:30px;
@@ -1195,7 +1254,7 @@ blockquote.FAM-codebox > div { margin:0; }
 #FAM-tabs:hover {
   overflow-x:auto;
   position:relative;
-  z-index:1;
+  z-index:2;
 }
 
 .FAM-tab {
