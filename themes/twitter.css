@@ -122,28 +122,16 @@ strong.FAM-page-link, b.FAM-page-link {
   background-color:#060C10;
 }
 
-.FAM-my-msg .FAM-msg-content, #FAM-button, #FAM-toolbar, #FAM .FAM-list li:before, #FAM-attachment-total, .FAM-dropdown-title, #FAM a.FAM-page-link, .FAM-page-link, .FAM-tab.FAM-tab-active:after, #FAM-new-msg-notif, #FAM-new-msg-divider:before, #FAM-new-msg-divider:after {
+.FAM-my-msg .FAM-msg-content, #FAM-button, #FAM-toolbar, #FAM .FAM-list li:before, #FAM-attachment-total, .FAM-dropdown-title, #FAM a.FAM-page-link, .FAM-page-link, .FAM-tab.FAM-tab-active:after, #FAM-new-msg-notif, #FAM-new-msg-divider:before, #FAM-new-msg-divider:after, .FAM-button {
   background-color:#1DA1F2;
 }
 
-#FAM .FAM-list li:hover:before, #FAM-button:hover, #FAM a.FAM-page-link:hover {
+#FAM .FAM-list li:hover:before, #FAM-button:hover, #FAM a.FAM-page-link:hover, .FAM-button:hover {
   background-color:#0D91E2;
 }
 
-#FAM-button:active, #FAM a.FAM-page-link:active {
+#FAM-button:active, #FAM a.FAM-page-link:active, .FAM-button:active {
   background-color:#0081D2;
-}
-
-.FAM-button {
-  background-color:#5BADD6;
-}
-
-.FAM-button:hover {
-  background-color:#4B9DC6;
-}
-
-.FAM-button:active {
-  background-color:#3B8DB6;
 }
 
 #FAM-attach-success {
