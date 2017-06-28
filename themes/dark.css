@@ -50,7 +50,7 @@
   color:#CCC;
 }
 
-#FAM, #FAM .FAM-inputbox, #FAM .FAM-connected-buttons a, #FAM-actions > button, .FAM-block-option:hover, .FAM-chat, .FAM-msg-text .FAM-attachment td, .FAM-codebox, .FAM-spoiler, .FAM-codebox dt, .FAM-spoiler dt, .FAM-codebox cite, #FAM #FAM-service-title a {
+#FAM, #FAM-msg, #FAM .FAM-inputbox, #FAM .FAM-connected-buttons a, #FAM-actions > button, .FAM-block-option:hover, .FAM-chat, .FAM-msg-text .FAM-attachment td, .FAM-codebox, .FAM-spoiler, .FAM-codebox dt, .FAM-spoiler dt, .FAM-codebox cite, #FAM #FAM-service-title a {
   color:#CCC;
 }
 
@@ -83,7 +83,7 @@
 }
 
 /* important colors */
-.FAM-codebox dt a, .FAM-codebox cite a {
+#FAM .FAM-codebox dt a, #FAM .FAM-codebox cite a {
   color:#CCC !important;
 }
 

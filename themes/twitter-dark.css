@@ -9,22 +9,22 @@
 *******************************
 *** ====== THEME INFO ====== **
 *******************************
-** TITLE       : Twitter
-** DESCRIPTION : A theme based on Twitter's DMs
+** TITLE       : Twitter Dark
+** DESCRIPTION : A dark variant of the Twitter theme.
 ** AUTHOR      : Seth Clydesdale
 ******************************/
 
 /* -- 00. FONT COLORS -- */
 #FAM a, #FAM-actions > button {
-  color:#1B95E0;
+  color:#3AB2FF;
 }
 
 #FAM a:hover, #FAM-actions > button:hover {
-  color:#0B85D0;
+  color:#2AA2EF;
 }
 
 #FAM a:active, #FAM-actions > button:active {
-  color:#0075C0;
+  color:#1A92DF;
 }
 
 #FAM-button, #FAM-toolbar, .FAM-maintitle, .FAM-toolbar-button, .FAM-button, #FAM-attachment-total, #FAM-attach-success, .FAM-dropdown-title, #FAM a.FAM-page-link, .FAM-page-link, .FAM-my-msg .FAM-msg-content, #FAM-new-msg-notif {
@@ -39,36 +39,36 @@
   color:#D6DCE0;
 }
 
-.FAM-separator:after {
-  color:#C6CCD0;
-}
-
-.FAM-chat-icon .fa-circle {
+.FAM-separator:after, #FAM-menu, .FAM-block-option {
   color:#95A7B6;
 }
 
-.FAM-msg-date, #FAM-menu, .FAM-block-option {
+.FAM-msg-date, .FAM-block-option:active {
+  color:#8899A5;
+}
+
+.FAM-chat-icon .fa-circle {
   color:#657786;
 }
 
 #FAM, #FAM-msg, #FAM .FAM-inputbox, #FAM .FAM-connected-buttons a, .FAM-block-option:hover, .FAM-chat, .FAM-msg-text .FAM-attachment td, .FAM-codebox, .FAM-spoiler, .FAM-codebox dt, .FAM-spoiler dt, .FAM-codebox cite, #FAM #FAM-service-title a {
-  color:#363C40;
+  color:#CCC;
 }
 
-.FAM-block-option:active, .FAM-msg-content {
+.FAM-msg-content {
   color:#14171A;
 }
 
 #FAM-new-topic .fa-circle, .FAM-chat-icon.FAM-new-post .fa-circle, #FAM-tab-add:hover, #FAM-version-status-icon .fa-check-circle, #FAM-new-msg-divider, .FAM-section-title {
-  color:#1DA1F2;
+  color:#3673A2;
 }
 
 #FAM-new-topic:hover .fa-circle {
-  color:#0D91E2;
+  color:#266392;
 }
 
 #FAM-new-topic:active .fa-circle {
-  color:#0081D2;
+  color:#165382;
 }
 
 #FAM-version-status-icon .fa-exclamation-circle {
@@ -85,33 +85,33 @@
 
 /* important colors */
 #FAM .FAM-codebox dt a, #FAM .FAM-codebox cite a {
-  color:#363C40 !important;
+  color:#CCC !important;
 }
 
 
 /* -- 01. BACKGROUND COLORS -- */
 #FAM, #FAM-msg, #FAM-menu, #FAM .FAM-inputbox, #FAM .FAM-connected-buttons a, #FAM-actions .FAM-dropdown, .FAM-msg-text .FAM-attachment tr, .FAM-codebox, .FAM-spoiler, .FAM-tab:hover, .FAM-tab.FAM-tab-active {
-  background-color:#FFF;
+  background-color:#313D4A;
 }
 
 .FAM-menu-option:hover, #FAM .FAM-connected-buttons a:hover, .FAM-chat:hover, .FAM-tab {
-  background-color:#EEE;
+  background-color:#212D3A;
 }
 
 #FAM-actions {
-  background-color:#EAF4F9;
+  background-color:#414D5A;
 }
 
 .FAM-msg-content {
-  background-color:#E6ECF0;
+  background-color:#A9B7C1;
 }
 
 .FAM-menu-option:active, #FAM .FAM-connected-buttons a:active, .FAM-block-option:hover, .FAM-block-option:active {
-  background-color:#D6DCE0;
+  background-color:#212D3A;
 }
 
 #FAM-timeout-bar, .FAM-codebox dt, .FAM-spoiler dt, .FAM-codebox cite {
-  background-color:#C6CCD0;
+  background-color:#212D3A;
 }
 
 strong.FAM-page-link, b.FAM-page-link {
@@ -123,15 +123,15 @@ strong.FAM-page-link, b.FAM-page-link {
 }
 
 .FAM-my-msg .FAM-msg-content, #FAM-button, #FAM-toolbar, #FAM .FAM-list li:before, #FAM-attachment-total, .FAM-dropdown-title, #FAM a.FAM-page-link, .FAM-page-link, .FAM-tab.FAM-tab-active:after, #FAM-new-msg-notif, #FAM-new-msg-divider:before, #FAM-new-msg-divider:after, .FAM-button {
-  background-color:#1DA1F2;
+  background-color:#3673A2;
 }
 
 #FAM .FAM-list li:hover:before, #FAM-button:hover, #FAM a.FAM-page-link:hover, .FAM-button:hover {
-  background-color:#0D91E2;
+  background-color:#266392;
 }
 
 #FAM-button:active, #FAM a.FAM-page-link:active, .FAM-button:active {
-  background-color:#0081D2;
+  background-color:#165382;
 }
 
 #FAM-attach-success {
@@ -145,49 +145,49 @@ strong.FAM-page-link, b.FAM-page-link {
 
 /* -- 02. BORDER COLORS -- */
 #FAM, #FAM .FAM-inputbox, #FAM .FAM-connected-buttons a, #FAM-actions .FAM-dropdown, .FAM-attachment-thumb, .FAM-tab, #FAM-profile-avatar, #FAM-version-card, #FAM-search-results {
-  border-color:#D6DCE0;
+  border-color:#0F1D2C;
 }
 
 #FAM-menu, #FAM .FAM-inputbox:hover, #FAM .FAM-connected-buttons a:hover, .FAM-codebox, .FAM-spoiler {
-  border-color:#C6CCD0;
+  border-color:#1F2D3C;
 }
 
 #FAM .FAM-connected-buttons a:active {
-  border-color:#B6BCC0;
+  border-color:#000D1C;
 }
 
 #FAM .FAM-inputbox:focus {
-  border-color:#1DA1F2;
+  border-color:#3673A2;
 }
 
 /* online / offline colors */
 .FAM-msg-avatar {
-  border-color:#E6ECF0;
+  border-color:#A9B7C1;
 }
 
 .FAM-msg-online .FAM-msg-avatar {
-  border-color:#1DA1F2;
+  border-color:#3673A2;
 }
 
 /* specific borders */
 #FAM-actions, hr.FAM-hr {
-  border-top-color:#E6ECF0;
+  border-top-color:#0F1D2C;
 }
 
 .FAM-block-option, .FAM-chat, .FAM-pagination, #FAM-tab-container {
-  border-bottom-color:#E6ECF0;
+  border-bottom-color:#0F1D2C;
 }
 
 #FAM-tab-add {
-  border-left-color:#E6ECF0;
+  border-left-color:#0F1D2C;
 }
 
 .FAM-section-title {
-  border-bottom-color:#1DA1F2;
+  border-bottom-color:#3673A2;
 }
 
 #FAM-toolbar {
-  border-bottom-color:#0D91E2;
+  border-bottom-color:#266392;
 }
 
 /* -- 03. SCROLL BAR -- */
@@ -196,10 +196,10 @@ strong.FAM-page-link, b.FAM-page-link {
   height:8px;
 }
 
-#FAM *::-webkit-scrollbar-track { background-color:#EEE; }
+#FAM *::-webkit-scrollbar-track { background-color:transparent; }
 #FAM *::-webkit-scrollbar-thumb {
   border-radius:100px;
-  background-color:rgba(0, 0, 0, 0.1);
+  background-color:rgba(255, 255, 255, 0.1);
   border:none;
 }
 
@@ -210,8 +210,8 @@ strong.FAM-page-link, b.FAM-page-link {
 }
 
 /* hover / active scrollbar colors */
-#FAM *::-webkit-scrollbar-thumb:hover { background-color:rgba(0, 0, 0, 0.2); }
-#FAM *::-webkit-scrollbar-thumb:active { background-color:rgba(0, 0, 0, 0.3); }
+#FAM *::-webkit-scrollbar-thumb:hover { background-color:rgba(255, 255, 255, 0.2); }
+#FAM *::-webkit-scrollbar-thumb:active { background-color:rgba(255, 255, 255, 0.3); }
 
 
 /* -- 04. EXTRA STYLES -- */
@@ -247,7 +247,7 @@ strong.FAM-page-link, b.FAM-page-link {
 
 #FAM-msg {
   height:30px;
-  border:1px solid #CCE5F2;
+  border:1px solid #212D3A;
   padding:6px 18px;
   margin-top:5px;
   border-radius:18px;
@@ -269,11 +269,11 @@ strong.FAM-page-link, b.FAM-page-link {
 
 /* forum / topic styles */
 .FAM-chat {
-  border-bottom:1px solid #E6ECF0;
+  border-bottom:1px solid #0F1D2C;
 }
 
 .FAM-chat:hover {
-  background-color:#F0F8FA;
+  background-color:#414D5A;
 }
 
 /* BORDER-RADIUS ALL THE THINGS LIKE TWITTER */
