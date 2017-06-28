@@ -1,4 +1,6 @@
 <div class="FAM-content-block">
+  <div class="FAM-section-title" style="/*v1.0.0*/display:none;">{settings_title_window}</div>
+  
   <div class="FAM-row">
     <label for="FAM-fullscreen" class="FAM-label">{settings_fullscreen}</label>
     <div class="FAM-label-value">
@@ -21,6 +23,8 @@
   </div>
   
   <div style="/*v1.0.0*/display:none;">
+    <div class="FAM-section-title">{settings_title_themes}</div>
+    
     <div class="FAM-row">
       <label class="FAM-label">{settings_theme}</label>
       <div class="FAM-label-value">
@@ -39,13 +43,32 @@
         <button class="FAM-button" onclick="FAM.page.settings.resetColor(this);" type="button"><i class="fa fa-times"></i></button>
       </div>
     </div>
+    
+    <div class="FAM-section-title">{settings_title_notifications}</div>
+    
+    <div class="FAM-row">
+      <label for="FAM-sound-notif" class="FAM-label">{settings_sound_notif}</label>
+      <div class="FAM-label-value">
+        <input id="FAM-sound-notif" type="checkbox" onclick="FAM.page.settings.update(this);" {fam_sound_notif}>
+      </div>
+    </div>
   </div>
-
+  
+  <div class="FAM-section-title">{settings_title_misc}</div>
+  
   <div class="FAM-row FAM-center">
     <button id="FAM-settings-default" class="FAM-button" onclick="FAM.page.settings.reset();" type="button">{settings_default}</button>
   </div>
 
   <div class="FAM-row FAM-center">
     <a href="https://github.com/SethClydesdale/forumactif-messenger/wiki/Settings">{settings_guide}</a>
+  </div>
+  
+  <div style="/*v1.0.0*/display:none;">
+    <div class="FAM-section-title">{settings_title_admin}</div>
+    
+    <div class="FAM-row FAM-center">
+      <button id="FAM-settings-admin" class="FAM-button" onclick="FAM.page.open.config();" type="button">{settings_admin}</button>
+    </div>
   </div>
 </div>
