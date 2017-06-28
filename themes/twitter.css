@@ -59,7 +59,7 @@
   color:#14171A;
 }
 
-#FAM-new-topic .fa-circle, .FAM-chat-icon.FAM-new-post .fa-circle, #FAM-tab-add:hover, #FAM-version-status-icon .fa-check-circle, #FAM-new-msg-divider {
+#FAM-new-topic .fa-circle, .FAM-chat-icon.FAM-new-post .fa-circle, #FAM-tab-add:hover, #FAM-version-status-icon .fa-check-circle, #FAM-new-msg-divider, .FAM-section-title {
   color:#1DA1F2;
 }
 
@@ -170,7 +170,7 @@ strong.FAM-page-link, b.FAM-page-link {
 }
 
 /* specific borders */
-#FAM-actions {
+#FAM-actions, hr.FAM-hr {
   border-top-color:#E6ECF0;
 }
 
@@ -180,6 +180,10 @@ strong.FAM-page-link, b.FAM-page-link {
 
 #FAM-tab-add {
   border-left-color:#E6ECF0;
+}
+
+.FAM-section-title {
+  border-bottom-color:#1DA1F2;
 }
 
 #FAM-toolbar {
