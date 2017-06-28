@@ -286,6 +286,7 @@ strong.FAM-page-link, b.FAM-page-link {
 }
 
 #FAM-actions {
+  height:41px;
   border-radius:0 0 5px 5px;
 }
 
