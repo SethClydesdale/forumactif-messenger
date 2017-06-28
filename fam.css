@@ -195,9 +195,9 @@
   overflow-y:auto;
   overflow-x:hidden;
 }
-#FAM-content.FAM-reply-open { height:calc(100% - 109px); }
+#FAM-content.FAM-reply-open { height:calc(100% - 110px); }
 #FAM-tab-container[style*="none"] + #FAM-content { height:calc(100% - 39px); }
-#FAM-tab-container[style*="none"] + #FAM-content.FAM-reply-open { height:calc(100% - 79px); }
+#FAM-tab-container[style*="none"] + #FAM-content.FAM-reply-open { height:calc(100% - 80px); }
 
 .FAM-content-block {
   font-size:14px;
@@ -507,7 +507,7 @@ hr.FAM-hr {
 
 /* actions */
 #FAM-actions {
-  height:40px;
+  height:41px;
   border-top:1px solid #DDD;
   display:none;
 }
