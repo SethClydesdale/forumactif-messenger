@@ -315,3 +315,7 @@ strong.FAM-page-link, b.FAM-page-link {
   border-radius:20px 20px 0px 20px;
 }
 
+/* remove border-radius in fullscreen */
+#FAM.FAM-fullscreen, #FAM.FAM-fullscreen #FAM-actions, #FAM.FAM-fullscreen #FAM-toolbar {
+  border-radius:0;
+}
