@@ -42,6 +42,11 @@
     </div>
   </div>
   
+  <div class="FAM-row">
+    <label class="FAM-label">{config_initial_tabs}</label>
+    <div id="FAM-config-initial_tabs" class="FAM-label-value"></div>
+  </div>
+  
   <div class="FAM-section-title">{config_title_limits}</div>
   
   <div class="FAM-row">
@@ -89,9 +94,9 @@
   </div>
   
   <div class="FAM-row">
-    <label for="FAM-config-show_menu_avatar" class="FAM-label">{config_show_menu_avatar}</label>
+    <label for="FAM-config-hide_menu_avatar" class="FAM-label">{config_hide_menu_avatar}</label>
     <div class="FAM-label-value">
-      <input id="FAM-config-show_menu_avatar" type="checkbox" {fam_show_menu_avatar}>
+      <input id="FAM-config-hide_menu_avatar" type="checkbox" {fam_hide_menu_avatar}>
     </div>
   </div>
   
@@ -133,7 +138,7 @@
   <div class="FAM-section-title">{config_update}</div>
   
   <div class="FAM-row FAM-center">
-    <button id="FAM-config-update" class="FAM-button" onclick="return false;" type="button">{config_update}</button>
+    <button id="FAM-config-update" class="FAM-button" onclick="FAM.page.config.update();" type="button">{config_update}</button>
   </div>
   
   <div class="FAM-row">
