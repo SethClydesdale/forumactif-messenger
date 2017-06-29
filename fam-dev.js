@@ -114,6 +114,7 @@
         config_chat_permission : 'Chat Permission : ',
         config_main_title : 'Main Title : ',
         config_embed : 'Embed Container : ',
+        config_update_channel : 'Update Channel : ',
         config_tabs : 'Enable Tabs : ',
         config_initial_tabs : 'Initial Tabs : ',
         config_refresh : 'Refresh Rate : ',
@@ -2106,7 +2107,7 @@
           FAM.request = $.get(FAM.page.dir + 'config.html', function (data) {
             var config = {},
                 permission = 'value="' + FAM.config.chat_permission + '"',
-                channel = 'value="' + FAM.config.update_channel + '"',
+                channel = 'value="' + (FAM.config.update_channel == '-dev' ? 'developer' : 'production') + '"',
                 
                 check = {
                   tabs : 1,
