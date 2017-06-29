@@ -1,0 +1,32 @@
+<div class="FAM-content-block">
+  <div id="FAM-service-title" class="FAM-title FAM-center"><a href="https://github.com/SethClydesdale/forumactif-messenger"><i class="fa fa-comments"></i> <b>Forum</b>actif <b>Messenger</b></a></div>
+
+  <div id="FAM-version-data" class="FAM-center">
+    <div id="FAM-version-current" class="FAM-row FAM-center FAM-connected-buttons">
+      <span id="FAM-version">{client_version}</span>
+      <span id="FAM-version-notes"><a href="https://github.com/SethClydesdale/forumactif-messenger/releases">{about_releases}</a></span>
+    </div>
+
+    <div id="FAM-version-card" class="FAM-row">
+      <div id="FAM-version-status-icon"><i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw"></i></div>
+      <div id="FAM-version-info">
+        <div id="FAM-version-status"></div>
+        <div id="FAM-version-latest">{about_latest} <a id="FAM-version-github">v1.0.0-beta</a> (Official Build)</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="FAM-version-sync">
+    <div class="FAM-row"><button id="FAM-update" class="FAM-button" onclick="FAM.update ? FAM.update() : FAM.page.about.update();" type="button"><i class="fa fa-refresh"></i> {about_sync}</button></div>
+    <div class="FAM-row"><textarea id="FAM-update-code" class="FAM-inputbox" onclick="this.select()" readonly></textarea></div>
+    <div class="FAM-row FAM-center FAM-connected-buttons">
+      <a href="https://github.com/SethClydesdale/forumactif-messenger/wiki/Updating"><i class="fa fa-question"></i> {about_help}</a>
+      <a href="https://github.com/SethClydesdale/forumactif-messenger/blob/master/CONTRIBUTING.md#bug-reports"><i class="fa fa-bug"></i> {about_bug}</a>
+    </div>
+  </div>
+
+  <div id="FAM-creator-info">
+    <div class="FAM-row"><i class="fa fa-code"></i> with <i class="fa fa-heart"></i> by <a href="https://github.com/SethClydesdale">Seth Clydesdale</a></div>
+    <div class="FAM-row">And the awesome <a href="https://github.com/SethClydesdale/forumactif-messenger/graphs/contributors">Forumactif Messenger Community</a></div>
+  </div>
+</div>

@@ -342,10 +342,19 @@
   padding-bottom:3px;
 }
 
+/* horizontal rule */
 hr.FAM-hr {
   border:none;
   border-top:2px solid #DDD;
   margin:24px 0;
+}
+
+/* icon links */
+.FAM-icon-link {
+  font-size:18px;
+  vertical-align:middle;
+  display:inline-block;
+  margin:0 6px;
 }
 
 /* list styles */
