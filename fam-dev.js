@@ -1773,7 +1773,7 @@
         update : function () {
           FAM.cache.content.querySelector('#FAM-update').outerHTML = '<p id="FAM-update" style="text-align:center;"><i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw"></i></p>';
 
-          $.get('https://raw.githubusercontent.com/SethClydesdale/forumactif-messenger/master/fam' + FAM.config.update_chanel + '.js', function (data) {
+          $.get('https://raw.githubusercontent.com/SethClydesdale/forumactif-messenger/master/fam' + FAM.config.update_channel + '.js', function (data) {
             var config = data.replace(/[\s\S]*?(config.*?:.*?\{[\s\S]*?\},)[\s\S]*/, '$1').replace(/config.*?:/, 'window.fam_new_config = ').replace(/,$/, ';'),
                 lang = data.replace(/[\s\S]*?(lang.*?:.*?\{[\s\S]*?\})[\s\S]*/, '$1').replace(/lang.*?:/, 'window.fam_new_lang = '),
                 script = document.createElement('SCRIPT'),
