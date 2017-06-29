@@ -428,6 +428,7 @@ hr.FAM-hr {
 .FAM-label {
   font-weight:bold;
   text-align:right;
+  word-wrap:break-word;
   display:inline-block;
   width:30%;
   padding-right:6px;
