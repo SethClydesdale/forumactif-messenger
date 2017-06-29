@@ -1820,7 +1820,7 @@
               fam_window_width : settings.fam_window_width || '',
               fam_window_height : settings.fam_window_height || '',
               fam_theme_color : settings.fam_theme_color || '#3399FF',
-              fam_sound_notif : settings.fam_sound_notif || FAM.config.sound_notif_auto_enabled
+              fam_sound_notif : typeof settings.fam_sound_notif != 'undefined' ? settings.fam_sound_notif : (FAM.config.sound_notif_auto_enabled == true ? 'checked' : '')
               
             }).replace(
               theme, 
@@ -1920,6 +1920,17 @@
 
         // applies cached settings on startup
         apply : function () {
+          
+          // auto enable sound notif if setting is unset
+          function applySoundNotif (settings) {
+            settings = settings || {};
+            
+            if (typeof settings.fam_sound_notif == 'undefined' && FAM.config.sound_notif_auto_enabled) {
+              FAM.message.sound = true;
+            }
+          };
+          
+          // apply all settings
           if (window.JSON && window.localStorage && localStorage.fam_settings) {
             var settings = JSON.parse(localStorage.fam_settings), i;
 
@@ -1954,6 +1965,9 @@
               }
             }
 
+            applySoundNotif(settings);
+          } else {
+            applySoundNotif();
           }
         },
         
