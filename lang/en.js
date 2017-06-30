@@ -102,7 +102,7 @@ window.fam_lang_import = {
   config_update : 'Update Configuration',
   config_toggle_lang : 'Toggle Language Data',
   config_import_lang : 'Import Language : ',
-  config_import_lang_select : 'Select Language Pack',
+  config_import_lang_select : 'Select a Language Pack',
   config_import_lang_confirm : 'You are about to import the $LANG language pack for Forumactif Messenger. Do you want to continue?',
   config_import_lang_success : 'The $LANG language pack has been imported successfully.',
   config_export_lang : 'Export Language Data',

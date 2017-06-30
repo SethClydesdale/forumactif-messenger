@@ -204,6 +204,13 @@
   padding:12px;
 }
 
+.FAM-border-box {
+  border:1px solid #DDD;
+  border-radius:5px;
+  padding:3px;
+  margin:12px 6px;
+}
+
 .FAM-loading, .FAM-loading p {
   font-size:18px;
   font-weight:bold;
@@ -315,9 +322,11 @@
 #FAM .FAM-button-input-small .FAM-button {
   font-size:18px;
   width:30px;
-  height:30px; 
+  height:30px;
+  padding:0;
 }
 
+/* titles */
 .FAM-title {
   font-size:24px;
   font-weight:bold;
@@ -428,6 +437,7 @@ hr.FAM-hr {
 .FAM-label {
   font-weight:bold;
   text-align:right;
+  vertical-align:top;
   word-wrap:break-word;
   display:inline-block;
   width:30%;
@@ -442,6 +452,16 @@ hr.FAM-hr {
 
 #FAM .FAM-label-value .FAM-inputbox:not([type="color"]) {
   width:60%;
+}
+
+/* init tab styles */
+#FAM .FAM-label-value .FAM-init-tab.FAM-border-box .FAM-inputbox {
+  width:90%;
+  padding:8px;
+}
+
+.FAM-init-tab-controls .FAM-icon-link {
+  font-size:24px;
 }
 
 /* symmetrical labels */
