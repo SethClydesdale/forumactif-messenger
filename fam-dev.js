@@ -2196,9 +2196,11 @@
         
         // imports the selected language file
         importLang : function () {
-          var lang = FAM.cache.content.querySelector('#FAM-config-lang-import').value;
+          var select = FAM.cache.content.querySelector('#FAM-config-lang-import'),
+              lang = select.value,
+              langName = select.querySelector('[value="' + lang + '"]').innerText;
           
-          if (lang && confirm(FAM.config.lang.config_import_lang_confirm.replace('$LANG', lang))) {
+          if (lang && confirm(FAM.config.lang.config_import_lang_confirm.replace('$LANG', langName))) {
             var button = FAM.cache.content.querySelector('#FAM-config-lang-import-confirm'),
                 html = button.innerHTML,
                 click = button.getAttribute('onclick');
@@ -2247,7 +2249,7 @@
               // restore button state and display a success message
               button.innerHTML = html;
               button.setAttribute('onclick', click);
-              alert(FAM.config.lang.config_import_lang_success.replace('$LANG', lang));
+              alert(FAM.config.lang.config_import_lang_success.replace('$LANG', langName));
             });
           }
         },
