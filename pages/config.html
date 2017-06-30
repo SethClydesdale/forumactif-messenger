@@ -37,7 +37,7 @@
     <label for="FAM-config-update_channel" class="FAM-label">{config_update_channel}</label>
     <div class="FAM-label-value">
       <select id="FAM-config-update_channel" class="FAM-inputbox">
-        <option value="production">production</option>
+        <option value="production">production (stable)</option>
         <option value="developer">developer (beta)</option>
       </select>
     </div>
@@ -146,7 +146,28 @@
   
   <div class="FAM-section-title">{config_title_lang}</div>
   <button id="FAM-config-lang-toggle" class="FAM-button" onclick="this.nextSibling.style.display = this.nextSibling.style.display == 'none' ? '' : 'none';" type="button">{config_toggle_lang}</button>
-  <div id="FAM-config-lang-data" style="display:none"></div>
+  <div id="FAM-config-lang-data" style="display:none">
+    <div class="FAM-row">
+      <label class="FAM-label">{config_import_lang}</label>
+      <div class="FAM-label-value FAM-button-input">
+        <select id="FAM-config-lang-import" class="FAM-inputbox">
+          <option value="" selected>{config_import_lang_select}</option>
+          <option value="en">English</option>
+          <option value="fr">Français</option>
+        </select>
+        <button class="FAM-button" onclick="FAM.page.config.importLang();" type="button"><i class="fa fa-arrow-right"></i></button>
+      </div>
+    </div>
+    
+    <div class="FAM-row FAM-center">
+      <button id="FAM-config-lang-export" class="FAM-button" onclick="FAM.page.config.exportLang();" type="button">{config_export_lang}</button>
+    </div>
+    
+    <div class="FAM-row">
+      <p id="FAM-config-lang-success"></p>
+      <textarea id="FAM-config-lang-file" class="FAM-inputbox" onclick="this.select()" style="display:none;" readonly></textarea>
+    </div>
+  </div>
   
   <div class="FAM-section-title">{config_update}</div>
   
