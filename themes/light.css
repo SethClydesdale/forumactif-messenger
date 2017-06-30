@@ -165,7 +165,7 @@ strong.FAM-page-link, b.FAM-page-link {
 
 
 /* -- 02. BORDER COLORS -- */
-#FAM, #FAM .FAM-inputbox, #FAM .FAM-connected-buttons a, #FAM-actions .FAM-dropdown, .FAM-attachment-thumb, .FAM-tab, #FAM-profile-avatar, #FAM-version-card, #FAM-search-results {
+#FAM, #FAM .FAM-inputbox, #FAM .FAM-connected-buttons a, #FAM-actions .FAM-dropdown, .FAM-attachment-thumb, .FAM-tab, #FAM-profile-avatar, #FAM-version-card, #FAM-search-results, .FAM-border-box {
   border-color:#DDD;
 }
 
