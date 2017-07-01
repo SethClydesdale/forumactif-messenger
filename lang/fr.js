@@ -1,4 +1,4 @@
-// by DDril
+// French translation by DDril
 window.fam_lang_import = {
   loading : 'Chargement...',
   idle : 'Forumactif Messenger est en veille suite à votre inactivité. Cliquez ici pour le relancer.',
