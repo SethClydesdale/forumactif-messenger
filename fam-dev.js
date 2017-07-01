@@ -1682,7 +1682,7 @@
           var success = $('a[href^="/viewtopic?t="]', data)[0];
           
           if (success) {
-            FAM.get('/t' + success.href.replace(/.*?t=(\d+)&.*/, '$1') + '-' + encodeURIComponent(FAM.topic.backup.subject.toLowerCase().replace(/\s/g, '-')) + '?view=newest', subject);
+            FAM.get('/t' + success.href.replace(/.*?t=(\d+)&.*/, '$1') + '-' + encodeURIComponent(FAM.topic.backup.subject.toLowerCase().replace(/\s/g, '-')) + '?view=newest', FAM.topic.backup.subject);
             delete FAM.topic.backup;
             
           } else {

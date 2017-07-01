@@ -6,6 +6,7 @@ Forumactif Messenger is an open source project, which means that you can help im
 - [Feature Requests and Suggestions](#feature-requests-and-suggestions)
 - [Contributing Code Changes](#contributing-code-changes)
 - [Contributing a Theme](#contributing-a-theme)
+- [Contributing a Translation](#contributing-a-translation)
 - [Questions](#questions)
 
 ---
@@ -130,6 +131,47 @@ Once you're satisfied with your theme you can submit it to Github for the commun
 - An image and/or description of your theme. (optional)
 
 Once your pull request is submitted all you need to do is sit back and wait for a reply. If any changes need to be made, we'll let you know and work with you to help get your pull request merged.
+
+---
+
+## Contributing a Translation
+Contributing a translation for Forumactif Messenger is fairly easy to do and helps out the community a lot! If you're interested in contributing a translation please read on below.
+
+### Fork and Clone the Repository
+You will need to fork the main Forumactif Messenger repository and clone it to your desktop to contribute changes. See the [github help page](https://help.github.com/articles/fork-a-repo) for more information.
+
+### Creating your language file
+Before creating a new language file, check out the [lang](https://github.com/SethClydesdale/forumactif-messenger/tree/master/lang) folder to make sure a translation isn't already available. If a file is already available for your language feel free to edit it, if a file isn't available create a new one in this folder.
+
+To keep things simple and organized we use [language codes](https://www.w3schools.com/tags/ref_language_codes.asp) for our lang file names. (i.e. en.js, fr.js, de.js...) If a language code isn't available for your language, you're free to use whatever name you like so long as it relates to your language. Once your file is created you're ready to begin translating!
+
+### Translating
+To begin translating go to your forum that you have Forumactif Messenger installed on. Then go to **[Settings](https://github.com/SethClydesdale/forumactif-messenger/wiki/Settings#how-to-access-settings) > [Admin Configuration](https://github.com/SethClydesdale/forumactif-messenger/wiki/Settings#admin-configuration) > Language** and click the button to open up the language data for Forumactif Messenger. In there you will see a list of labels and input fields. The labels on the left are the alias name for the translation and the input field on the right is the translation for the alias. Translate as many of these as you like. If you're editing an existing translation use [Import Language](https://github.com/SethClydesdale/forumactif-messenger/wiki/Config#importing) to import the language data from Github.
+
+[![](https://i11.servimg.com/u/f11/18/21/41/30/captur17.png)](https://i11.servimg.com/u/f11/18/21/41/30/captur17.png)
+
+When you're finished translating the language data, the next step is exporting it! For information on exporting language data please see this page :
+
+https://github.com/SethClydesdale/forumactif-messenger/wiki/Config#exporting
+
+### Finishing up
+Once you've received the code for your language data the last thing you need to do is paste it as the contents of your translation file. When pasting the contents, make sure that `window.fam_lang_import =` is at the beginning of your translation file. This is an important piece of code used in the import process. It should look something like below. 
+
+```javascript
+window.fam_lang_import = {
+// translation aliases....
+}
+```
+
+You can look at the other translation files in [lang](https://github.com/SethClydesdale/forumactif-messenger/tree/master/lang) for more examples.
+
+### Submitting your Translation
+Once you're satisfied with your translation you can submit it to Github for the community to use. To submit your translation for review you must push your local changes to your forked copy of the repository and submit [a pull request](https://help.github.com/articles/about-pull-requests/). In the pull request, choose a title which sums up the changes that you have made, and in the body include some basic information about your translation, such as changes you made to an existing translation or any other information that we may need to know.
+
+Once your pull request is submitted all you need to do is sit back and wait for a reply. If any changes need to be made, we'll let you know and work with you to help get your pull request merged.
+
+### Submitting outside of Github
+If you're not comfortable with using github, you can submit your translation code to the [English Support Forum](http://help.forumotion.com/t152951-forumactif-messenger-instant-message-application-for-forumotion#1047237) for Forumotion. You will have to [register an account](http://help.forumotion.com/register) on the forum. If you cannot view the linked topic, send your bug report via PM to [Ange Tuteur](http://help.forumotion.com/privmsg?mode=post&u=88576).
 
 ---
 
