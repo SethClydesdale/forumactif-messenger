@@ -5,6 +5,10 @@ Forumactif Messenger (or "FAM" for short) is a JavaScript application or "plugin
 
 This application is constantly being improved thanks to support from the community. Forumactif Messenger will aim to support ALL major forum versions that are currently available on Forumotion. Those included are.. PhpBB2, PhpBB3, PunBB, Invision, ModernBB, and [Forumactif Edge](https://github.com/SethClydesdale/forumactif-edge).
 
+## Demo
+The best way to understand how something works is to try it out for yourself. If you want to try out a live demo of Forumactif Messenger before installing it on your forum, you can do so by visiting our demo on Demoactif. Click the link below to give Forumactif Messenger a try !
+
+http://demoactif.forumactif.com/t36-demo-forumactif-messenger?demo=fam&demo_user=true
 
 ## How to Install
 Forumactif Messenger can be installed for everyday use as well as testing and providing feedback to us. You can also help [contribute to the project](https://github.com/SethClydesdale/forumactif-messenger/blob/master/CONTRIBUTING.md) if you like as well. Visit the link below to learn how to install Forumactif Messenger !
