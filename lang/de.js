@@ -81,4 +81,4 @@ window.fam_lang_import = {
   no : 'Nein',
   send : 'Senden',
   cancel : 'Abbrechen'
-};
+}

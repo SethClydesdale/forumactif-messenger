@@ -44,4 +44,4 @@ window.fam_lang_import = {
   error_report : 'Signaler',
 
   guest : 'Invité'
-};
+}

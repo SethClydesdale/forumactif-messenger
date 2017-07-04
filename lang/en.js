@@ -82,9 +82,14 @@ window.fam_lang_import = {
   config_title_lang : 'Language',
   config_chat_page : 'Chat Page : ',
   config_chat_permission : 'Chat Permission : ',
+  config_permission_all : 'all',
+  config_permission_member : 'member',
+  config_permission_staff : 'staff',
   config_main_title : 'Main Title : ',
   config_embed : 'Embed Container : ',
   config_update_channel : 'Update Channel : ',
+  config_channel_production : 'production (stable)',
+  config_channel_developer : 'developer (beta)',
   config_tabs : 'Enable Tabs : ',
   config_initial_tabs : 'Initial Tabs : ',
   config_remove_tab : 'You are about to delete this tab. Do you want to continue?',
@@ -162,4 +167,4 @@ window.fam_lang_import = {
   send : 'Send',
   cancel : 'Cancel',
   reset : 'Reset'
-};
+}

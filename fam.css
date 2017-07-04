@@ -233,7 +233,14 @@
   margin-bottom:12px;
 }
 
-#FAM-no-tabs { cursor:pointer; }
+#FAM-no-tabs {
+  top:69px;
+  cursor:pointer;
+}
+
+#FAM-tab-container[style*=none] + #FAM-content #FAM-no-tabs {
+  top:39px;
+}
 
 #FAM-idle {
   color:#FFF;
