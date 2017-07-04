@@ -2735,10 +2735,7 @@
         data = data.replace(/\n\s*?</g, '<')
                    .replace(/<a/g, '<a target="_blank"')
                    // show new release content
-                   .replace(/style="\/\*v1\.0\.0\*\/display:none;"/g, '')
-                   .replace(/style="\/\*v1\.0\.1\*\/display:none;"/g, '')
-                   // hide old content
-                   .replace(/\/\*v1\.0\.1:hide\*\//g, 'display:none;');
+                   .replace(/style="\/\*v1\.0\.0\*\/display:none;"/g, '');
 
         // parse custom variables
         for (i in vars) {
