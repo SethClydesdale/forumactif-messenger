@@ -132,6 +132,9 @@ Once you're satisfied with your theme you can submit it to Github for the commun
 
 Once your pull request is submitted all you need to do is sit back and wait for a reply. If any changes need to be made, we'll let you know and work with you to help get your pull request merged.
 
+### Submitting your Theme outside of Github
+If you're not comfortable with using github, you can submit your theme's CSS to the [English Support Forum](http://help.forumotion.com/t152951-forumactif-messenger-instant-message-application-for-forumotion#1047237) for Forumotion. You will have to [register an account](http://help.forumotion.com/register) on the forum. If you cannot view the linked topic, send your theme's CSS via PM to [Ange Tuteur](http://help.forumotion.com/privmsg?mode=post&u=88576).
+
 ---
 
 ## Contributing a Translation
@@ -170,8 +173,8 @@ Once you're satisfied with your translation you can submit it to Github for the 
 
 Once your pull request is submitted all you need to do is sit back and wait for a reply. If any changes need to be made, we'll let you know and work with you to help get your pull request merged.
 
-### Submitting outside of Github
-If you're not comfortable with using github, you can submit your translation code to the [English Support Forum](http://help.forumotion.com/t152951-forumactif-messenger-instant-message-application-for-forumotion#1047237) for Forumotion. You will have to [register an account](http://help.forumotion.com/register) on the forum. If you cannot view the linked topic, send your bug report via PM to [Ange Tuteur](http://help.forumotion.com/privmsg?mode=post&u=88576).
+### Submitting your Translation outside of Github
+If you're not comfortable with using github, you can submit your translation code to the [English Support Forum](http://help.forumotion.com/t152951-forumactif-messenger-instant-message-application-for-forumotion#1047237) for Forumotion. You will have to [register an account](http://help.forumotion.com/register) on the forum. If you cannot view the linked topic, send your translation via PM to [Ange Tuteur](http://help.forumotion.com/privmsg?mode=post&u=88576).
 
 ---
 
