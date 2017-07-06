@@ -2914,12 +2914,11 @@
       // close the specified tab
       close : function (id) {
         var dead = FAM.cache.tabs.querySelector('#FAM-tab-' + id),
-            same = id == FAM.tab.active,
             survivor = dead.previousSibling ? dead.previousSibling :
                        dead.nextSibling ? dead.nextSibling :
                        null;
 
-        if (survivor && same) {
+        if (survivor && id == FAM.tab.active) {
           FAM.tab.focus(survivor.id.replace('FAM-tab-', ''));
 
         } else if (!survivor) {
