@@ -17,7 +17,7 @@ Forumactif Messenger isn't perfect, so sometimes you may run into a bug or somet
 ### Where to report your bug
 There are a few ways to report a bug, choose your preferred method below. You can report your bug on...
 - Github by opening a [new issue](https://github.com/SethClydesdale/forumactif-messenger/issues). If you don't have a Github account [you can create one](https://github.com/join). (It's free!)
-- The [English Support Forum](http://help.forumotion.com/t152951-forumactif-messenger-instant-message-application-for-forumotion#1047237) for Forumotion. You will have to [register an account](http://help.forumotion.com/register) on the forum. If you cannot view the linked topic, send your bug report via PM to [Ange Tuteur](http://help.forumotion.com/privmsg?mode=post&u=88576).
+- [FM Design](http://fmdesign.forumotion.com/t1378-forumactif-messenger-instant-message-application-for-forumotion#30691) by leaving a reply in the topic. You will have to [register an account](http://fmdesign.forumotion.com/register) on the forum.
 
 ### What to include in your report
 If possible, please include the following information in your bug report.
@@ -39,7 +39,7 @@ Forumactif Messenger is constantly evolving and it's largely in part thanks to t
 ### Where to leave your suggestion
 There are a few ways to suggest new features, choose your preferred method below. You can leave your suggestion on...
 - Github by opening a [new issue](https://github.com/SethClydesdale/forumactif-messenger/issues). If you don't have a Github account [you can create one](https://github.com/join). (It's free!)
-- The [English Support Forum](http://help.forumotion.com/t152951-forumactif-messenger-instant-message-application-for-forumotion#1047237) for Forumotion. You will have to [register an account](http://help.forumotion.com/register) on the forum. If you cannot view the linked topic, send your bug report via PM to [Ange Tuteur](http://help.forumotion.com/privmsg?mode=post&u=88576).
+- [FM Design](http://fmdesign.forumotion.com/t1378-forumactif-messenger-instant-message-application-for-forumotion#30691) by leaving a reply in the topic. You will have to [register an account](http://fmdesign.forumotion.com/register) on the forum.
 
 ### What to include in your suggestion
 If possible, please include the following information in your suggestion.
@@ -133,7 +133,7 @@ Once you're satisfied with your theme you can submit it to Github for the commun
 Once your pull request is submitted all you need to do is sit back and wait for a reply. If any changes need to be made, we'll let you know and work with you to help get your pull request merged.
 
 ### Submitting your Theme outside of Github
-If you're not comfortable with using github, you can submit your theme's CSS to the [English Support Forum](http://help.forumotion.com/t152951-forumactif-messenger-instant-message-application-for-forumotion#1047237) for Forumotion. You will have to [register an account](http://help.forumotion.com/register) on the forum. If you cannot view the linked topic, send your theme's CSS via PM to [Ange Tuteur](http://help.forumotion.com/privmsg?mode=post&u=88576).
+If you're not comfortable with using github, you can submit your theme's CSS to [FM Design](http://fmdesign.forumotion.com/t1378-forumactif-messenger-instant-message-application-for-forumotion#30691). You will have to [register an account](http://fmdesign.forumotion.com/register) on the forum.
 
 ---
 
@@ -174,7 +174,7 @@ Once you're satisfied with your translation you can submit it to Github for the 
 Once your pull request is submitted all you need to do is sit back and wait for a reply. If any changes need to be made, we'll let you know and work with you to help get your pull request merged.
 
 ### Submitting your Translation outside of Github
-If you're not comfortable with using github, you can submit your translation code to the [English Support Forum](http://help.forumotion.com/t152951-forumactif-messenger-instant-message-application-for-forumotion#1047237) for Forumotion. You will have to [register an account](http://help.forumotion.com/register) on the forum. If you cannot view the linked topic, send your translation via PM to [Ange Tuteur](http://help.forumotion.com/privmsg?mode=post&u=88576).
+If you're not comfortable with using github, you can submit your translation code to [FM Design](http://fmdesign.forumotion.com/t1378-forumactif-messenger-instant-message-application-for-forumotion#30691). You will have to [register an account](http://fmdesign.forumotion.com/register) on the forum. 
 
 ---
 
