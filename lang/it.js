@@ -1,3 +1,4 @@
+// Italian translation by MattiaDes
 window.fam_lang_import = {
   loading : 'Caricamento...',
   idle : 'Forumattivo Messenger è stato addormentato a causa dell\'inattività. Clicca qui per iniziare a chiacchierare di nuovo.',
