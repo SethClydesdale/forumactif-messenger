@@ -1,9 +1,18 @@
 # Forumactif Messenger
-Forumactif Messenger (or "FAM" for short) is a JavaScript application or "plugin" that integrates with [Forumotion](https://www.forumotion.com/) forums to enable instant messaging in topics in the style of a SMS app. It allows you to view topics and post messages in **real time** without ever having to refresh the page. What it does is display your forums, topics, etc.. in a separate window from the forum so you can pick it up and chat with anyone anytime. Even when not using this application, members can still participate in chats by accessing the topics directly on your forum.
+Forumactif Messenger (or "FAM" for short) is a JavaScript plugin that integrates with [Forumotion](https://www.forumotion.com/) forums to enable **real time messaging** in topics in a minimal design to make the experience more engaging. Some other features include..
+
+- Real time navigation and messaging.
+- Sound notification for messages.
+- GIF Search and other attachment options.
+- Community submitted themes selector.
+- Multiple supported languages.
+- Fullscreen window display.
+- Update and Configuration manager.
+- Live Searching, and more...
 
 [![](https://i58.servimg.com/u/f58/18/21/41/30/w4f56y10.gif)](https://i58.servimg.com/u/f58/18/21/41/30/w4f56y10.gif)
 
-This application is constantly being improved thanks to support from the community. Forumactif Messenger will aim to support ALL major forum versions that are currently available on Forumotion. Those included are.. PhpBB2, PhpBB3, PunBB, Invision, ModernBB, and [Forumactif Edge](https://github.com/SethClydesdale/forumactif-edge).
+Forumactif Messenger is optimized to work on all major forum versions for Forumotion, so long as your forum's templates aren't heavily modified.
 
 ## Demo
 The best way to understand how something works is to try it out for yourself. If you want to try out a live demo of Forumactif Messenger before installing it on your forum, you can do so by visiting our demo on Demoactif. Click the link below to give Forumactif Messenger a try !
@@ -11,7 +20,7 @@ The best way to understand how something works is to try it out for yourself. If
 http://demoactif.forumactif.com/t36-demo-forumactif-messenger?demo=fam&demo_user=true
 
 ## How to Install
-Forumactif Messenger can be installed for everyday use as well as testing and providing feedback to us. You can also help [contribute to the project](https://github.com/SethClydesdale/forumactif-messenger/blob/master/CONTRIBUTING.md) if you like as well. Visit the link below to learn how to install Forumactif Messenger !
+Installing Forumactif Messenger on your forum is super easy ! Visit the link below to learn how to install Forumactif Messenger on your Forum !
 
 https://github.com/SethClydesdale/forumactif-messenger/wiki/Installing
 
@@ -19,7 +28,7 @@ https://github.com/SethClydesdale/forumactif-messenger/wiki/Installing
 ## How to Contribute and Improve Forumactif Messenger
 Forumactif Messenger is open source, so anyone can help build and improve it !
 
-- Got a suggestion, have feedback, or find a bug ? Let us know on the [English Support Forum](http://help.forumotion.com/t152951-forumactif-messenger-instant-message-application-for-forumotion#1047237) OR on Github by opening a [new issue](https://github.com/SethClydesdale/forumactif-messenger/issues) !
+- Got a suggestion, have feedback, or find a bug ? Let us know on [FM Design](http://fmdesign.forumotion.com/t1378-forumactif-messenger-instant-message-application-for-forumotion#30691) OR on Github by opening a [new issue](https://github.com/SethClydesdale/forumactif-messenger/issues) !
 - Are you a developer with a passion for creating Open Source technology and want to improve Forumotion ? [Fork the repo on Github](https://github.com/SethClydesdale/forumactif-messenger/fork) and help out with development. [See our to do list](https://github.com/SethClydesdale/forumactif-messenger/wiki/Todo-List) or contact me to discuss development if you have any queries.
 
 For more information about contributing please see the following pages.
