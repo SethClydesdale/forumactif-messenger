@@ -3,6 +3,7 @@ Forumactif Messenger (or "FAM" for short) is a JavaScript plugin that integrates
 
 - Real time navigation and messaging.
 - Sound notification for messages.
+- Tabs for having multiple chats opened at once.
 - GIF Search and other attachment options.
 - Community submitted themes selector.
 - Multiple supported languages.
