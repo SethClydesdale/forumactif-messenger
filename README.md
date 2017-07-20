@@ -20,7 +20,7 @@ The best way to understand how something works is to try it out for yourself. If
 http://demoactif.forumactif.com/t36-demo-forumactif-messenger?demo=fam&demo_user=true
 
 ## How to Install
-Installing Forumactif Messenger on your forum is super easy ! Visit the link below to learn how to install Forumactif Messenger on your Forum !
+Installing Forumactif Messenger is super easy ! Visit the link below to learn how to install Forumactif Messenger on your Forumotion forum !
 
 https://github.com/SethClydesdale/forumactif-messenger/wiki/Installing
 
