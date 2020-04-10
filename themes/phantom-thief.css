@@ -1,0 +1,283 @@
+/******************************
+** === TABLE OF CONTENTS === **
+*******************************
+** 00. FONT COLORS
+** 01. BACKGROUND COLORS
+** 02. BORDER COLORS
+** 03. SCROLL BAR
+** 04. EXTRA STYLES
+*******************************
+*** ====== THEME INFO ====== **
+*******************************
+** TITLE       : Phantom Thief 
+** DESCRIPTION : Persona 5 inspired theme
+** AUTHOR      : Seth Clydesdale
+******************************/
+
+/* -- 00. FONT COLORS -- */
+#FAM a {
+  color:#000;
+}
+
+#FAM a:hover {
+  color:#300;
+}
+
+#FAM a:active {
+  color:#600;
+}
+
+#FAM-button, #FAM-toolbar, .FAM-maintitle, .FAM-toolbar-button, .FAM-button, #FAM-attachment-total, #FAM-attach-success, .FAM-dropdown-title, #FAM a.FAM-page-link, .FAM-page-link, .FAM-my-msg .FAM-msg-content, #FAM-new-msg-notif {
+  color:#FFF;
+}
+
+#FAM.FAM-fullscreen[data-hidden="false"] + #FAM-button:hover, .FAM-toolbar-button i:hover {
+  color:#EEE;
+}
+
+#FAM.FAM-fullscreen[data-hidden="false"] + #FAM-button:active, .FAM-toolbar-button i:active {
+  color:#DDD;
+}
+
+.FAM-separator:after {
+  color:#CCC;
+}
+
+.FAM-chat-icon .fa-circle {
+  color:#999;
+}
+
+#FAM-menu, .FAM-block-option {
+  color:#C66;
+}
+
+#FAM, #FAM-msg, #FAM .FAM-inputbox, #FAM .FAM-connected-buttons a, #FAM-actions > button, .FAM-block-option:hover, .FAM-chat, .FAM-msg-text .FAM-attachment td, .FAM-codebox, .FAM-spoiler, .FAM-codebox dt, .FAM-spoiler dt, .FAM-codebox cite, #FAM #FAM-service-title a {
+  color:#FFF;
+}
+
+.FAM-block-option:active {
+  color:#FCC;
+}
+
+#FAM-new-topic .fa-circle, .FAM-chat-icon.FAM-new-post .fa-circle, #FAM-tab-add:hover, #FAM-version-status-icon .fa-check-circle, #FAM-new-msg-divider, .FAM-section-title {
+  color:#F40001;
+}
+
+#FAM-new-topic:hover .fa-circle {
+  color:#E40001;
+}
+
+#FAM-new-topic:active .fa-circle {
+  color:#D40001;
+}
+
+#FAM-version-status-icon .fa-exclamation-circle {
+  color:#F93;
+}
+
+.FAM-error {
+  color:#F66;
+}
+
+.FAM-attachment-delete:hover .fa-circle, .FAM-tab-close:hover {
+  color:#F33;
+}
+
+/* important colors */
+#FAM .FAM-codebox dt a, #FAM .FAM-codebox cite a {
+  color:#333 !important;
+}
+
+
+/* -- 01. BACKGROUND COLORS -- */
+#FAM, #FAM-menu, #FAM .FAM-inputbox, #FAM .FAM-connected-buttons a, #FAM-actions > button, #FAM-actions .FAM-dropdown, .FAM-msg-text .FAM-attachment tr, .FAM-codebox, .FAM-spoiler, .FAM-tab:hover, .FAM-tab.FAM-tab-active {
+  background-color:#A40001;
+}
+
+.FAM-menu-option:hover, #FAM .FAM-connected-buttons a:hover, #FAM-actions > button:hover, .FAM-chat:hover, .FAM-tab {
+  background-color:#940001;
+}
+
+.FAM-menu-option:active, #FAM .FAM-connected-buttons a:active, #FAM-actions > button:active, .FAM-block-option:hover, .FAM-block-option:active, .FAM-msg-content {
+  background-color:#840001;
+}
+
+#FAM-timeout-bar, .FAM-codebox dt, .FAM-spoiler dt, .FAM-codebox cite {
+  background-color:#740001;
+}
+
+strong.FAM-page-link, b.FAM-page-link {
+  background-color:#440001;
+}
+
+.FAM-spoiler_content:after {
+  background-color:#000;
+}
+
+#FAM-button, #FAM-toolbar, .FAM-button, #FAM .FAM-list li:before, #FAM-attachment-total, .FAM-dropdown-title, #FAM a.FAM-page-link, .FAM-page-link, .FAM-tab.FAM-tab-active:after, #FAM-new-msg-notif, #FAM-new-msg-divider:before, #FAM-new-msg-divider:after {
+  background-color:#F40001;
+}
+
+#FAM-button:hover, .FAM-button:hover, #FAM a.FAM-page-link:hover {
+  background-color:#E40001;
+}
+
+#FAM-button:active, .FAM-button:active, #FAM a.FAM-page-link:active {
+  background-color:#D40001;
+}
+
+#FAM-attach-success {
+  background-color:#8B5;
+}
+
+.FAM-msg-error .FAM-msg-content {
+  background-color:#F33;
+}
+
+
+/* -- 02. BORDER COLORS -- */
+#FAM, #FAM .FAM-inputbox, #FAM .FAM-connected-buttons a, #FAM-actions .FAM-dropdown, .FAM-attachment-thumb, .FAM-tab, #FAM-profile-avatar, #FAM-version-card, #FAM-search-results, .FAM-border-box {
+  border-color:#000;
+}
+
+#FAM-menu, #FAM .FAM-inputbox:hover, #FAM .FAM-connected-buttons a:hover, .FAM-codebox, .FAM-spoiler {
+  border-color:#111;
+}
+
+#FAM .FAM-connected-buttons a:active {
+  border-color:#222;
+}
+
+#FAM .FAM-inputbox:focus {
+  border-color:#F40001;
+}
+
+/* online / offline colors */
+.FAM-msg-avatar {
+  border-color:#111;
+}
+
+.FAM-msg-online .FAM-msg-avatar {
+  border-color:#F40001;
+}
+
+/* specific borders */
+#FAM-actions, hr.FAM-hr {
+  border-top-color:#000;
+}
+
+.FAM-msg-content:before {
+  border-right-color:#000;
+}
+
+.FAM-block-option, .FAM-chat, .FAM-pagination, #FAM-tab-container {
+  border-bottom-color:#000;
+}
+
+#FAM-actions > button, #FAM-msg-container, #FAM-tab-add {
+  border-left-color:#000;
+}
+
+.FAM-section-title {
+  border-bottom-color:#F40001;
+}
+
+#FAM-toolbar {
+  border-bottom-color:#E40001;
+}
+
+.FAM-msg-error .FAM-msg-content:before {
+  border-left-color:#F33;
+}
+
+
+/* -- 03. SCROLL BAR -- */
+#FAM *::-webkit-scrollbar {
+  width:8px;
+  height:8px;
+}
+
+#FAM *::-webkit-scrollbar-track { background-color:#840001; }
+#FAM *::-webkit-scrollbar-thumb {
+  background-color:rgba(255, 255, 255, 0.2);
+  border:none;
+}
+
+/* scrollbar buttons */
+#FAM *::-webkit-scrollbar-button:single-button {
+  height:0;
+  width:0;
+}
+
+/* hover / active scrollbar colors */
+#FAM *::-webkit-scrollbar-thumb:hover { background-color:rgba(255, 255, 255, 0.3); }
+#FAM *::-webkit-scrollbar-thumb:active { background-color:rgba(255, 255, 255, 0.4); }
+
+
+/* -- 04. EXTRA STYLES -- */
+
+/* message arrows */
+.FAM-msg-content:before, .FAM-msg-text:before {
+  content:"";
+  border-top:10px solid transparent;
+  border-bottom:10px solid transparent;
+  border-right:20px solid #FFF;
+  position:absolute;
+  top:0px;
+  left:-30px;
+}
+
+.FAM-msg-text:before {
+  border-right-color:#000;
+  left:-22px;
+}
+
+.FAM-my-msg .FAM-msg-content:before, .FAM-my-msg .FAM-msg-text:before {
+  border-right:none;
+  border-left:20px solid #000;
+  top:0px;
+  right:-31px;
+  left:auto;
+}
+
+.FAM-my-msg .FAM-msg-text:before {
+  border-left-color:#FFF;
+  right:-23px;
+}
+
+/* message style */
+#FAM .FAM-msg-actions {
+  color:#FFF;
+  background:#000;
+  border-radius:0;
+}
+
+.FAM-msg-content {
+  color:#FFF;
+  background:transparent;
+  border-radius:0;
+  margin:20px 0 20px 15px;
+}
+
+.FAM-msg-content:after {
+  content:"";
+  border:6px solid #FFF;
+  background:#000;
+  position:absolute;
+  top:-15px;
+  left:-15px;
+  width:calc(100% + 20px);
+  height:calc(100% + 20px);
+  z-index:-1;
+}
+
+.FAM-my-msg .FAM-msg-content {
+  color:#000;
+  background:transparent;
+  margin:20px 15px 20px 0;
+}
+
+.FAM-my-msg .FAM-msg-content:after {
+  border-color:#000;
+  background:#FFF;
+}

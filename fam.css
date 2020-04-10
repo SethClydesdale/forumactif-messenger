@@ -286,6 +286,8 @@
   vertical-align:baseline;
   cursor:text;
   outline:none;
+  height:auto;
+  line-height:normal;
 }
 
 #FAM select.FAM-inputbox, #FAM .FAM-inputbox[type="color"] {
