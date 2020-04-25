@@ -860,7 +860,7 @@
         // check if the user is online
         online = post.className.indexOf('online') != -1 ||
                  (FAM.fVersion == 2 && post.querySelector('.i_icon_online')) ||
-                 (FAM.fVersion == 0 && post.nextSibling.querySelector('.i_icon_online'));
+                 (FAM.fVersion == 0 && post.nextSibling && post.nextSibling.querySelector('.i_icon_online'));
         
         // date and message elements
         date = $(FAM.select.post_date, post)[0];
@@ -1144,7 +1144,7 @@
 
       // scroll to the newest message or specified amount
       scroll : function (amount) {
-        FAM.cache.content.scrollTop = amount || FAM.cache.content.lastChild.offsetTop - 60;
+        FAM.cache.content.scrollTop = amount || (FAM.cache.content.lastChild ? FAM.cache.content.lastChild.offsetTop - 60 : 0);
       },
 
 
@@ -3432,7 +3432,7 @@
       }
     },
 
-    version : 'v1.0.2'
+    version : 'v1.0.3'
   };
 
   FAM.init(); // setup FAM
