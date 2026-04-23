@@ -852,10 +852,10 @@
 
         // check if the user is in a group
         group = name ? name.getElementsByTagName('SPAN')[0] : null;
-        group = group ? '<span style="' + group.getAttribute('style') + '"><strong>' : null;
+        group = group ? '<span class="' + group.className + '" style="' + (group.getAttribute('style') || '') + '"><strong>' + group.innerHTML : null;
 
-        // check if the username is available
-        name = name ? name.innerText : FAM.config.no_name;
+	    	// check if the username is available
+        name = name ? (group ? '' : name.innerHTML) : FAM.config.no_name;
 
         // check if the user is online
         online = post.className.indexOf('online') != -1 ||
